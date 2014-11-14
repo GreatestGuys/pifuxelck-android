@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-
 /**
  * A View that is capable of rendering an {@link AbstractDrawing}.
  */

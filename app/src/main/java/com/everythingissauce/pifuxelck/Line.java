@@ -1,7 +1,13 @@
 package com.everythingissauce.pifuxelck;
 
+import android.os.Bundle;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +91,10 @@ public class Line implements AbstractLine {
     }
   }
 
+  private static final String COLOR_KEY = "color";
+  private static final String POINTS_KEY = "points";
+  private static final String SIZE_KEY = "size";
+
   private final Color mColor;
   private final Point[] mPoints;
   private final double mSize;
@@ -110,6 +120,59 @@ public class Line implements AbstractLine {
 
   public double getSize() {
     return mSize;
+  }
+
+  public Bundle toBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putBundle(COLOR_KEY, mColor.toBundle());
+    bundle.putDouble(SIZE_KEY, mSize);
+
+    ArrayList<Bundle> pointBundleList = new ArrayList<Bundle>();
+    for (Point point : mPoints) {
+      pointBundleList.add(point.toBundle());
+    }
+    bundle.putParcelableArrayList(POINTS_KEY, pointBundleList);
+
+    return bundle;
+  }
+
+  public static Line fromBundle(Bundle bundle) {
+    List<Point> pointList = new ArrayList<Point>();
+    List<Bundle> pointBundleList = bundle.getParcelableArrayList(POINTS_KEY);
+    for (Bundle pointBundle : pointBundleList) {
+      pointList.add(Point.fromBundle(pointBundle));
+    }
+    return new Line(
+        Color.fromBundle(bundle.getBundle(COLOR_KEY)),
+        bundle.getDouble(SIZE_KEY),
+        pointList);
+  }
+
+  public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put(COLOR_KEY, mColor.toJson());
+    json.put(SIZE_KEY, mSize);
+
+    JSONArray pointArray = new JSONArray();
+    for (Point point : mPoints) {
+      pointArray.put(point.toJson());
+    }
+    json.put(POINTS_KEY, pointArray);
+
+    return json;
+  }
+
+  public static Line fromJson(JSONObject json) throws JSONException {
+    List<Point> pointList = new ArrayList<Point>();
+    JSONArray pointJsonArray = json.getJSONArray(POINTS_KEY);
+    for (int i = 0; i < pointJsonArray.length(); i++) {
+      pointList.add(Point.fromJson(pointJsonArray.getJSONObject(i)));
+    }
+
+    return new Line(
+        Color.fromJson(json.getJSONObject(COLOR_KEY)),
+        json.getDouble(SIZE_KEY),
+        pointList);
   }
 
   @Override
