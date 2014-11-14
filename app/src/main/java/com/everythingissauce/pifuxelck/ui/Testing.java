@@ -1,9 +1,14 @@
-package com.everythingissauce.pifuxelck;
+package com.everythingissauce.pifuxelck.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.everythingissauce.pifuxelck.Drawing;
+import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.ui.DrawingOnTouchListener;
+import com.everythingissauce.pifuxelck.ui.DrawingView;
 
 
 public class Testing extends Activity {
@@ -12,6 +17,11 @@ public class Testing extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_testing);
+
+      Drawing.Builder drawingBuilder = new Drawing.Builder();
+      DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
+      drawingView.setDrawing(drawingBuilder);
+      DrawingOnTouchListener.install(drawingView, drawingBuilder);
     }
 
 

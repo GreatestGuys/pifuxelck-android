@@ -11,9 +11,12 @@ import java.util.List;
 /**
  * A styled list of line segments in a drawing. This class is immutable.
  */
-public class Line implements Iterable<LineSegment> {
+public class Line implements AbstractLine {
 
-  public static class Builder {
+  /**
+   * A builder for Line objects. This class is not thread safe.
+   */
+  public static class Builder implements AbstractLine {
 
     private Color mColor = new Color(0, 0, 0);
     private final List<Point> mPoints = new ArrayList<Point>();
@@ -22,6 +25,11 @@ public class Line implements Iterable<LineSegment> {
     public Builder setColor(Color color) {
       mColor = color;
       return this;
+    }
+
+    @Override
+    public Color getColor() {
+      return mColor;
     }
 
     public Builder addPoint(double x, double y) {
@@ -39,8 +47,41 @@ public class Line implements Iterable<LineSegment> {
       return this;
     }
 
+    @Override
+    public double getSize() {
+      return mSize;
+    }
+
     public Line build() {
       return new Line(mColor, mSize, mPoints);
+    }
+
+    @Override
+    public Iterator<LineSegment> iterator() {
+      return new Iterator<LineSegment>() {
+
+        // mIndex points to the point in the array that will be the first point of
+        // the next line segment returned by next().
+        int mIndex = 0;
+
+        @Override
+        public boolean hasNext() {
+          return mIndex < (mPoints.size() - 1);
+        }
+
+        @Override
+        public LineSegment next() {
+          LineSegment segment = new LineSegment(mPoints.get(mIndex), mPoints.get(mIndex + 1));
+          mIndex++;
+          return segment;
+        }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException(
+              "LineSegments cannot be removed from a line!");
+        }
+      };
     }
   }
 

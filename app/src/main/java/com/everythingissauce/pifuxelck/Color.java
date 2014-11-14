@@ -11,6 +11,9 @@ import com.google.common.base.Objects;
  */
 public class Color {
 
+  public static final Color WHITE = new Color(1, 1, 1);
+  public static final Color BLACK = new Color(0, 0, 0);
+
   private final double mAlpha;
   private final double mBlue;
   private final double mGreen;

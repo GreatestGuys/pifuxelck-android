@@ -9,8 +9,8 @@
     <view
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        class="com.everythingissauce.pifuxelck.DrawingView"
-        android:id="@+id/view"
+        class="com.everythingissauce.pifuxelck.ui.DrawingView"
+        android:id="@+id/drawing"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
