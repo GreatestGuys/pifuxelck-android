@@ -1,5 +1,8 @@
 package com.everythingissauce.pifuxelck;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -66,6 +69,31 @@ public class Line implements Iterable<LineSegment> {
 
   public double getSize() {
     return mSize;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper("Line")
+        .add("color", mColor)
+        .add("size", mSize)
+        .add("points", Arrays.asList(mPoints))
+        .toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Line)) {
+      return false;
+    }
+    Line otherLine = (Line) other;
+    return mColor.equals(otherLine.mColor)
+        && mSize == otherLine.mSize
+        && Arrays.asList(mPoints).equals(Arrays.asList(otherLine.mPoints));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mColor, mSize, Arrays.asList(mPoints));
   }
 
   private class LineSegmentIterator implements Iterator<LineSegment> {

@@ -1,5 +1,8 @@
 package com.everythingissauce.pifuxelck;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 /**
  * A line segment represented by two points. This class is immutable.
  */
@@ -19,5 +22,28 @@ public class LineSegment {
 
   public Point getSecond() {
     return mSecond;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper("LineSegment")
+        .add("first", mFirst)
+        .add("second", mSecond)
+        .toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof LineSegment)) {
+      return false;
+    }
+    LineSegment otherLine = (LineSegment) other;
+    return mFirst.equals(otherLine.mFirst)
+        && mSecond.equals(otherLine.mSecond);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mFirst, mSecond);
   }
 }
