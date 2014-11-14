@@ -1,5 +1,8 @@
 package com.everythingissauce.pifuxelck;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,5 +32,26 @@ public class Drawing implements Iterable<Line> {
     synchronized (mLock) {
       return mLines.iterator();
     }
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper("Drawing")
+        .add("lines", mLines)
+        .toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Drawing)) {
+      return false;
+    }
+    Drawing otherDrawing = (Drawing) other;
+    return mLines.equals(otherDrawing.mLines);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mLines);
   }
 }

@@ -1,5 +1,8 @@
 package com.everythingissauce.pifuxelck;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 /**
  * The color of a line segment in a drawing. This class uses floating point
  * values on between 0 and 1 inclusive to represent colors.
@@ -57,5 +60,32 @@ public class Color {
 
   private int to255(double colorValue) {
     return (int) (colorValue * 255);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper("Color")
+        .add("red", mRed)
+        .add("green", mGreen)
+        .add("blue", mBlue)
+        .add("alpha", mAlpha)
+        .toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Color)) {
+      return false;
+    }
+    Color otherColor = (Color) other;
+    return mRed == otherColor.mRed
+        && mGreen == otherColor.mGreen
+        && mBlue == otherColor.mBlue
+        && mAlpha == otherColor.mAlpha;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mRed, mGreen, mBlue, mAlpha);
   }
 }
