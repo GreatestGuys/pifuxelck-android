@@ -1,7 +1,13 @@
 package com.everythingissauce.pifuxelck;
 
+import android.os.Bundle;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +26,15 @@ public class Drawing implements AbstractDrawing {
 
     private Color mBackgroundColor = Color.WHITE;
     private final List<Line> mLines = new ArrayList<Line>();
+
+    public static Builder fromDrawing(AbstractDrawing drawing) {
+      Builder builder = new Builder();
+      builder.setBackgroundColor(drawing.getBackgroundColor());
+      for (Line line : drawing) {
+        builder.pushLine(line);
+      }
+      return builder;
+    }
 
     public Builder setBackgroundColor(Color backgroundColor) {
       mBackgroundColor = backgroundColor;
@@ -54,6 +69,9 @@ public class Drawing implements AbstractDrawing {
     }
   }
 
+  private static final String BACKGROUND_KEY = "background_color";
+  private static final String LINES_KEY = "lines";
+
   private final Color mBackgroundColor;
   private final Line[] mLines;
 
@@ -74,6 +92,55 @@ public class Drawing implements AbstractDrawing {
   @Override
   public Iterator<Line> iterator() {
     return Arrays.asList(mLines).iterator();
+  }
+
+  public Bundle toBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putBundle(BACKGROUND_KEY, mBackgroundColor.toBundle());
+
+    ArrayList<Bundle> lineBundleList = new ArrayList<Bundle>();
+    for (Line line : mLines) {
+      lineBundleList.add(line.toBundle());
+    }
+    bundle.putParcelableArrayList(LINES_KEY, lineBundleList);
+
+    return bundle;
+  }
+
+  public static Drawing fromBundle(Bundle bundle) {
+    List<Line> lineList = new ArrayList<Line>();
+    List<Bundle> lineBundleList = bundle.getParcelableArrayList(LINES_KEY);
+    for (Bundle lineBundle : lineBundleList) {
+      lineList.add(Line.fromBundle(lineBundle));
+    }
+    return new Drawing(
+        Color.fromBundle(bundle.getBundle(BACKGROUND_KEY)),
+        lineList);
+  }
+
+  public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put(BACKGROUND_KEY, mBackgroundColor.toJson());
+
+    JSONArray lineArray = new JSONArray();
+    for (Line line : mLines) {
+      lineArray.put(line.toJson());
+    }
+    json.put(LINES_KEY, lineArray);
+
+    return json;
+  }
+
+  public static Drawing fromJson(JSONObject json) throws JSONException {
+    List<Line> lineList = new ArrayList<Line>();
+    JSONArray lineJsonArray = json.getJSONArray(LINES_KEY);
+    for (int i = 0; i < lineJsonArray.length(); i++) {
+      lineList.add(Line.fromJson(lineJsonArray.getJSONObject(i)));
+    }
+
+    return new Drawing(
+        Color.fromJson(json.getJSONObject(BACKGROUND_KEY)),
+        lineList);
   }
 
   @Override
