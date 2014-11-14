@@ -1,7 +1,12 @@
 package com.everythingissauce.pifuxelck;
 
+import android.os.Bundle;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * A point along a line segment. Points are defined as X-Y pairs where each
@@ -12,6 +17,9 @@ import com.google.common.base.Objects;
  * This class is immutable.
  */
 public class Point {
+
+  private static final String X_KEY = "x";
+  private static final String Y_KEY = "y";
 
   private final double mX;
   private final double mY;
@@ -35,6 +43,28 @@ public class Point {
 
   public Point offset(double x, double y) {
     return new Point(mX + x, mY + y);
+  }
+
+  public Bundle toBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putDouble(X_KEY, mX);
+    bundle.putDouble(Y_KEY, mY);
+    return bundle;
+  }
+
+  public static Point fromBundle(Bundle bundle) {
+    return new Point(bundle.getDouble(X_KEY), bundle.getDouble(Y_KEY));
+  }
+
+  public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put(X_KEY, mX);
+    json.put(Y_KEY, mY);
+    return json;
+  }
+
+  public static Point fromJson(JSONObject json) throws JSONException {
+    return new Point(json.getDouble(X_KEY), json.getDouble(Y_KEY));
   }
 
   @Override

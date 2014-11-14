@@ -1,7 +1,12 @@
 package com.everythingissauce.pifuxelck;
 
+import android.os.Bundle;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * The color of a line segment in a drawing. This class uses floating point
@@ -10,6 +15,11 @@ import com.google.common.base.Objects;
  * This class is immutable.
  */
 public class Color {
+
+  private static final String ALPHA_KEY = "a";
+  private static final String BLUE_KEY = "g";
+  private static final String GREEN_KEY = "b";
+  private static final String RED_KEY = "r";
 
   public static final Color WHITE = new Color(1, 1, 1);
   public static final Color BLACK = new Color(0, 0, 0);
@@ -63,6 +73,40 @@ public class Color {
 
   private int to255(double colorValue) {
     return (int) (colorValue * 255);
+  }
+
+  public Bundle toBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putDouble(RED_KEY, mRed);
+    bundle.putDouble(GREEN_KEY, mGreen);
+    bundle.putDouble(BLUE_KEY, mBlue);
+    bundle.putDouble(ALPHA_KEY, mAlpha);
+    return bundle;
+  }
+
+  public static Color fromBundle(Bundle bundle) {
+    return new Color(
+        bundle.getDouble(RED_KEY),
+        bundle.getDouble(GREEN_KEY),
+        bundle.getDouble(BLUE_KEY),
+        bundle.getDouble(ALPHA_KEY, 1.0));
+  }
+
+  public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put(RED_KEY, mRed);
+    json.put(GREEN_KEY, mGreen);
+    json.put(BLUE_KEY, mBlue);
+    json.put(ALPHA_KEY, mAlpha);
+    return json;
+  }
+
+  public static Color fromJson(JSONObject json) throws JSONException {
+    return new Color(
+        json.getDouble(RED_KEY),
+        json.getDouble(GREEN_KEY),
+        json.getDouble(BLUE_KEY),
+        json.getDouble(ALPHA_KEY));
   }
 
   @Override
