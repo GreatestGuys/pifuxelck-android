@@ -3,8 +3,8 @@ package com.everythingissauce.pifuxelck;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
