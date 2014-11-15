@@ -8,8 +8,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.TextView;
 
+import com.everythingissauce.pifuxelck.Color;
 import com.everythingissauce.pifuxelck.Drawing;
 import com.everythingissauce.pifuxelck.R;
 
@@ -29,11 +31,15 @@ public class DrawingActivity extends Activity implements
 
   @Nullable private Drawing.Builder mDrawingBuilder;
   @Nullable private DrawingView mDrawingView;
+  @Nullable private DrawingOnTouchListener mDrawingOnTouchListener;
 
   @Nullable private View mOptionsButton;
   @Nullable private View mSizeButton;
   @Nullable private View mColorButton;
   @Nullable private View mBackgroundButton;
+
+  @Nullable private GridView mColorPickerView;
+  @Nullable private ColorAdapter mColorPickerAdapter;
 
   private int mChosenOption = OPTIONS_NONE;
 
@@ -49,7 +55,8 @@ public class DrawingActivity extends Activity implements
 
     mDrawingView = (DrawingView) findViewById(R.id.drawing_view);
     mDrawingView.setDrawing(mDrawingBuilder);
-    DrawingOnTouchListener.install(mDrawingView, mDrawingBuilder);
+    mDrawingOnTouchListener =
+        DrawingOnTouchListener.install(mDrawingView, mDrawingBuilder);
 
     View undoButton = findViewById(R.id.undo_button);
     undoButton.setOnClickListener(this);
@@ -60,6 +67,11 @@ public class DrawingActivity extends Activity implements
     mSizeButton = findViewById(R.id.size_button);
     mColorButton = findViewById(R.id.stroke_color_button);
     mBackgroundButton = findViewById(R.id.background_color_button);
+
+    mColorPickerAdapter = new ColorAdapter(this);
+    mColorPickerView = (GridView) findViewById(R.id.color_picker);
+    mColorPickerView.setAdapter(mColorPickerAdapter);
+    mColorPickerView.setOnItemClickListener(mColorPickerAdapter);
   }
 
   @Override
@@ -100,9 +112,9 @@ public class DrawingActivity extends Activity implements
         } else if (mChosenOption == OPTIONS_SIZE) {
           Log.i(TAG, "Chose size");
         } else if (mChosenOption == OPTIONS_COLOR) {
-          Log.i(TAG, "Chose color");
+          showStrokeColors();
         } else if (mChosenOption == OPTIONS_BACKGROUND) {
-          Log.i(TAG, "Chose background");
+          showBackgroundColors();
         }
         return true;
 
@@ -131,6 +143,32 @@ public class DrawingActivity extends Activity implements
     mSizeButton.setVisibility(View.INVISIBLE);
     mColorButton.setVisibility(View.INVISIBLE);
     mBackgroundButton.setVisibility(View.INVISIBLE);
+  }
+
+  private void showBackgroundColors() {
+    mColorPickerView.setVisibility(View.VISIBLE);
+    mColorPickerAdapter.setOnColorSelectedListener(
+        new ColorAdapter.OnColorSelectedListener() {
+          @Override
+          public void onColorSelected(Color color) {
+            mColorPickerView.setVisibility(View.INVISIBLE);
+            mDrawingBuilder.setBackgroundColor(color);
+            mDrawingView.invalidate();
+          }
+        });
+  }
+
+  private void showStrokeColors() {
+    mColorPickerView.setVisibility(View.VISIBLE);
+    mColorPickerAdapter.setOnColorSelectedListener(
+        new ColorAdapter.OnColorSelectedListener() {
+          @Override
+          public void onColorSelected(Color color) {
+            mColorPickerView.setVisibility(View.INVISIBLE);
+            mDrawingOnTouchListener.setCurrentColor(color);
+            mDrawingView.invalidate();
+          }
+        });
   }
 
   private boolean viewContainsEvent(

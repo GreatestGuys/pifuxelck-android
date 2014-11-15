@@ -23,6 +23,8 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
   private final DrawingView mDrawingView;
   private final Drawing.Builder mDrawingBuilder;
   @Nullable private Line.Builder mInProgressLine;
+  private Color mCurrentColor;
+  private double mCurrentSize;
 
   private double mLastX;
   private double mLastY;
@@ -31,6 +33,8 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
     mDrawingView = view;
     mDrawingBuilder = builder;
     mInProgressLine = null;
+    mCurrentColor = Color.BLACK;
+    mCurrentSize = 0.025;
     mLastX = 0;
     mLastY = 0;
   }
@@ -54,6 +58,10 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
     mDrawingView.setOnTouchListener(null);
   }
 
+  public void setCurrentColor(Color color) {
+    mCurrentColor = color;
+  }
+
   @Override
   public boolean onTouch(View view, MotionEvent motionEvent) {
     double viewSize = view.getWidth();
@@ -65,8 +73,8 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
     switch (motionEvent.getActionMasked()) {
       case MotionEvent.ACTION_DOWN:
         mInProgressLine = new Line.Builder()
-            .setSize(0.025)
-            .setColor(Color.BLACK)
+            .setSize(mCurrentSize)
+            .setColor(mCurrentColor)
             .addPoint(scaledX, scaledY);
         mDrawingView.setInProgressLine(mInProgressLine);
 
