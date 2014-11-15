@@ -81,7 +81,7 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
 
     CircleView circleView =
         (CircleView) containerView.findViewById(R.id.color_button);
-    circleView.setFillColor(PALETTE[i].toAndroidColor());
+    circleView.setFillColor(PALETTE[i % PALETTE.length].toAndroidColor());
 
     return containerView;
   }
@@ -89,12 +89,22 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
   @Override
   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
     if (mOnColorSelectedListener != null) {
-      mOnColorSelectedListener.onColorSelected(PALETTE[i]);
+      mOnColorSelectedListener.onColorSelected(PALETTE[i % PALETTE.length]);
     }
   }
 
   public void setOnColorSelectedListener(
       @Nullable OnColorSelectedListener listener) {
     mOnColorSelectedListener = listener;
+  }
+
+  @Override
+  public int getCount() {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override
+  public Color getItem(int position) {
+    return super.getItem(position % PALETTE.length);
   }
 }
