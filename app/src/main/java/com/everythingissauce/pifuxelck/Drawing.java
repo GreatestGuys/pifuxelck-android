@@ -24,16 +24,20 @@ public class Drawing implements AbstractDrawing {
    */
   public static class Builder implements AbstractDrawing {
 
-    private Color mBackgroundColor = Color.WHITE;
-    private final List<Line> mLines = new ArrayList<Line>();
+    private Color mBackgroundColor;
+    private final List<Line> mLines;
 
-    public static Builder fromDrawing(AbstractDrawing drawing) {
-      Builder builder = new Builder();
-      builder.setBackgroundColor(drawing.getBackgroundColor());
+    public Builder() {
+      mBackgroundColor = Color.WHITE;
+      mLines = new ArrayList<Line>();
+    }
+
+    public Builder(Drawing drawing) {
+      mBackgroundColor = drawing.mBackgroundColor;
+      mLines = new ArrayList<Line>();
       for (Line line : drawing) {
-        builder.pushLine(line);
+        pushLine(line);
       }
-      return builder;
     }
 
     public Builder setBackgroundColor(Color backgroundColor) {
@@ -79,8 +83,9 @@ public class Drawing implements AbstractDrawing {
     mBackgroundColor = backgroundColor;
 
     mLines = new Line[lines.size()];
-    for (int i = 0; i < lines.size(); i++) {
-      mLines[i] = lines.get(i);
+    int i = 0;
+    for (Line line : lines) {
+      mLines[i++] = line;
     }
   }
 
@@ -157,11 +162,12 @@ public class Drawing implements AbstractDrawing {
       return false;
     }
     Drawing otherDrawing = (Drawing) other;
-    return mLines.equals(otherDrawing.mLines);
+    return mLines.equals(otherDrawing.mLines)
+        && mBackgroundColor.equals(otherDrawing.mBackgroundColor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(mLines);
+    return Objects.hashCode(mBackgroundColor, mLines);
   }
 }

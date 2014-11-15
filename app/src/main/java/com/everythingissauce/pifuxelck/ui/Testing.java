@@ -21,7 +21,8 @@ public class Testing extends Activity {
 
     mDrawingBuilder = savedInstanceState == null
         ? new Drawing.Builder()
-        : Drawing.Builder.fromDrawing(Drawing.fromBundle(savedInstanceState.getBundle("drawing")));
+        : new Drawing.Builder(
+            Drawing.fromBundle(savedInstanceState.getBundle("drawing")));
     DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
     drawingView.setDrawing(mDrawingBuilder);
     DrawingOnTouchListener.install(drawingView, mDrawingBuilder);

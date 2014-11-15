@@ -104,8 +104,9 @@ public class Line implements AbstractLine {
     mSize = size;
 
     mPoints = new Point[points.size()];
-    for (int i = 0; i < points.size(); i++) {
-      mPoints[i] = points.get(i);
+    int i = 0;
+    for (Point point : points) {
+      mPoints[i++] = point;
     }
   }
 
