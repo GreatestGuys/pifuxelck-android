@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.Light">
-        <item name="android:colorPrimary">@color/cyan</item>
-        <item name="android:colorPrimaryDark">@color/cyan_dark</item>
-        <item name="android:colorAccent">@color/pink</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primaryDark</item>
+        <item name="android:colorAccent">@color/accent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:windowBackground">@color/background_grey</item>
     </style>

@@ -13,7 +13,7 @@
 <!--        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="displayOptions">showHome|homeAsUp|showTitle</item> -->
         <item name="android:icon">@android:color/transparent</item>
-        <item name="android:background">@color/cyan</item>
+        <item name="android:background">@color/primary</item>
     </style>
 
 </resources>

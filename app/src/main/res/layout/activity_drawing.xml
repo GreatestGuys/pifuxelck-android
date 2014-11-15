@@ -12,13 +12,13 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/label_card"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:gravity="bottom"
         android:nestedScrollingEnabled="false"
+        android:id="@+id/label_card"
         >
 
         <TextView
@@ -33,7 +33,6 @@
             android:paddingBottom="8dp"/>
 
     </android.support.v7.widget.CardView>
-
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
@@ -51,34 +50,37 @@
 
     </android.support.v7.widget.CardView>
 
+    <!-- The three always visible buttons. -->
+
     <com.github.pavlospt.CircleView
         android:layout_width="64dip"
         android:layout_height="64dip"
         android:id="@+id/done_button"
+        android:elevation="100dp"
         app:titleSize="32dp"
         app:titleText="✓"
         app:subtitleText=""
         app:titleColor="@android:color/white"
-        app:fillColor="@color/pink"
+        app:fillColor="@color/accent"
         app:strokeColorValue="@android:color/transparent"
         app:backgroundColorValue="@android:color/transparent"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/drawing_card"
-        android:layout_alignEnd="@+id/drawing_card"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="8dp"/>
 
     <com.github.pavlospt.CircleView
         android:layout_width="64dip"
         android:layout_height="64dip"
         android:id="@+id/undo_button"
+        android:elevation="100dp"
         app:titleSize="32dp"
         app:titleText="✗"
         app:subtitleText=""
         app:titleColor="@android:color/white"
-        app:fillColor="@color/pink"
+        app:fillColor="@color/accent"
         app:strokeColorValue="@android:color/transparent"
         app:backgroundColorValue="@android:color/transparent"
-        android:layout_alignTop="@+id/done_button"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"/>
 
@@ -86,16 +88,75 @@
         android:layout_width="64dip"
         android:layout_height="64dip"
         android:id="@+id/options_button"
+        android:elevation="100dp"
         app:titleSize="48dp"
         app:titleText="···"
         app:subtitleText=""
         app:titleColor="@android:color/white"
-        app:fillColor="@color/pink"
+        app:fillColor="@color/accent"
         app:strokeColorValue="@android:color/transparent"
         app:backgroundColorValue="@android:color/transparent"
-        android:layout_alignTop="@+id/done_button"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_marginBottom="8dp"/>
+
+    <!-- The three expanded option buttons. -->
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:id="@+id/size_button"
+        android:elevation="50dp"
+        app:titleSize="32dp"
+        app:titleText="◄"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/accentDark"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_above="@+id/stroke_color_button"
+        android:layout_alignLeft="@+id/stroke_color_button"
+        android:layout_alignStart="@+id/stroke_color_button"
+        android:layout_marginBottom="32dp"
+        android:layout_marginRight="8dp"
+        android:visibility="invisible"/>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:id="@+id/stroke_color_button"
+        android:elevation="50dp"
+        app:titleSize="32dp"
+        app:titleText="•"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/accentDark"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_above="@+id/options_button"
+        android:layout_alignLeft="@+id/background_color_button"
+        android:layout_alignStart="@+id/background_color_button"
+        android:layout_marginBottom="32dp"
+        android:layout_marginRight="8dp"
+        android:visibility="invisible"/>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:id="@+id/background_color_button"
+        android:elevation="50dp"
+        app:titleSize="18dp"
+        app:titleText="■"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/accentDark"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_above="@+id/size_button"
+        android:layout_alignRight="@+id/options_button"
+        android:layout_alignEnd="@+id/options_button"
+        android:layout_marginBottom="32dp"
+        android:layout_marginRight="8dp"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
