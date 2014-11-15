@@ -133,6 +133,18 @@ public class DrawingActivity extends Activity implements
     return false;
   }
 
+  @Override
+  public void onBackPressed() {
+    // Interpret the back button to mean, close the current overlay if the
+    // color picker, or the size picker is displayed.
+    if (mColorPickerView.getVisibility() == View.VISIBLE) {
+      mColorPickerView.setVisibility(View.INVISIBLE);
+      mColorPickerAdapter.setOnColorSelectedListener(null);
+    } else {
+      super.onBackPressed();
+    }
+  }
+
   private void showOptionButtons() {
     mSizeButton.setVisibility(View.VISIBLE);
     mColorButton.setVisibility(View.VISIBLE);
