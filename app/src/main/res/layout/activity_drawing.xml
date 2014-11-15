@@ -1,0 +1,101 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.everythingissauce.pifuxelck.ui.DrawingActivity">
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/label_card"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="bottom"
+        android:nestedScrollingEnabled="false"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="'A banana'"
+            android:id="@+id/label"
+            android:textColor="@android:color/black"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drawing_card"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <com.everythingissauce.pifuxelck.ui.DrawingView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/drawing_view"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"/>
+
+    </android.support.v7.widget.CardView>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="64dip"
+        android:layout_height="64dip"
+        android:id="@+id/done_button"
+        app:titleSize="32dp"
+        app:titleText="✓"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/pink"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/drawing_card"
+        android:layout_alignEnd="@+id/drawing_card"
+        android:layout_marginBottom="8dp"/>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="64dip"
+        android:layout_height="64dip"
+        android:id="@+id/undo_button"
+        app:titleSize="32dp"
+        app:titleText="✗"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/pink"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_alignTop="@+id/done_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"/>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="64dip"
+        android:layout_height="64dip"
+        android:id="@+id/options_button"
+        app:titleSize="48dp"
+        app:titleText="···"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/pink"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_alignTop="@+id/done_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

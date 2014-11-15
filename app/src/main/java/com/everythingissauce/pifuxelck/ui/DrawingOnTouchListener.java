@@ -65,8 +65,8 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
     switch (motionEvent.getActionMasked()) {
       case MotionEvent.ACTION_DOWN:
         mInProgressLine = new Line.Builder()
-            .setSize(0.05)
-            .setColor(new Color(1, 0, 0))
+            .setSize(0.025)
+            .setColor(Color.BLACK)
             .addPoint(scaledX, scaledY);
         mDrawingView.setInProgressLine(mInProgressLine);
 
