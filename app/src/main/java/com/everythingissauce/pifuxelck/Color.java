@@ -16,10 +16,10 @@ import org.json.JSONException;
  */
 public class Color {
 
-  private static final String ALPHA_KEY = "a";
-  private static final String BLUE_KEY = "g";
-  private static final String GREEN_KEY = "b";
-  private static final String RED_KEY = "r";
+  private static final String ALPHA_KEY = "alpha";
+  private static final String BLUE_KEY = "green";
+  private static final String GREEN_KEY = "blue";
+  private static final String RED_KEY = "red";
 
   public static final Color WHITE = new Color(1, 1, 1);
   public static final Color BLACK = new Color(0, 0, 0);

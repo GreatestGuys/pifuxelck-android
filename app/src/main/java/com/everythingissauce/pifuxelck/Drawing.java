@@ -81,12 +81,8 @@ public class Drawing implements AbstractDrawing {
 
   public Drawing(Color backgroundColor, List<Line> lines) {
     mBackgroundColor = backgroundColor;
-
     mLines = new Line[lines.size()];
-    int i = 0;
-    for (Line line : lines) {
-      mLines[i++] = line;
-    }
+    lines.toArray(mLines);
   }
 
   @Override

@@ -104,10 +104,7 @@ public class Line implements AbstractLine {
     mSize = size;
 
     mPoints = new Point[points.size()];
-    int i = 0;
-    for (Point point : points) {
-      mPoints[i++] = point;
-    }
+    points.toArray(mPoints);
   }
 
   public Color getColor() {
