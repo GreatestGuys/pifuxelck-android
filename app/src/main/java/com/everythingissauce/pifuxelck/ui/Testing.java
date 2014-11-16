@@ -1,29 +1,37 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-
 import com.everythingissauce.pifuxelck.Drawing;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.ui.DrawingOnTouchListener;
 import com.everythingissauce.pifuxelck.ui.DrawingView;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class Testing extends Activity {
+
+  Drawing.Builder mDrawingBuilder;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_testing);
 
-    Drawing.Builder drawingBuilder = new Drawing.Builder();
+    mDrawingBuilder = savedInstanceState == null
+        ? new Drawing.Builder()
+        : new Drawing.Builder(
+            Drawing.fromBundle(savedInstanceState.getBundle("drawing")));
     DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
-    drawingView.setDrawing(drawingBuilder);
-    DrawingOnTouchListener.install(drawingView, drawingBuilder);
+    drawingView.setDrawing(mDrawingBuilder);
+    DrawingOnTouchListener.install(drawingView, mDrawingBuilder);
   }
 
+  @Override
+  protected void onSaveInstanceState (Bundle outState) {
+    outState.putBundle("drawing", mDrawingBuilder.build().toBundle());
+  }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
