@@ -158,7 +158,7 @@ public class Drawing implements AbstractDrawing {
       return false;
     }
     Drawing otherDrawing = (Drawing) other;
-    return mLines.equals(otherDrawing.mLines)
+    return Arrays.equals(mLines, otherDrawing.mLines)
         && mBackgroundColor.equals(otherDrawing.mBackgroundColor);
   }
 

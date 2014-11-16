@@ -190,7 +190,7 @@ public class Line implements AbstractLine {
     Line otherLine = (Line) other;
     return mColor.equals(otherLine.mColor)
         && mSize == otherLine.mSize
-        && Arrays.asList(mPoints).equals(Arrays.asList(otherLine.mPoints));
+        && Arrays.equals(mPoints, otherLine.mPoints);
   }
 
   @Override
