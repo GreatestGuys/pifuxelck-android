@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+            <include layout="@layout/drawing_card" />
+
+            <include layout="@layout/label_card" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="64dip"
+        android:layout_height="64dip"
+        android:id="@+id/done_button"
+        android:elevation="100dp"
+        app:titleSize="48dp"
+        app:titleText="+"
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/accent"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        app:fillRadius="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        android:clickable="true"/>
+
+</RelativeLayout>
