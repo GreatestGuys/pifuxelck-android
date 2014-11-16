@@ -28,19 +28,19 @@
             android:layout_marginRight="30dp"
             android:gravity="bottom"
             android:nestedScrollingEnabled="false"
-            android:id="@+id/label_card"
-            >
+            android:id="@+id/label_card" >
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="'A banana'"
+                android:text=""
                 android:id="@+id/label"
                 android:textColor="@android:color/black"
                 android:paddingTop="8dp"
-                android:paddingBottom="8dp"/>
+                android:paddingBottom="8dp"
+                android:maxLines="2" />
 
         </android.support.v7.widget.CardView>
 

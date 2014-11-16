@@ -5,23 +5,35 @@ import com.everythingissauce.pifuxelck.Drawing;
 import com.everythingissauce.pifuxelck.R;
 
 import android.app.Activity;
-import android.graphics.Rect;
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.TextView;
 
 public class DrawingActivity extends Activity implements
     View.OnClickListener, View.OnTouchListener {
 
-  private static final String TAG = "DrawingActivity";
+  /**
+   * The action that should be used when launching this activity.
+   */
+  public static final String ACTION_DRAW =
+      "com.everythingissauce.pifuxelck.DRAW";
 
-  private static final String BUNDLE_KEY_DRAWING = "drawing";
+  /**
+   * The extras key that will contain the bundled drawing.
+   */
+  public static final String EXTRAS_DRAWING = "drawing";
+
+  /**
+   * The extras key that should contain the label that should be drawn..
+   */
+  public static final String EXTRAS_LABEL = "label";
+
+  private static final String TAG = "DrawingActivity";
 
   // Constants used when the user is swiping over the option button that they
   // want to activate.
@@ -55,15 +67,22 @@ public class DrawingActivity extends Activity implements
     mDrawingBuilder = savedInstanceState == null
         ? new Drawing.Builder()
         : new Drawing.Builder(Drawing.fromBundle(
-              savedInstanceState.getBundle(BUNDLE_KEY_DRAWING)));
+              savedInstanceState.getBundle(EXTRAS_DRAWING)));
 
     mDrawingView = (DrawingView) findViewById(R.id.drawing_view);
     mDrawingView.setDrawing(mDrawingBuilder);
     mDrawingOnTouchListener =
         DrawingOnTouchListener.install(mDrawingView, mDrawingBuilder);
 
+    TextView labelView = (TextView) findViewById(R.id.label);
+    String label = getIntent().getStringExtra(EXTRAS_LABEL);
+    labelView.setText("\"" + (label == null ? "" : label) + "\"");
+
     View undoButton = findViewById(R.id.undo_button);
     undoButton.setOnClickListener(this);
+
+    View doneButton = findViewById(R.id.done_button);
+    doneButton.setOnClickListener(this);
 
     mOptionsButton = findViewById(R.id.options_button);
     mOptionsButton.setOnTouchListener(this);
@@ -84,8 +103,10 @@ public class DrawingActivity extends Activity implements
   }
 
   @Override
-  protected void onSaveInstanceState (Bundle outState) {
-    outState.putBundle("drawing", mDrawingBuilder.build().toBundle());
+  protected void onSaveInstanceState(@NonNull Bundle outState) {
+    if (mDrawingBuilder != null) {
+      outState.putBundle("drawing", mDrawingBuilder.build().toBundle());
+    }
   }
 
   @Override
@@ -94,6 +115,13 @@ public class DrawingActivity extends Activity implements
       case R.id.undo_button:
         mDrawingBuilder.popLine();
         mDrawingView.invalidate();
+        break;
+
+      case R.id.done_button:
+        Intent intent = new Intent();
+        intent.putExtra(EXTRAS_DRAWING, mDrawingBuilder.build().toBundle());
+        setResult(RESULT_OK, intent);
+        finish();
         break;
     }
   }
@@ -105,6 +133,22 @@ public class DrawingActivity extends Activity implements
         return onTouchOptionsButton(event);
     }
     return false;
+  }
+
+  @Override
+  public void onBackPressed() {
+    // Interpret the back button to mean, close the current overlay if the
+    // color picker, or the size picker is displayed.
+    if (mColorPickerView.getVisibility() == View.VISIBLE) {
+      mColorPickerView.setVisibility(View.INVISIBLE);
+      mColorPickerAdapter.setOnColorSelectedListener(null);
+    } else if (mSizePickerView.getVisibility() == View.VISIBLE) {
+      mSizePickerView.setVisibility(View.INVISIBLE);
+      mSizePickerAdapter.setOnSizeSelectedListener(null);
+    } else {
+      setResult(RESULT_CANCELED, new Intent());
+      super.onBackPressed();
+    }
   }
 
   private boolean onTouchOptionsButton(MotionEvent event) {
@@ -139,21 +183,6 @@ public class DrawingActivity extends Activity implements
         return true;
     }
     return false;
-  }
-
-  @Override
-  public void onBackPressed() {
-    // Interpret the back button to mean, close the current overlay if the
-    // color picker, or the size picker is displayed.
-    if (mColorPickerView.getVisibility() == View.VISIBLE) {
-      mColorPickerView.setVisibility(View.INVISIBLE);
-      mColorPickerAdapter.setOnColorSelectedListener(null);
-    } else if (mSizePickerView.getVisibility() == View.VISIBLE) {
-      mSizePickerView.setVisibility(View.INVISIBLE);
-      mSizePickerAdapter.setOnSizeSelectedListener(null);
-    } else {
-      super.onBackPressed();
-    }
   }
 
   private void showOptionButtons() {

@@ -75,7 +75,7 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
   }
 
   @Override
-  public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+  public void onItemClick(AdapterView<?> parent, View view, int i, long l) {
     if (mOnSizeSelectedListener!= null) {
       mOnSizeSelectedListener.onSizeSelected(SIZES[i]);
     }
@@ -86,4 +86,3 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
     mOnSizeSelectedListener = listener;
   }
 }
-
