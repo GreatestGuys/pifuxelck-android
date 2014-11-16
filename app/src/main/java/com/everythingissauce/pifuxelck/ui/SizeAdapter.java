@@ -70,7 +70,6 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
     layoutParams.width = (int) (mFullWidth * SIZES[i]);
     circleView.setLayoutParams(layoutParams);
 
-
     return containerView;
   }
 
