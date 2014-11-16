@@ -42,20 +42,20 @@ public class DrawingActivity extends Activity implements
   private static final int OPTIONS_COLOR = 1;
   private static final int OPTIONS_BACKGROUND = 2;
 
-  @Nullable private Drawing.Builder mDrawingBuilder;
-  @Nullable private DrawingView mDrawingView;
-  @Nullable private DrawingOnTouchListener mDrawingOnTouchListener;
+  private Drawing.Builder mDrawingBuilder;
+  private DrawingView mDrawingView;
+  private DrawingOnTouchListener mDrawingOnTouchListener;
 
-  @Nullable private View mOptionsButton;
-  @Nullable private View mSizeButton;
-  @Nullable private View mColorButton;
-  @Nullable private View mBackgroundButton;
+  private View mOptionsButton;
+  private View mSizeButton;
+  private View mColorButton;
+  private View mBackgroundButton;
 
-  @Nullable private GridView mColorPickerView;
-  @Nullable private ColorAdapter mColorPickerAdapter;
+  private GridView mColorPickerView;
+  private ColorAdapter mColorPickerAdapter;
 
-  @Nullable private GridView mSizePickerView;
-  @Nullable private SizeAdapter mSizePickerAdapter;
+  private GridView mSizePickerView;
+  private SizeAdapter mSizePickerAdapter;
 
   private int mChosenOption = OPTIONS_NONE;
 
