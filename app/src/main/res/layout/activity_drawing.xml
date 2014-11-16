@@ -189,4 +189,13 @@
         android:visibility="invisible"
         android:columnWidth="80dp"/>
 
+    <GridView
+        android:id="@+id/size_picker"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:elevation="150dp"
+        android:background="@color/overlay_background"
+        android:numColumns="1"
+        android:visibility="invisible" />
+
 </RelativeLayout>

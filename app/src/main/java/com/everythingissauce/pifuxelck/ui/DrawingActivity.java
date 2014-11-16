@@ -1,5 +1,9 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.Color;
+import com.everythingissauce.pifuxelck.Drawing;
+import com.everythingissauce.pifuxelck.R;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -8,12 +12,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.TextView;
-
-import com.everythingissauce.pifuxelck.Color;
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.R;
 
 public class DrawingActivity extends Activity implements
     View.OnClickListener, View.OnTouchListener {
@@ -40,6 +41,9 @@ public class DrawingActivity extends Activity implements
 
   @Nullable private GridView mColorPickerView;
   @Nullable private ColorAdapter mColorPickerAdapter;
+
+  @Nullable private GridView mSizePickerView;
+  @Nullable private SizeAdapter mSizePickerAdapter;
 
   private int mChosenOption = OPTIONS_NONE;
 
@@ -72,6 +76,11 @@ public class DrawingActivity extends Activity implements
     mColorPickerView = (GridView) findViewById(R.id.color_picker);
     mColorPickerView.setAdapter(mColorPickerAdapter);
     mColorPickerView.setOnItemClickListener(mColorPickerAdapter);
+
+    mSizePickerAdapter = new SizeAdapter(this);
+    mSizePickerView = (GridView) findViewById(R.id.size_picker);
+    mSizePickerView.setAdapter(mSizePickerAdapter);
+    mSizePickerView.setOnItemClickListener(mSizePickerAdapter);
   }
 
   @Override
@@ -107,10 +116,8 @@ public class DrawingActivity extends Activity implements
 
       case MotionEvent.ACTION_UP:
         hideOptionButtons();
-        if (mChosenOption == OPTIONS_NONE) {
-          Log.i(TAG, "Chose no option");
-        } else if (mChosenOption == OPTIONS_SIZE) {
-          Log.i(TAG, "Chose size");
+        if (mChosenOption == OPTIONS_SIZE) {
+          showStrokeSizes();
         } else if (mChosenOption == OPTIONS_COLOR) {
           showStrokeColors();
         } else if (mChosenOption == OPTIONS_BACKGROUND) {
@@ -123,7 +130,8 @@ public class DrawingActivity extends Activity implements
           mChosenOption = OPTIONS_SIZE;
         } else if (viewContainsEvent(mOptionsButton, mColorButton, event)) {
           mChosenOption = OPTIONS_COLOR;
-        } else if (viewContainsEvent(mOptionsButton, mBackgroundButton, event)) {
+        } else if (viewContainsEvent(
+            mOptionsButton, mBackgroundButton, event)) {
           mChosenOption = OPTIONS_BACKGROUND;
         } else {
           mChosenOption = OPTIONS_NONE;
@@ -140,6 +148,9 @@ public class DrawingActivity extends Activity implements
     if (mColorPickerView.getVisibility() == View.VISIBLE) {
       mColorPickerView.setVisibility(View.INVISIBLE);
       mColorPickerAdapter.setOnColorSelectedListener(null);
+    } else if (mSizePickerView.getVisibility() == View.VISIBLE) {
+      mSizePickerView.setVisibility(View.INVISIBLE);
+      mSizePickerAdapter.setOnSizeSelectedListener(null);
     } else {
       super.onBackPressed();
     }
@@ -163,6 +174,7 @@ public class DrawingActivity extends Activity implements
         new ColorAdapter.OnColorSelectedListener() {
           @Override
           public void onColorSelected(Color color) {
+            mColorPickerAdapter.setOnColorSelectedListener(null);
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingBuilder.setBackgroundColor(color);
             mDrawingView.invalidate();
@@ -176,8 +188,29 @@ public class DrawingActivity extends Activity implements
         new ColorAdapter.OnColorSelectedListener() {
           @Override
           public void onColorSelected(Color color) {
+            mColorPickerAdapter.setOnColorSelectedListener(null);
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingOnTouchListener.setCurrentColor(color);
+            mSizePickerAdapter.setColor(color.toAndroidColor());
+            mDrawingView.invalidate();
+          }
+        });
+  }
+
+  private void showStrokeSizes() {
+    // Update the maximum size of a stroke to render, and reset the adapter
+    // causing a re-layout in the size view picker.
+    mSizePickerAdapter.setMaxStrokeWidth(mDrawingView.getWidth());
+    mSizePickerView.setAdapter(mSizePickerAdapter);
+
+    mSizePickerView.setVisibility(View.VISIBLE);
+    mSizePickerAdapter.setOnSizeSelectedListener(
+        new SizeAdapter.OnSizeSelectedListener() {
+          @Override
+          public void onSizeSelected(double size) {
+            mSizePickerAdapter.setOnSizeSelectedListener(null);
+            mSizePickerView.setVisibility(View.INVISIBLE);
+            mDrawingOnTouchListener.setCurrentSize(size);
             mDrawingView.invalidate();
           }
         });

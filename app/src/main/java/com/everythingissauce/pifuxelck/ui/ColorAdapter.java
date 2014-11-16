@@ -1,5 +1,8 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.Color;
+import com.everythingissauce.pifuxelck.R;
+
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,13 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
-import com.everythingissauce.pifuxelck.Color;
-import com.everythingissauce.pifuxelck.R;
 import com.github.pavlospt.CircleView;
 
 /**
- * A {@link ListAdapter} that will provide views that correspond to choices in a
- * color palette spanning the usable spectrum.
+ * A {@link ListAdapter} that will provide views that correspond to all of
+ * possible color options.
  */
 public class ColorAdapter extends ArrayAdapter<Color> implements
     AdapterView.OnItemClickListener {
@@ -25,7 +26,7 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
    * http://www.oracle.com/webfolder/ux/middleware/richclient/index.html?/webfolder/ux/middleware/richclient/guidelines5/inputColor.html
    */
   private static final Color[] PALETTE = {
-    // Blacks, greys, and white:
+    // Black, greys, and white:
     newColor(0, 0, 0), newColor(190, 190, 190), newColor(167, 167, 167),
     newColor(220, 220, 220), newColor(248, 248, 255), newColor(255, 255, 255),
 
@@ -59,10 +60,6 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
     return new Color(red / 255.0, green / 255.0, blue / 255.0);
   }
 
-  public ColorAdapter(Context context) {
-    super(context, R.layout.color_swatch, PALETTE);
-  }
-
   /**
    * A listener that will be notified when one of the color swatches has been
    * selected by the user.
@@ -71,7 +68,11 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
     void onColorSelected(Color color);
   }
 
-  @Nullable OnColorSelectedListener mOnColorSelectedListener;
+  private @Nullable OnColorSelectedListener mOnColorSelectedListener;
+
+  public ColorAdapter(Context context) {
+    super(context, R.layout.color_swatch, PALETTE);
+  }
 
   @Override
   public View getView(final int i, View containerView, ViewGroup viewGroup) {

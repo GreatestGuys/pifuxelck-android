@@ -62,6 +62,10 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
     mCurrentColor = color;
   }
 
+  public void setCurrentSize(Double size) {
+    mCurrentSize = size;
+  }
+
   @Override
   public boolean onTouch(View view, MotionEvent motionEvent) {
     double viewSize = view.getWidth();
