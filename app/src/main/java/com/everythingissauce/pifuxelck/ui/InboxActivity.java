@@ -39,6 +39,7 @@ public class InboxActivity extends Activity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_inbox);
+    getActionBar().setTitle(R.string.title_activity_inbox);
 
     addEntry(new Turn(null, "A banana"));
     addEntry(new Turn(null, "The Death Star!"));

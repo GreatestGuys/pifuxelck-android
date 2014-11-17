@@ -23,7 +23,7 @@
     <com.github.pavlospt.CircleView
         android:layout_width="64dip"
         android:layout_height="64dip"
-        android:id="@+id/done_button"
+        android:id="@+id/new_button"
         android:elevation="100dp"
         app:titleSize="48dp"
         app:titleText="+"
