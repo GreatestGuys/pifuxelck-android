@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.github.pavlospt.CircleView
+        android:layout_width="72dip"
+        android:layout_height="72dip"
+        android:layout_margin="8dip"
+        android:id="@+id/color_button"
+        app:titleText=""
+        app:subtitleText=""
+        app:titleColor="@android:color/white"
+        app:fillColor="@color/accentDark"
+        app:fillRadius="1"
+        app:strokeColorValue="@android:color/transparent"
+        app:backgroundColorValue="@android:color/transparent"
+        android:layout_gravity="center"/>
+
+</FrameLayout>

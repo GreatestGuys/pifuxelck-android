@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="primary" type="color">#00BCD4</item>
+    <item name="primaryDark" type="color">#006064</item>
+
+
+    <item name="accent" type="color">#9C27B0</item>
+    <item name="accentDark" type="color">#4A148C</item>
+    <item name="accentLight" type="color">#CE93D8</item>
+
+
+    <item name="background_grey" type="color">#CFD8DC</item>
+    <item name="shadow_grey" type="color">#006064</item>
+
+    <item name="overlay_background" type="color">#80000000</item>
+</resources>

@@ -71,6 +71,10 @@ public class Color {
         to255(mBlue));
   }
 
+  public Color invert() {
+    return new Color(1 - mRed, 1 - mGreen, 1 - mBlue, mAlpha);
+  }
+
   private int to255(double colorValue) {
     return (int) (colorValue * 255);
   }

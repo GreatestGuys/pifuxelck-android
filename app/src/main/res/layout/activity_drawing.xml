@@ -1,0 +1,201 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    tools:context="com.everythingissauce.pifuxelck.ui.DrawingActivity">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="com.everythingissauce.pifuxelck.ui.DrawingActivity">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:gravity="bottom"
+            android:nestedScrollingEnabled="false"
+            android:id="@+id/label_card" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text=""
+                android:id="@+id/label"
+                android:textColor="@android:color/black"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:maxLines="2" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/drawing_card"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <com.everythingissauce.pifuxelck.ui.DrawingView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/drawing_view"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"/>
+
+        </android.support.v7.widget.CardView>
+
+        <!-- The three always visible buttons. -->
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:id="@+id/done_button"
+            android:elevation="100dp"
+            app:titleSize="32dp"
+            app:titleText="✓"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accent"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="8dp"/>
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:id="@+id/undo_button"
+            android:elevation="100dp"
+            app:titleSize="32dp"
+            app:titleText="✕"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accent"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"/>
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:id="@+id/options_button"
+            android:elevation="100dp"
+            app:titleSize="48dp"
+            app:titleText="···"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accent"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- The three expanded option buttons. -->
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:id="@+id/size_button"
+            android:elevation="50dp"
+            app:titleSize="24dp"
+            app:titleText="◀"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accentDark"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_above="@+id/stroke_color_button"
+            android:layout_alignLeft="@+id/stroke_color_button"
+            android:layout_alignStart="@+id/stroke_color_button"
+            android:layout_marginBottom="32dp"
+            android:layout_marginRight="8dp"
+            android:visibility="invisible"/>
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:id="@+id/stroke_color_button"
+            android:elevation="50dp"
+            app:titleSize="32dp"
+            app:titleText="•"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accentDark"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_above="@+id/options_button"
+            android:layout_alignLeft="@+id/background_color_button"
+            android:layout_alignStart="@+id/background_color_button"
+            android:layout_marginBottom="32dp"
+            android:layout_marginRight="8dp"
+            android:visibility="invisible"/>
+
+        <com.github.pavlospt.CircleView
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:id="@+id/background_color_button"
+            android:elevation="50dp"
+            app:titleSize="18dp"
+            app:titleText="■"
+            app:subtitleText=""
+            app:titleColor="@android:color/white"
+            app:fillColor="@color/accentDark"
+            app:strokeColorValue="@android:color/transparent"
+            app:backgroundColorValue="@android:color/transparent"
+            app:fillRadius="1"
+            android:layout_above="@+id/size_button"
+            android:layout_alignRight="@+id/options_button"
+            android:layout_alignEnd="@+id/options_button"
+            android:layout_marginBottom="32dp"
+            android:layout_marginRight="8dp"
+            android:visibility="invisible"/>
+
+        </RelativeLayout>
+
+    <!-- The various overlays. -->
+
+    <GridView
+        android:id="@+id/color_picker"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:elevation="150dp"
+        android:background="@color/overlay_background"
+        android:numColumns="auto_fit"
+        android:visibility="invisible"
+        android:columnWidth="80dp"/>
+
+    <GridView
+        android:id="@+id/size_picker"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:elevation="150dp"
+        android:background="@color/overlay_background"
+        android:numColumns="1"
+        android:visibility="invisible" />
+
+</RelativeLayout>
