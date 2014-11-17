@@ -33,7 +33,6 @@
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/label"
-        android:textColor="@android:color/black"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"

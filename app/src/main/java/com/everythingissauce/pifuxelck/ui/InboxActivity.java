@@ -8,6 +8,8 @@ import com.everythingissauce.pifuxelck.Turn;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -47,7 +49,7 @@ public class InboxActivity extends Activity implements
 
     mEntryRefreshLayout= (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
     mEntryRefreshLayout.setOnRefreshListener(this);
-    mEntryRefreshLayout.setColorSchemeColors(R.color.accentLight);
+    mEntryRefreshLayout.setColorSchemeResources(R.color.accent);
 
     refreshInbox();
   }
@@ -66,10 +68,15 @@ public class InboxActivity extends Activity implements
 
   @Override
   public void onRefresh() {
-    mEntryRefreshLayout.setRefreshing(false);
+    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            mEntryRefreshLayout.setRefreshing(false);
+          }
+        }, 5000);
   }
 
-  @Override
+    @Override
   protected void onActivityResult(int request, int result, Intent data) {
     switch (request) {
       case REQUEST_DRAWING:

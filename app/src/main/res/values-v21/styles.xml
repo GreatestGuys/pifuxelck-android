@@ -8,6 +8,10 @@
         <item name="android:windowBackground">@color/background_grey</item>
 
         <item name="android:colorButtonNormal">@color/primaryDark</item>
+
+        <item name="android:navigationBarColor">@color/primary</item>
+
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 
     <style name="AppTheme.Fullscreen">

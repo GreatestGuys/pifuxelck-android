@@ -8,6 +8,8 @@
         <item name="android:windowBackground">@color/background_grey</item>
 
         <item name="android:buttonStyle">@style/ButtonStyle</item>
+
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 
     <style name="ActionBarTheme"

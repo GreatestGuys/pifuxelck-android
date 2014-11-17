@@ -37,7 +37,6 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text=""
                 android:id="@+id/label"
-                android:textColor="@android:color/black"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:maxLines="2" />
