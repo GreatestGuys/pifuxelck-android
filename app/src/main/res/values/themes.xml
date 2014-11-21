@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarTheme</item>
+
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowBackground">@color/background_grey</item>
+
+        <item name="android:textColor">@color/primaryText</item>
+
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
+
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="ActionBarTheme"
+           parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+<!--        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item> -->
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="android:background">@color/primary</item>
+    </style>
+
+    <style name="ButtonStyle">
+        <item name="android:background">@color/primaryDark</item>
+    </style>
+
+    <style name="AppTheme.Fullscreen">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowTitleSize">0dp</item>
+    </style>
+
+</resources>

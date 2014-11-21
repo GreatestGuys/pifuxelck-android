@@ -23,6 +23,7 @@
              the size. -->
 
         <com.everythingissauce.pifuxelck.ui.DrawingView
+            android:alpha="0.13"
             android:layout_width="match_parent"
             android:layout_height="100000000dp"
             android:id="@+id/drawing_view" />
@@ -32,24 +33,19 @@
     <!-- Overlay a transparent view over the drawing so that it doesn't clash
          with the the chrome on the inbox entry item -->
 
-    <View
-        android:background="#DDffffff"
-        android:layout_width="fill_parent"
-        android:layout_height="128dp"/>
-
-        <TextView
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Abc"
-            android:id="@+id/icon"
-            android:textColor="@color/accent"
-            android:textSize="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_gravity="center"
-            android:paddingRight="16dp"/>
+    <TextView
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="T"
+        android:id="@+id/icon"
+        android:textColor="@color/accent"
+        android:textSize="24dp"
+        android:layout_marginLeft="8dp"
+        android:layout_gravity="center"
+        android:paddingRight="16dp"/>
 
 </RelativeLayout>

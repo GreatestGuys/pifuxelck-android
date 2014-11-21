@@ -21,22 +21,70 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.github.pavlospt.CircleView
-        android:layout_width="64dip"
-        android:layout_height="64dip"
-        android:id="@+id/new_button"
-        android:elevation="100dp"
-        app:titleSize="48dp"
-        app:titleText="+"
-        app:subtitleText=""
-        app:titleColor="@android:color/white"
-        app:fillColor="@color/accent"
-        app:strokeColorValue="@android:color/transparent"
-        app:backgroundColorValue="@android:color/transparent"
-        app:fillRadius="1"
+        style="@style/ActionButton.New"
+        android:id="@+id/new_action_button"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        android:clickable="true"/>
+        android:layout_marginRight="8dp"/>
+
+    <!-- Overlay that is shown when labeling a drawing. -->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/overlay_background"
+        android:id="@+id/overlay_layout"
+        android:clickable="true"
+        android:visibility="invisible"
+        android:elevation="150dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/white"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:id="@+id/drawing_frame">
+
+            <com.everythingissauce.pifuxelck.ui.DrawingView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/drawing_view"
+                android:clickable="true"/>
+
+        </FrameLayout>
+
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/label_edit_text"
+            android:maxLines="1"
+            android:background="@android:color/white"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_above="@+id/drawing_frame"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:padding="8dp"
+            android:textColor="@color/primaryDark"
+            android:hint="Describe the drawing..."
+            android:inputType="text|textAutoCorrect|textCapSentences"
+            android:singleLine="true"
+            android:clickable="true"
+            android:imeOptions="actionDone"
+            />
+
+        <com.github.pavlospt.CircleView
+            style="@style/ActionButton.Ok"
+            android:id="@+id/done_action_button"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

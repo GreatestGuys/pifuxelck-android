@@ -1,32 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <item name="android:actionBarStyle">@style/ActionBarTheme</item>
-
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:windowBackground">@color/background_grey</item>
-
-        <item name="android:buttonStyle">@style/ButtonStyle</item>
-
-        <item name="android:textColor">@color/primaryText</item>
+    <style name="ActionButton">
+        <item name="android:layout_width">64dip</item>
+        <item name="android:layout_height">64dip</item>
+        <item name="android:elevation">100dp</item>
+        <item name="subtitleText"></item>
+        <item name="titleColor">@android:color/white</item>
+        <item name="fillColor">@color/accent</item>
+        <item name="strokeColorValue">@android:color/transparent</item>
+        <item name="backgroundColorValue">@android:color/transparent</item>
+        <item name="fillRadius">1</item>
+        <item name="android:clickable">true</item>
     </style>
 
-    <style name="ActionBarTheme"
-           parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-<!--        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
-        <item name="displayOptions">showHome|homeAsUp|showTitle</item> -->
-        <item name="android:icon">@android:color/transparent</item>
-        <item name="android:background">@color/primary</item>
+    <style name="ActionButton.Ok">
+        <item name="titleSize">32dp</item>
+        <item name="titleText">@string/action_button_ok</item>
     </style>
 
-    <style name="ButtonStyle">
-        <item name="android:background">@color/primaryDark</item>
+    <style name="ActionButton.New">
+        <item name="titleSize">48dp</item>
+        <item name="titleText">@string/action_button_new</item>
     </style>
 
-    <style name="AppTheme.Fullscreen">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowTitleSize">0dp</item>
+    <style name="ActionButton.More">
+        <item name="titleSize">48dp</item>
+        <item name="titleText">@string/action_button_more</item>
+    </style>
+
+    <style name="ActionButton.Back">
+        <item name="titleSize">28dp</item>
+        <item name="titleText">@string/action_button_back</item>
+    </style>
+
+    <style name="ActionButton.Small">
+        <item name="android:layout_width">48dip</item>
+        <item name="android:layout_height">48dip</item>
+        <item name="android:elevation">50dp</item>
+    </style>
+
+    <style name="ActionButton.Small.Size">
+        <item name="titleSize">24dp</item>
+        <item name="titleText">@string/action_button_size</item>
+    </style>
+
+    <style name="ActionButton.Small.Color">
+        <item name="titleSize">32dp</item>
+        <item name="titleText">@string/action_button_color</item>
+    </style>
+
+    <style name="ActionButton.Small.Background">
+        <item name="titleSize">18dp</item>
+        <item name="titleText">@string/action_button_background</item>
     </style>
 
 </resources>

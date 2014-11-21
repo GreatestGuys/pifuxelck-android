@@ -10,6 +10,7 @@
 
         <activity
             android:name="com.everythingissauce.pifuxelck.ui.InboxActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_inbox"
             android:theme="@style/AppTheme" >
