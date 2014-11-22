@@ -102,7 +102,9 @@ public class InboxActivity extends Activity implements
         return;
 
       case R.id.done_action_button:
-        hideLabelOverlay();
+        if (submitLabelTurn()) {
+          hideLabelOverlay();
+        }
         return;
     }
   }
@@ -110,7 +112,9 @@ public class InboxActivity extends Activity implements
   @Override
   public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
     if (actionId == EditorInfo.IME_ACTION_DONE) {
-      hideLabelOverlay();
+      if (submitLabelTurn()) {
+        hideLabelOverlay();
+      }
       return true;
     }
     return false;
@@ -130,6 +134,17 @@ public class InboxActivity extends Activity implements
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    // Interpret the back button to mean close the current overlay.
+    if (mOverlayView.getVisibility() == View.VISIBLE) {
+      hideLabelOverlay();
+    } else {
+      setResult(RESULT_CANCELED, new Intent());
+      super.onBackPressed();
+    }
+  }
+
   private void showLabelOverlay(Drawing drawing) {
     mOverlayView.setVisibility(View.VISIBLE);
     mDrawingView.setDrawing(drawing);
@@ -137,22 +152,29 @@ public class InboxActivity extends Activity implements
     mLabelEditText.setText("");
   }
 
-  private void hideLabelOverlay() {
+  /**
+   * Submit a turn by labelling the current drawing.
+   * @return True if the drawing was successfully labeled, false other wise.
+   */
+  private boolean submitLabelTurn() {
     // Do not dismiss the overlay unless something has been typed into the box.
     if (mLabelEditText.getText().length() == 0) {
-      return;
+      return false;
     }
 
+    // TODO(will): For now also add the new label to the turns list.
+    addEntry(new Turn(null, mLabelEditText.getText().toString()));
+    refreshInbox();
+    return true;
+  }
+
+  private void hideLabelOverlay() {
     mOverlayView.setVisibility(View.INVISIBLE);
 
     // Make the keyboard go away if it is not already hidden.
     InputMethodManager imm =
         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(mLabelEditText.getWindowToken(), 0);
-
-    // TODO(will): For now also add the new label to the turns list.
-    addEntry(new Turn(null, mLabelEditText.getText().toString()));
-    refreshInbox();
   }
 
   private void refreshInbox() {

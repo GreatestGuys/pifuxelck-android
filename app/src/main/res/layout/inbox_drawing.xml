@@ -44,7 +44,7 @@
         android:id="@+id/icon"
         android:textColor="@color/accent"
         android:textSize="24dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="24dp"
         android:layout_gravity="center"
         android:paddingRight="16dp"/>
 
