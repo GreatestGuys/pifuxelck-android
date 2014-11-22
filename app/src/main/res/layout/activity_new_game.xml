@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/label_edit_text"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/white"
+        android:textSize="24sp"
+        android:padding="8dp"
+        android:hint="@string/hint_describe_a_scene"
+        android:gravity="top|left"
+        android:inputType="textShortMessage|textMultiLine|text|textCapSentences|textAutoComplete|textAutoCorrect"
+        android:textColor="@color/primaryDark"
+        android:clickable="true"
+        android:imeOptions="actionDone"
+        android:lines="2"
+        android:minLines="2"
+        android:maxLines="2"
+        android:singleLine="true"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/accent"
+        android:layout_below="@+id/label_edit_text" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contacts_list_view"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/divider"
+        android:choiceMode="multipleChoice"
+        android:dividerHeight="1dp"
+        android:drawSelectorOnTop="true"
+        android:divider="@color/background_grey" />
+
+    <com.github.pavlospt.CircleView
+        style="@style/ActionButton.Ok"
+        android:id="@+id/done_action_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

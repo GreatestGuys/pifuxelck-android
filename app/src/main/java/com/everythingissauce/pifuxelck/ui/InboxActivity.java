@@ -99,6 +99,9 @@ public class InboxActivity extends Activity implements
   public void onClick(View view) {
     switch (view.getId()) {
       case R.id.new_action_button:
+        Intent intent = new Intent();
+        intent.setClass(getApplicationContext(), NewGameActivity.class);
+        startActivity(intent);
         return;
 
       case R.id.done_action_button:

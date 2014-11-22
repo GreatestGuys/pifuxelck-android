@@ -71,7 +71,7 @@
             android:padding="8dp"
             android:textColor="@color/primaryDark"
             android:hint="Describe the drawing..."
-            android:inputType="text|textAutoCorrect|textCapSentences"
+            android:inputType="text|textCapSentences|textAutoComplete|textAutoCorrect"
             android:singleLine="true"
             android:clickable="true"
             android:imeOptions="actionDone"
