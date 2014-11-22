@@ -7,6 +7,11 @@
           android:title="History"
           android:showAsAction="always" />
 
+    <item android:id="@+id/action_contacts"
+          android:icon="@drawable/ic_people_white_24dp"
+          android:title="Contacts"
+          android:showAsAction="always" />
+
     <item android:id="@+id/action_settings"
           android:icon="@drawable/ic_settings_white_24dp"
           android:title="Settings"
