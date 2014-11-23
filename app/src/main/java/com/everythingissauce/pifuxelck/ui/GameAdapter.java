@@ -12,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class HistoryGameAdapter extends ArrayAdapter<Game> {
+public class GameAdapter extends ArrayAdapter<Game> {
 
-  public HistoryGameAdapter(Context context) {
+  public GameAdapter(Context context) {
     super(context, R.layout.history_game);
   }
 
-  public HistoryGameAdapter(Context context, Game[] games) {
+  public GameAdapter(Context context, Game[] games) {
     super(context, R.layout.history_game, games);
   }
 

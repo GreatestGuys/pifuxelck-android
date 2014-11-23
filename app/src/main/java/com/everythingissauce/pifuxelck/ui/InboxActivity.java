@@ -111,8 +111,9 @@ public class InboxActivity extends Activity implements
     Turn turn = entry.getPreviousTurn();
 
     if (turn.isLabelTurn()) {
-      Intent drawingIntent = new Intent(DrawingActivity.ACTION_DRAW);
+      Intent drawingIntent = new Intent();
       drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, turn.getLabel());
+      drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
       startActivityForResult(drawingIntent, REQUEST_DRAWING);
     } else if (turn.isDrawingTurn()) {
       showLabelOverlay(turn.getDrawing());

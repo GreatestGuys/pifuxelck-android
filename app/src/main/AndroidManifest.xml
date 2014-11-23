@@ -36,10 +36,6 @@
             android:label="@string/title_activity_drawing"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
-            <intent-filter>
-                <action android:name="com.everythingissauce.pifuxelck.DRAW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -53,7 +49,16 @@
 
         <activity
             android:name="com.everythingissauce.pifuxelck.ui.HistoryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_history"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
+        </activity>
+
+        <activity
+            android:name="com.everythingissauce.pifuxelck.ui.GameActivity"
+            android:label="@string/title_activity_game"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
