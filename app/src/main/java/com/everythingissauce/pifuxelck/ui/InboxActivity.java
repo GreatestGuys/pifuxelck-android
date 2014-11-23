@@ -177,6 +177,7 @@ public class InboxActivity extends Activity implements
     mDrawingView.setDrawing(drawing);
     mDrawingView.clearCache();
     mDrawingView.refreshCache();
+    mDrawingView.invalidate();
     mLabelEditText.setText("");
     mOverlayView.setVisibility(View.VISIBLE);
   }
@@ -199,6 +200,8 @@ public class InboxActivity extends Activity implements
 
   private void hideLabelOverlay() {
     mOverlayView.setVisibility(View.INVISIBLE);
+    mDrawingView.clearCache();
+    mDrawingView.setDrawing(null);
 
     // Make the keyboard go away if it is not already hidden.
     InputMethodManager imm =

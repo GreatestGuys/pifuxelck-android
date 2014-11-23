@@ -104,6 +104,7 @@ public class DrawingView extends View {
     mCache = null;
     if (mCacheTask != null) {
       mCacheTask.cancel(true);
+      mCacheTask = null;
       mQueuedCacheTask = false;
     }
   }
@@ -161,6 +162,11 @@ public class DrawingView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
+    if (mDrawing == null) {
+      Log.i(TAG, "No drawing, clearing canvas.");
+      canvas.drawColor(Color.WHITE);
+    }
+
     if (mCache == null) {
       Log.i(TAG, "Cache is null, not drawing: " + mDrawing);
       drawDrawingAndLine(canvas, mDrawing, mInProgressLine, getWidth());
@@ -172,8 +178,6 @@ public class DrawingView extends View {
     Rect destination = new Rect(0, 0, getWidth(), getHeight());
     canvas.drawBitmap(mCache, null /* src */, destination, null /* paint */);
   }
-
-
 
   private static void drawDrawingAndLine(
       Canvas canvas, AbstractDrawing drawing, AbstractLine line, int size) {
