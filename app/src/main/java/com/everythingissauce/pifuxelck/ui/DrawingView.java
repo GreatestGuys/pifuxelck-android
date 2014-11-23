@@ -29,39 +29,78 @@ public class DrawingView extends View {
 
   /**
    * A task that will render the drawing into a Bitmap on a background thread
-   * and update the mCache field on the UI thread when the cache has been
+   * and update the mDrawingCache field on the UI thread when the cache has been
    * rendered.
    */
-  private class CreateCacheTask extends AsyncTask<Void, Void, Bitmap> {
+  private class CreateDrawingCacheTask extends AsyncTask<Void, Void, Bitmap> {
 
     private int mSize;
     private Drawing mDrawing;
-    @Nullable private Line mLine;
 
-    public CreateCacheTask(
+    public CreateDrawingCacheTask(
         int size,
-        AbstractDrawing drawing,
-        AbstractLine line) {
+        AbstractDrawing drawing) {
       mSize = size;
       mDrawing = new Drawing.Builder(drawing).build();
-      mLine = line == null ? null : new Line.Builder(line).build();
     }
 
     @Override
     protected Bitmap doInBackground(Void... voids) {
-      // TODO(will): Consider using RGB_565 on low memory devices...
       Bitmap cache = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
       Canvas canvas = new Canvas(cache);
-      drawDrawingAndLine(canvas, mDrawing, mLine, mSize);
+      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      drawDrawing(canvas, paint, mDrawing, mSize);
       return cache;
     }
 
     @Override
     protected void onPostExecute(Bitmap cache) {
-      mCache = cache;
-      mCacheTask = null;
-      if (mQueuedCacheTask) {
-        refreshCache();
+      mDrawingCache = cache;
+      mDrawingCacheTask = null;
+      if (mQueuedDrawingCacheTask) {
+        refreshDrawingCache();
+      }
+
+      if (DEBUG) Log.d(TAG, "Finished drawing, invalidating view: " + mDrawing);
+
+      // Signal that the DrawingView should be redrawn now that the cache has
+      // been updated.
+      invalidate();
+    }
+  }
+
+  /**
+   * A task that will render the drawing into a Bitmap on a background thread
+   * and update the mDrawingCache field on the UI thread when the cache has been
+   * rendered.
+   */
+  private class CreateLineCacheTask extends AsyncTask<Void, Void, Bitmap> {
+
+    private int mSize;
+    private Line mLine;
+
+    public CreateLineCacheTask(
+        int size,
+        AbstractLine line) {
+      mSize = size;
+      mLine = new Line.Builder(line).build();
+    }
+
+    @Override
+    protected Bitmap doInBackground(Void... voids) {
+      Bitmap cache = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
+      Canvas canvas = new Canvas(cache);
+      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      drawLine(canvas, paint, mLine, mSize);
+      return cache;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap cache) {
+      mLineCache = cache;
+      mLineCacheTask = null;
+      if (mQueuedLineCacheTask) {
+        refreshDrawingCache();
       }
 
       if (DEBUG) Log.d(TAG, "Finished drawing, invalidating view: " + mDrawing);
@@ -74,10 +113,14 @@ public class DrawingView extends View {
 
   @Nullable private AbstractDrawing mDrawing;
   @Nullable private AbstractLine mInProgressLine;
-  @Nullable private Bitmap mCache;
 
-  @Nullable private CreateCacheTask mCacheTask;
-  private boolean mQueuedCacheTask = false;
+  @Nullable private Bitmap mDrawingCache;
+  @Nullable private CreateDrawingCacheTask mDrawingCacheTask;
+  private boolean mQueuedDrawingCacheTask = false;
+
+  @Nullable private Bitmap mLineCache;
+  @Nullable private CreateLineCacheTask mLineCacheTask;
+  private boolean mQueuedLineCacheTask = false;
 
   public DrawingView(Context context) {
     super(context);
@@ -102,26 +145,47 @@ public class DrawingView extends View {
   /**
    * Clears the cache. This method MUST be called on the UI thread.
    */
-  public void clearCache() {
-    mCache = null;
-    if (mCacheTask != null) {
-      mCacheTask.cancel(true);
-      mCacheTask = null;
-      mQueuedCacheTask = false;
+  public void clearDrawingCache() {
+    mDrawingCache = null;
+    if (mDrawingCacheTask != null) {
+      mDrawingCacheTask.cancel(true);
+      mDrawingCacheTask = null;
+      mQueuedDrawingCacheTask = false;
     }
   }
 
   /**
-   * Refreshes the current cache. This method MUST be called on the UI thread.
+   * Clears the cache. This method MUST be called on the UI thread.
    */
-  public void refreshCache() {
-    refreshCache(getWidth());
+  public void clearLineCache() {
+    mLineCache = null;
+    if (mLineCacheTask != null) {
+      mLineCacheTask.cancel(true);
+      mLineCacheTask = null;
+      mQueuedLineCacheTask = false;
+    }
+  }
+
+  /**
+   * Refreshes the current drawing cache. This method MUST be called on the UI
+   * thread.
+   */
+  public void refreshDrawingCache() {
+    refreshDrawingCache(getWidth());
+  }
+
+  /**
+   * Refreshes the current line cache. This method MUST be called on the UI
+   * thread.
+   */
+  public void refreshLineCache() {
+    refreshDrawingCache(getWidth());
   }
 
   /**
    * Refreshes the current cache. This method MUST be called on the UI thread.
    */
-  private void refreshCache(int size) {
+  private void refreshDrawingCache(int size) {
     // If there isn't a drawing, then refreshing the cache is pointless.
     if (mDrawing == null) {
       if (DEBUG) Log.d(TAG, "No drawing, not creating cache");
@@ -136,17 +200,48 @@ public class DrawingView extends View {
 
     // If there is an ongoing task to refresh the cache, then mark that another
     // refresh is desired after the current one completes.
-    if (mCacheTask != null) {
+    if (mDrawingCacheTask != null) {
       if (DEBUG) Log.d(TAG, "Already running, queueing cache task: " + mDrawing);
-      mQueuedCacheTask = true;
+      mQueuedDrawingCacheTask = true;
       return;
     }
 
     if (DEBUG) Log.d(TAG, "Starting cache task: " + mDrawing);
 
-    mQueuedCacheTask = false;
-    mCacheTask = new CreateCacheTask(size, mDrawing, mInProgressLine);
-    mCacheTask.execute();
+    mQueuedDrawingCacheTask = false;
+    mDrawingCacheTask = new CreateDrawingCacheTask(size, mDrawing);
+    mDrawingCacheTask.execute();
+  }
+
+  /**
+   * Refreshes the current cache. This method MUST be called on the UI thread.
+   */
+  private void refreshLineCache(int size) {
+    // If there isn't a drawing, then refreshing the cache is pointless.
+    if (mInProgressLine == null) {
+      if (DEBUG) Log.d(TAG, "No Line, not creating cache");
+      return;
+    }
+
+    // No point in creating an empty bitmap.
+    if (size == 0) {
+      if (DEBUG) Log.d(TAG, "Size is 0: " + mDrawing);
+      return;
+    }
+
+    // If there is an ongoing task to refresh the cache, then mark that another
+    // refresh is desired after the current one completes.
+    if (mLineCacheTask != null) {
+      if (DEBUG) Log.d(TAG, "Already running, queueing cache task: " + mDrawing);
+      mQueuedLineCacheTask = true;
+      return;
+    }
+
+    if (DEBUG) Log.d(TAG, "Starting line cache task: " + mDrawing);
+
+    mQueuedLineCacheTask = false;
+    mLineCacheTask = new CreateLineCacheTask(size, mInProgressLine);
+    mLineCacheTask.execute();
   }
 
   @Override
@@ -157,42 +252,40 @@ public class DrawingView extends View {
     int size = width > height && height > 0 ? height : width;
     setMeasuredDimension(size, size);
 
-    refreshCache(size);
+    refreshDrawingCache(size);
+    refreshLineCache(size);
   }
 
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    if (mDrawing == null) {
-      if (DEBUG) Log.d(TAG, "No drawing, clearing canvas.");
-      canvas.drawColor(Color.WHITE);
-    }
-
-    if (mCache == null) {
-      if (DEBUG) Log.d(TAG, "Cache is null, not drawing: " + mDrawing);
-      drawDrawingAndLine(canvas, mDrawing, mInProgressLine, getWidth());
-      return;
-    }
-
-    if (DEBUG) Log.d(TAG, "Drawing from the cache: " + mDrawing);
-
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Rect destination = new Rect(0, 0, getWidth(), getHeight());
-    canvas.drawBitmap(mCache, null /* src */, destination, null /* paint */);
+
+    if (mDrawingCache == null && mDrawing != null) {
+      if (DEBUG) Log.d(TAG, "Cache is null, drawing drawing: " + mDrawing);
+      drawDrawing(canvas, paint, mDrawing, getWidth());
+    } else if (mDrawingCache != null) {
+      if (DEBUG) Log.d(TAG, "Drawing from the cache: " + mDrawing);
+      canvas.drawBitmap(mDrawingCache, null, destination, null);
+    }
+
+    if (mLineCache == null && mInProgressLine != null) {
+      if (DEBUG) Log.d(TAG, "Cache is null, drawing line: " + mDrawing);
+      drawLine(canvas, paint, mInProgressLine, getWidth());
+    } else if (mLineCache != null) {
+      if (DEBUG) Log.d(TAG, "Drawing line from the cache: " + mDrawing);
+      canvas.drawBitmap(mLineCache, null , destination, null);
+    }
   }
 
-  private static void drawDrawingAndLine(
-      Canvas canvas, AbstractDrawing drawing, AbstractLine line, int size) {
-    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+  private static void drawDrawing(
+      Canvas canvas, Paint paint, AbstractDrawing drawing, int size) {
     canvas.drawColor(drawing.getBackgroundColor().toAndroidColor());
 
     for (Line drawingLine : drawing) {
       drawLine(canvas, paint, drawingLine, size);
-    }
-
-    if (line != null) {
-      drawLine(canvas, paint, line, size);
     }
   }
 

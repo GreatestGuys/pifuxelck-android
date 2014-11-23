@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
@@ -108,7 +107,9 @@ public class DrawingActivity extends Activity implements
     switch (view.getId()) {
       case R.id.undo_button:
         mDrawingBuilder.popLine();
-        mDrawingView.refreshCache();
+        mDrawingView.setInProgressLine(null);
+        mDrawingView.clearLineCache();
+        mDrawingView.refreshDrawingCache();
         break;
 
       case R.id.done_button:
@@ -200,7 +201,7 @@ public class DrawingActivity extends Activity implements
             mColorPickerAdapter.setOnColorSelectedListener(null);
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingBuilder.setBackgroundColor(color);
-            mDrawingView.refreshCache();
+            mDrawingView.refreshDrawingCache();
           }
         });
   }
@@ -215,7 +216,7 @@ public class DrawingActivity extends Activity implements
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingOnTouchListener.setCurrentColor(color);
             mSizePickerAdapter.setColor(color.toAndroidColor());
-            mDrawingView.refreshCache();
+            mDrawingView.refreshDrawingCache();
           }
         });
   }
@@ -234,7 +235,7 @@ public class DrawingActivity extends Activity implements
             mSizePickerAdapter.setOnSizeSelectedListener(null);
             mSizePickerView.setVisibility(View.INVISIBLE);
             mDrawingOnTouchListener.setCurrentSize(size);
-            mDrawingView.refreshCache();
+            mDrawingView.refreshDrawingCache();
           }
         });
   }
