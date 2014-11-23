@@ -4,13 +4,15 @@
     <!-- Actual string constants. -->
 
     <string name="app_name">pifuxelck</string>
+
+    <string name="title_activity_inbox">Inbox</string>
     <string name="title_activity_drawing">Draw</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="title_activity_inbox">Inbox</string>
     <string name="title_activity_new_game">New Game</string>
+    <string name="title_activity_history">History</string>
 
-    <string name="hint_describe_a_scene">Describe a scene...</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hint_describe_a_scene">Describe a scene…</string>
     <string name="action_settings">Settings</string>
 
     <!-- Circle button values -->

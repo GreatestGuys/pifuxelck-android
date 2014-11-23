@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="96dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <FrameLayout
+            android:id="@+id/drawing_1_frame"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="96dp"
+            android:background="@android:color/white">
+
+            <com.everythingissauce.pifuxelck.ui.DrawingView
+                android:alpha="0.13"
+                android:layout_width="match_parent"
+                android:layout_height="100000000dp"
+                android:id="@+id/drawing_1_view" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/drawing_2_frame"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="96dp"
+            android:background="@android:color/white">
+
+            <com.everythingissauce.pifuxelck.ui.DrawingView
+                style="@style/DrawingView.Background"
+                android:id="@+id/drawing_2_view" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/drawing_3_frame"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="96dp"
+            android:background="@android:color/white">
+
+            <com.everythingissauce.pifuxelck.ui.DrawingView
+                android:alpha="0.13"
+                android:layout_width="match_parent"
+                android:layout_height="100000000dp"
+                android:id="@+id/drawing_3_view" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:maxLines="2"
+        android:gravity="center_horizontal"/>
+
+</RelativeLayout>

@@ -10,6 +10,7 @@
 
         <activity
             android:name="com.everythingissauce.pifuxelck.ui.InboxActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan|adjustResize"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_inbox"
@@ -31,10 +32,10 @@
 
         <activity
             android:name="com.everythingissauce.pifuxelck.ui.DrawingActivity"
-            android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_drawing"
-            android:theme="@style/AppTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="com.everythingissauce.pifuxelck.DRAW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -43,11 +44,20 @@
 
         <activity
             android:name="com.everythingissauce.pifuxelck.ui.NewGameActivity"
-            android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_new_game"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            android:theme="@style/AppTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
+        </activity>
+
+        <activity
+            android:name="com.everythingissauce.pifuxelck.ui.HistoryActivity"
+            android:label="@string/title_activity_history"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
 
     </application>

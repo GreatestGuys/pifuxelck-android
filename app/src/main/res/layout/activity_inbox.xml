@@ -50,10 +50,8 @@
             android:id="@+id/drawing_frame">
 
             <com.everythingissauce.pifuxelck.ui.DrawingView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/drawing_view"
-                android:clickable="true"/>
+                style="@style/DrawingView"
+                android:id="@+id/drawing_view"/>
 
         </FrameLayout>
 
