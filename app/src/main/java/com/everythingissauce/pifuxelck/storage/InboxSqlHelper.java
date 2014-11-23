@@ -14,12 +14,14 @@ public class InboxSqlHelper extends SQLiteOpenHelper {
 
   public static final String TABLE_NAME = "inbox";
   public static final String COLUMN_ID = "_id";
+  public static final String COLUMN_GAME_ID = "game_id";
   public static final String COLUMN_TURN_JSON = "turn_json";
 
   private static final String DATABASE_CREATE =
-      "CREATE TABLE " + TABLE_NAME + "("
-          + "INTEGER PRIMARY KEY, " + COLUMN_ID
-          + "TEXT, " + COLUMN_TURN_JSON
+      "CREATE TABLE " + TABLE_NAME + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_GAME_ID + " INTEGER NOT NULL, "
+          + COLUMN_TURN_JSON + " TEXT NOT NULL"
           + ");";
 
   public InboxSqlHelper(Context context) {
@@ -28,6 +30,7 @@ public class InboxSqlHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase db) {
+    Log.i(TAG, "Creating inbox table with:\n" + DATABASE_CREATE);
     db.execSQL(DATABASE_CREATE);
   }
 

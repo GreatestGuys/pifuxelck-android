@@ -18,10 +18,10 @@ public class HistorySqlHelper extends SQLiteOpenHelper {
   public static final String COLUMN_GAME_JSON = "game_json";
 
   private static final String DATABASE_CREATE =
-      "CREATE TABLE " + TABLE_NAME + "("
-          + "INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_ID
-          + "INTEGER, " + COLUMN_COMPLETED_AT
-          + "TEXT, " + COLUMN_GAME_JSON
+      "CREATE TABLE " + TABLE_NAME + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_COMPLETED_AT + " INTEGER, "
+          + COLUMN_GAME_JSON + " TEXT"
           + ");";
 
   public HistorySqlHelper(Context context) {
@@ -30,6 +30,7 @@ public class HistorySqlHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase db) {
+    Log.i(TAG, "Creating history table with:\n" + DATABASE_CREATE);
     db.execSQL(DATABASE_CREATE);
   }
 

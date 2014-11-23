@@ -5,6 +5,7 @@ import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.storage.HistoryStore;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,10 +24,14 @@ public class HistoryActivity extends Activity implements AdapterView.OnItemClick
   private ListView mGameListView;
   private GameAdapter mGameAdapter;
 
+  private HistoryStore mHistoryStore;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_history);
+
+    mHistoryStore = new HistoryStore(this);
 
     mGameAdapter = new GameAdapter(this, new Game[] {
         new Game.Builder(0)

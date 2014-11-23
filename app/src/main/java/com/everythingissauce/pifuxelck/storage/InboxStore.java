@@ -20,6 +20,10 @@ public class InboxStore {
 
   private final static String TAG = "InboxStore";
 
+  private static final String[] QUERY_COLUMNS = new String[] {
+      InboxSqlHelper.COLUMN_GAME_ID, InboxSqlHelper.COLUMN_TURN_JSON
+  };
+
   private final InboxSqlHelper mSqlHelper;
 
   public InboxStore(Context context) {
@@ -36,31 +40,38 @@ public class InboxStore {
     }
 
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(InboxSqlHelper.COLUMN_ID, entry.getGameId());
-    values.put(InboxSqlHelper.COLUMN_TURN_JSON, turnJson);
-    db.insert(InboxSqlHelper.TABLE_NAME, null, values);
+    try {
+      ContentValues values = new ContentValues();
+      values.put(InboxSqlHelper.COLUMN_GAME_ID, entry.getGameId());
+      values.put(InboxSqlHelper.COLUMN_TURN_JSON, turnJson);
+      db.insert(InboxSqlHelper.TABLE_NAME, null, values);
+    } finally {
+      db.close();
+    }
   }
 
   public List<InboxEntry> getEntries() {
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
-    Cursor cursor = db.query(
-        InboxSqlHelper.TABLE_NAME,
-        new String[] {
-            InboxSqlHelper.COLUMN_ID, InboxSqlHelper.COLUMN_TURN_JSON
-        },
-        null, null, /* WHERE clause. */
-        null, null, /* GROUP BY clause. */
-        InboxSqlHelper.COLUMN_ID  + " DESC",
-        null /* LIMIT */);
+    try {
+      Cursor cursor = db.query(
+          InboxSqlHelper.TABLE_NAME,
+          QUERY_COLUMNS,
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          InboxSqlHelper.COLUMN_ID + " DESC",
+          null /* LIMIT */);
 
-    List<InboxEntry> entries = new ArrayList<InboxEntry>(cursor.getCount());
-    while (!cursor.isAfterLast()) {
-      InboxEntry entry = cursorToInboxEntry(cursor);
-      if (entry != null) entries.add(entry);
-      cursor.moveToNext();
+      List<InboxEntry> entries = new ArrayList<InboxEntry>(cursor.getCount());
+      cursor.moveToFirst();
+      while (!cursor.isAfterLast()) {
+        InboxEntry entry = cursorToInboxEntry(cursor);
+        if (entry != null) entries.add(entry);
+        cursor.moveToNext();
+      }
+      return entries;
+    } finally {
+      db.close();
     }
-    return entries;
   }
 
   @Nullable

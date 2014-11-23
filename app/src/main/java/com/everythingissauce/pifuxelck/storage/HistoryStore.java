@@ -32,21 +32,29 @@ public class HistoryStore {
     }
 
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(HistorySqlHelper.COLUMN_COMPLETED_AT, game.getTimeCompleted());
-    values.put(HistorySqlHelper.COLUMN_GAME_JSON, gameJson);
-    db.insert(HistorySqlHelper.TABLE_NAME, null, values);
+    try {
+      ContentValues values = new ContentValues();
+      values.put(HistorySqlHelper.COLUMN_COMPLETED_AT, game.getTimeCompleted());
+      values.put(HistorySqlHelper.COLUMN_GAME_JSON, gameJson);
+      db.insert(HistorySqlHelper.TABLE_NAME, null, values);
+    } finally {
+      db.close();
+    }
   }
 
   public Cursor getHistory() {
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
-    return db.query(
-        HistorySqlHelper.TABLE_NAME,
-        new String[] {HistorySqlHelper.COLUMN_GAME_JSON},
-        null, null, /* WHERE clause. */
-        null, null, /* GROUP BY clause. */
-        HistorySqlHelper.COLUMN_COMPLETED_AT  + " DESC",
-        null /* LIMIT */);
+    try {
+      return db.query(
+          HistorySqlHelper.TABLE_NAME,
+          new String[]{HistorySqlHelper.COLUMN_GAME_JSON},
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          HistorySqlHelper.COLUMN_COMPLETED_AT + " DESC",
+          null /* LIMIT */);
+    } finally {
+      db.close();
+    }
   }
 
   @Nullable
