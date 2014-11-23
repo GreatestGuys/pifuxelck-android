@@ -91,7 +91,7 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
         mDrawingBuilder.pushLine(mInProgressLine.build());
         mInProgressLine = null;
         mDrawingView.setInProgressLine(null);
-        mDrawingView.invalidate();
+        mDrawingView.refreshCache();
         return true;
 
       case MotionEvent.ACTION_MOVE:
@@ -102,7 +102,7 @@ public class DrawingOnTouchListener implements View.OnTouchListener {
         }
 
         mInProgressLine.addPoint(scaledX, scaledY);
-        mDrawingView.invalidate();
+        mDrawingView.refreshCache();
 
         mLastX = x;
         mLastY = y;

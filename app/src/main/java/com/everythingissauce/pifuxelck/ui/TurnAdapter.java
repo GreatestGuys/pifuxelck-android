@@ -83,6 +83,8 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
     playerView = (TextView) container.findViewById(R.id.player);
 
     drawingView.setDrawing(turn.getDrawing());
+    drawingView.clearCache();
+    drawingView.refreshCache();
     playerView.setText(turn.getPlayerId());
     return container;
   }

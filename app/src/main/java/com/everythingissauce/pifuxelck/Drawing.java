@@ -32,8 +32,8 @@ public class Drawing implements AbstractDrawing {
       mLines = new ArrayList<Line>();
     }
 
-    public Builder(Drawing drawing) {
-      mBackgroundColor = drawing.mBackgroundColor;
+    public Builder(AbstractDrawing drawing) {
+      mBackgroundColor = drawing.getBackgroundColor();
       mLines = new ArrayList<Line>();
       for (Line line : drawing) {
         pushLine(line);

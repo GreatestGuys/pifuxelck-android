@@ -24,9 +24,32 @@ public class Line implements AbstractLine {
    */
   public static class Builder implements AbstractLine {
 
-    private Color mColor = new Color(0, 0, 0);
-    private final List<Point> mPoints = new ArrayList<Point>();
-    private double mSize = 0.01;
+    private Color mColor;
+    private final List<Point> mPoints;
+    private double mSize;
+
+    public Builder() {
+      mColor = new Color(0, 0, 0);
+      mPoints = new ArrayList<Point>();
+      mSize = 0.01;
+    }
+
+    public Builder(AbstractLine line) {
+      mColor = line.getColor();
+      mSize = line.getSize();
+      mPoints = new ArrayList<Point>();
+
+      Iterator<LineSegment> iterator = line.iterator();
+      LineSegment currentSegment = null;
+      while (iterator.hasNext()) {
+        currentSegment = iterator.next();
+        mPoints.add(currentSegment.getFirst());
+      }
+
+      if (currentSegment != null) {
+        mPoints.add(currentSegment.getSecond());
+      }
+    }
 
     public Builder setColor(Color color) {
       mColor = color;

@@ -86,6 +86,8 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
     }
 
     drawingView.setDrawing(turn.getDrawing());
+    drawingView.clearCache();
+    drawingView.refreshCache();
     return container;
   }
 
