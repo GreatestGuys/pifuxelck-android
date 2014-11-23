@@ -49,20 +49,8 @@ public class DrawingView extends View {
     protected Bitmap doInBackground(Void... voids) {
       // TODO(will): Consider using RGB_565 on low memory devices...
       Bitmap cache = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
-
       Canvas canvas = new Canvas(cache);
-      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-      canvas.drawColor(mDrawing.getBackgroundColor().toAndroidColor());
-
-      for (Line line : mDrawing) {
-        drawLine(canvas, paint, line);
-      }
-
-      if (mLine != null) {
-        drawLine(canvas, paint, mLine);
-      }
-
+      drawDrawingAndLine(canvas, mDrawing, mLine, mSize);
       return cache;
     }
 
@@ -79,40 +67,6 @@ public class DrawingView extends View {
       // Signal that the DrawingView should be redrawn now that the cache has
       // been updated.
       invalidate();
-    }
-
-    private void drawLine(
-        Canvas canvas, Paint paint, AbstractLine line) {
-      paint.setColor(line.getColor().toAndroidColor());
-      paint.setStrokeWidth((float) line.getSize() * mSize);
-
-      boolean isFirst = true;
-      for (LineSegment segment : line) {
-        canvas.drawLine(
-            (int) (segment.getFirst().getX() * mSize),
-            (int) (segment.getFirst().getY() * mSize),
-            (int) (segment.getSecond().getX() * mSize),
-            (int) (segment.getSecond().getY() * mSize),
-            paint);
-
-        // Only draw a circle over the first point of the line segment for the
-        // very first point in the sequence.
-        if (isFirst) {
-          canvas.drawCircle(
-              (float) segment.getFirst().getX() * mSize,
-              (float) segment.getFirst().getY() * mSize,
-              (float) line.getSize() / 2 * mSize,
-              paint);
-        }
-
-        canvas.drawCircle(
-            (float) segment.getSecond().getX() * mSize,
-            (float) segment.getSecond().getY() * mSize,
-            (float) line.getSize() / 2 * mSize,
-            paint);
-
-        isFirst = false;
-      }
     }
   }
 
@@ -205,7 +159,7 @@ public class DrawingView extends View {
 
     if (mCache == null) {
       Log.i(TAG, "Cache is null, not drawing: " + mDrawing);
-      canvas.drawColor(Color.WHITE);
+      drawDrawingAndLine(canvas, mDrawing, mInProgressLine, getWidth());
       return;
     }
 
@@ -213,5 +167,56 @@ public class DrawingView extends View {
 
     Rect destination = new Rect(0, 0, getWidth(), getHeight());
     canvas.drawBitmap(mCache, null /* src */, destination, null /* paint */);
+  }
+
+
+
+  private static void drawDrawingAndLine(
+      Canvas canvas, AbstractDrawing drawing, AbstractLine line, int size) {
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    canvas.drawColor(drawing.getBackgroundColor().toAndroidColor());
+
+    for (Line drawingLine : drawing) {
+      drawLine(canvas, paint, drawingLine, size);
+    }
+
+    if (line != null) {
+      drawLine(canvas, paint, line, size);
+    }
+  }
+
+  private static void drawLine(
+      Canvas canvas, Paint paint, AbstractLine line, int size) {
+    paint.setColor(line.getColor().toAndroidColor());
+    paint.setStrokeWidth((float) line.getSize() * size);
+
+    boolean isFirst = true;
+    for (LineSegment segment : line) {
+      canvas.drawLine(
+          (int) (segment.getFirst().getX() * size),
+          (int) (segment.getFirst().getY() * size),
+          (int) (segment.getSecond().getX() * size),
+          (int) (segment.getSecond().getY() * size),
+          paint);
+
+      // Only draw a circle over the first point of the line segment for the
+      // very first point in the sequence.
+      if (isFirst) {
+        canvas.drawCircle(
+            (float) segment.getFirst().getX() * size,
+            (float) segment.getFirst().getY() * size,
+            (float) line.getSize() / 2 * size,
+            paint);
+      }
+
+      canvas.drawCircle(
+          (float) segment.getSecond().getX() * size,
+          (float) segment.getSecond().getY() * size,
+          (float) line.getSize() / 2 * size,
+          paint);
+
+      isFirst = false;
+    }
   }
 }
