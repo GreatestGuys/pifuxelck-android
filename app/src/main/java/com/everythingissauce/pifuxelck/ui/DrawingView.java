@@ -1,15 +1,14 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.AbstractDrawing;
-import com.everythingissauce.pifuxelck.AbstractLine;
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.Line;
-import com.everythingissauce.pifuxelck.LineSegment;
+import com.everythingissauce.pifuxelck.data.AbstractDrawing;
+import com.everythingissauce.pifuxelck.data.AbstractLine;
+import com.everythingissauce.pifuxelck.data.Drawing;
+import com.everythingissauce.pifuxelck.data.Line;
+import com.everythingissauce.pifuxelck.data.LineSegment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.AsyncTask;

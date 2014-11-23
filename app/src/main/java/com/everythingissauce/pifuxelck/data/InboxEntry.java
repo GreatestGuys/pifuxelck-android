@@ -1,4 +1,4 @@
-package com.everythingissauce.pifuxelck;
+package com.everythingissauce.pifuxelck.data;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

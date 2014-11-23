@@ -1,9 +1,9 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.Game;
+import com.everythingissauce.pifuxelck.data.Drawing;
+import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
-import com.everythingissauce.pifuxelck.Turn;
+import com.everythingissauce.pifuxelck.data.Turn;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

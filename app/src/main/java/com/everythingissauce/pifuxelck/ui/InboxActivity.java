@@ -1,9 +1,9 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.InboxEntry;
+import com.everythingissauce.pifuxelck.data.Drawing;
+import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.R;
-import com.everythingissauce.pifuxelck.Turn;
+import com.everythingissauce.pifuxelck.data.Turn;
 import com.github.pavlospt.CircleView;
 
 import android.app.Activity;

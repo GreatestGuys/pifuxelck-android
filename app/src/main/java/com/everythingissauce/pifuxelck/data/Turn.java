@@ -1,6 +1,5 @@
-package com.everythingissauce.pifuxelck;
+package com.everythingissauce.pifuxelck.data;
 
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
