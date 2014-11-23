@@ -25,6 +25,8 @@ public class DrawingView extends View {
 
   private static final String TAG = "DrawingView";
 
+  private static final boolean DEBUG = false;
+
   /**
    * A task that will render the drawing into a Bitmap on a background thread
    * and update the mCache field on the UI thread when the cache has been
@@ -62,7 +64,7 @@ public class DrawingView extends View {
         refreshCache();
       }
 
-      Log.i(TAG, "Finished drawing, invalidating view: " + mDrawing);
+      if (DEBUG) Log.d(TAG, "Finished drawing, invalidating view: " + mDrawing);
 
       // Signal that the DrawingView should be redrawn now that the cache has
       // been updated.
@@ -122,25 +124,25 @@ public class DrawingView extends View {
   private void refreshCache(int size) {
     // If there isn't a drawing, then refreshing the cache is pointless.
     if (mDrawing == null) {
-      Log.i(TAG, "No drawing, not creating cache");
+      if (DEBUG) Log.d(TAG, "No drawing, not creating cache");
       return;
     }
 
     // No point in creating an empty bitmap.
     if (size == 0) {
-      Log.i(TAG, "Size is 0: " + mDrawing);
+      if (DEBUG) Log.d(TAG, "Size is 0: " + mDrawing);
       return;
     }
 
     // If there is an ongoing task to refresh the cache, then mark that another
     // refresh is desired after the current one completes.
     if (mCacheTask != null) {
-      Log.i(TAG, "Already running, queueing cache task: " + mDrawing);
+      if (DEBUG) Log.d(TAG, "Already running, queueing cache task: " + mDrawing);
       mQueuedCacheTask = true;
       return;
     }
 
-    Log.i(TAG, "Starting cache task: " + mDrawing);
+    if (DEBUG) Log.d(TAG, "Starting cache task: " + mDrawing);
 
     mQueuedCacheTask = false;
     mCacheTask = new CreateCacheTask(size, mDrawing, mInProgressLine);
@@ -163,17 +165,17 @@ public class DrawingView extends View {
     super.onDraw(canvas);
 
     if (mDrawing == null) {
-      Log.i(TAG, "No drawing, clearing canvas.");
+      if (DEBUG) Log.d(TAG, "No drawing, clearing canvas.");
       canvas.drawColor(Color.WHITE);
     }
 
     if (mCache == null) {
-      Log.i(TAG, "Cache is null, not drawing: " + mDrawing);
+      if (DEBUG) Log.d(TAG, "Cache is null, not drawing: " + mDrawing);
       drawDrawingAndLine(canvas, mDrawing, mInProgressLine, getWidth());
       return;
     }
 
-    Log.i(TAG, "Drawing from the cache: " + mDrawing);
+    if (DEBUG) Log.d(TAG, "Drawing from the cache: " + mDrawing);
 
     Rect destination = new Rect(0, 0, getWidth(), getHeight());
     canvas.drawBitmap(mCache, null /* src */, destination, null /* paint */);
