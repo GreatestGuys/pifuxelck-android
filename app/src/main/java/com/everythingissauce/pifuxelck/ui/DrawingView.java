@@ -102,6 +102,10 @@ public class DrawingView extends View {
    */
   public void clearCache() {
     mCache = null;
+    if (mCacheTask != null) {
+      mCacheTask.cancel(true);
+      mQueuedCacheTask = false;
+    }
   }
 
   /**

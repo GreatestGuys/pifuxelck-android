@@ -174,8 +174,8 @@ public class InboxActivity extends Activity implements
   }
 
   private void showLabelOverlay(Drawing drawing) {
-    mDrawingView.clearCache();
     mDrawingView.setDrawing(drawing);
+    mDrawingView.clearCache();
     mDrawingView.refreshCache();
     mLabelEditText.setText("");
     mOverlayView.setVisibility(View.VISIBLE);
