@@ -45,7 +45,7 @@ public class DrawingView extends View {
     // Force the DrawingView to always be square.
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
-    int size = width > height ? height : width;
+    int size = width > height && height > 0 ? height : width;
     setMeasuredDimension(size, size);
   }
 

@@ -1,6 +1,5 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -37,7 +36,6 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text=""
                 android:id="@+id/label"
-                android:textColor="@android:color/black"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:maxLines="2" />
@@ -52,8 +50,8 @@
             android:layout_centerHorizontal="true">
 
             <com.everythingissauce.pifuxelck.ui.DrawingView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:id="@+id/drawing_view"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"/>
@@ -63,52 +61,22 @@
         <!-- The three always visible buttons. -->
 
         <com.github.pavlospt.CircleView
-            android:layout_width="64dip"
-            android:layout_height="64dip"
+            style="@style/ActionButton.Ok"
             android:id="@+id/done_button"
-            android:elevation="100dp"
-            app:titleSize="32dp"
-            app:titleText="✓"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accent"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="8dp"/>
 
         <com.github.pavlospt.CircleView
-            android:layout_width="64dip"
-            android:layout_height="64dip"
+            style="@style/ActionButton.Back"
             android:id="@+id/undo_button"
-            android:elevation="100dp"
-            app:titleSize="32dp"
-            app:titleText="✕"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accent"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"/>
 
         <com.github.pavlospt.CircleView
-            android:layout_width="64dip"
-            android:layout_height="64dip"
+            style="@style/ActionButton.More"
             android:id="@+id/options_button"
-            android:elevation="100dp"
-            app:titleSize="48dp"
-            app:titleText="···"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accent"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="8dp"/>
@@ -116,18 +84,8 @@
         <!-- The three expanded option buttons. -->
 
         <com.github.pavlospt.CircleView
-            android:layout_width="48dip"
-            android:layout_height="48dip"
+            style="@style/ActionButton.Small.Size"
             android:id="@+id/size_button"
-            android:elevation="50dp"
-            app:titleSize="24dp"
-            app:titleText="◀"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accentDark"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_above="@+id/stroke_color_button"
             android:layout_alignLeft="@+id/stroke_color_button"
             android:layout_alignStart="@+id/stroke_color_button"
@@ -136,18 +94,8 @@
             android:visibility="invisible"/>
 
         <com.github.pavlospt.CircleView
-            android:layout_width="48dip"
-            android:layout_height="48dip"
+            style="@style/ActionButton.Small.Color"
             android:id="@+id/stroke_color_button"
-            android:elevation="50dp"
-            app:titleSize="32dp"
-            app:titleText="•"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accentDark"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_above="@+id/options_button"
             android:layout_alignLeft="@+id/background_color_button"
             android:layout_alignStart="@+id/background_color_button"
@@ -156,18 +104,8 @@
             android:visibility="invisible"/>
 
         <com.github.pavlospt.CircleView
-            android:layout_width="48dip"
-            android:layout_height="48dip"
+            style="@style/ActionButton.Small.Background"
             android:id="@+id/background_color_button"
-            android:elevation="50dp"
-            app:titleSize="18dp"
-            app:titleText="■"
-            app:subtitleText=""
-            app:titleColor="@android:color/white"
-            app:fillColor="@color/accentDark"
-            app:strokeColorValue="@android:color/transparent"
-            app:backgroundColorValue="@android:color/transparent"
-            app:fillRadius="1"
             android:layout_above="@+id/size_button"
             android:layout_alignRight="@+id/options_button"
             android:layout_alignEnd="@+id/options_button"

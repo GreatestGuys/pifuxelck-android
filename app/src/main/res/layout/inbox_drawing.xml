@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@android:color/white"
+    android:descendantFocusability="blocksDescendants"
+    android:clickable="false"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:gravity="center" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true" >
+
+        <!-- Use a ludicrously large value for the height. This number
+             just needs to be larger than the inferred width, and the
+             drawing will choose the lesser of the two dimensions to be
+             the size. -->
+
+        <com.everythingissauce.pifuxelck.ui.DrawingView
+            android:alpha="0.13"
+            android:layout_width="match_parent"
+            android:layout_height="100000000dp"
+            android:id="@+id/drawing_view" />
+
+     </FrameLayout>
+
+    <!-- Overlay a transparent view over the drawing so that it doesn't clash
+         with the the chrome on the inbox entry item -->
+
+    <TextView
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="T"
+        android:id="@+id/icon"
+        android:textColor="@color/accent"
+        android:textSize="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_gravity="center"
+        android:paddingRight="16dp"/>
+
+</RelativeLayout>

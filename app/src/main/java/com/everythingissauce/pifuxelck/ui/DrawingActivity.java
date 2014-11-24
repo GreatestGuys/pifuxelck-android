@@ -76,7 +76,7 @@ public class DrawingActivity extends Activity implements
 
     TextView labelView = (TextView) findViewById(R.id.label);
     String label = getIntent().getStringExtra(EXTRAS_LABEL);
-    labelView.setText("\"" + (label == null ? "" : label) + "\"");
+    labelView.setText(label == null ? "" : label);
 
     View undoButton = findViewById(R.id.undo_button);
     undoButton.setOnClickListener(this);

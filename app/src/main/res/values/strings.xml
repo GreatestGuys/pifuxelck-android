@@ -4,7 +4,19 @@
     <string name="app_name">pifuxelck</string>
     <string name="title_activity_drawing">Draw it!</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_inbox">Inbox</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Circle button values -->
+    <string name="action_button_new">+</string>
+    <string name="action_button_ok">✓</string>
+    <string name="action_button_more">···</string>
+    <string name="action_button_back">  ◀   </string>
+
+    <!-- Small circle button values -->
+    <string name="action_button_size">◀</string>
+    <string name="action_button_color">•</string>
+    <string name="action_button_background">■</string>
 
 </resources>

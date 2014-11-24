@@ -1,6 +1,5 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Color;
 import com.everythingissauce.pifuxelck.R;
 
 import android.content.Context;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 
 import com.github.pavlospt.CircleView;
@@ -35,7 +33,7 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
 
   private int mColor;
   private int mFullWidth;
-  private @Nullable OnSizeSelectedListener mOnSizeSelectedListener;
+  @Nullable private OnSizeSelectedListener mOnSizeSelectedListener;
 
   public SizeAdapter(Context context) {
     super(context, R.layout.size_swatch, SIZES);

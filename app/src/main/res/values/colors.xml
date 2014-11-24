@@ -13,4 +13,6 @@
     <item name="shadow_grey" type="color">#006064</item>
 
     <item name="overlay_background" type="color">#80000000</item>
+
+    <item name="primaryText" type="color">#CC000000</item>
 </resources>
