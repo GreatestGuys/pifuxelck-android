@@ -71,11 +71,12 @@ class ApiImpl implements Api {
             .setMethod(HttpRequest.POST)
             .setBody(requestBody)
             .setCallback(new CallbackTransform<String, Identity>(callback) {
-              @Override
-              public Identity transform(String body) throws NumberFormatException {
-                return partial.build(Long.valueOf(body));
-              }
-            })
+                  @Override
+                  public Identity transform(String body)
+                      throws NumberFormatException {
+                    return partial.build(Long.valueOf(body));
+                  }
+                })
             .makeRequest();
       }
     });
