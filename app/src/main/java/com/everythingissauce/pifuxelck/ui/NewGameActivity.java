@@ -35,7 +35,7 @@ public class NewGameActivity extends Activity implements
     mActionButton.setOnClickListener(this);
 
     mContactsAdapter = new ContactsAdapter(this);
-    mContactsListView= (ListView) findViewById(R.id.contacts_list_view);
+    mContactsListView = (ListView) findViewById(R.id.contacts_list_view);
     mContactsListView.setAdapter(mContactsAdapter);
     mContactsListView.setOnItemClickListener(this);
   }
