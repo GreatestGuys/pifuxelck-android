@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class InboxSqlHelper extends SQLiteOpenHelper {
+class InboxSqlHelper extends SQLiteOpenHelper {
 
   private static final String TAG = "InboxSqlHelper";
 

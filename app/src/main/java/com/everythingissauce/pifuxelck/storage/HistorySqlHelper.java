@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class HistorySqlHelper extends SQLiteOpenHelper {
+class HistorySqlHelper extends SQLiteOpenHelper {
 
   private static final String TAG = "HistorySqlHelper";
 
