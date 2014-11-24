@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Actual string constants. -->
+
     <string name="app_name">pifuxelck</string>
-    <string name="title_activity_drawing">Draw it!</string>
+    <string name="title_activity_drawing">Draw</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="title_activity_inbox">Inbox</string>
+    <string name="title_activity_new_game">New Game</string>
+
+    <string name="hint_describe_a_scene">Describe a scene...</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

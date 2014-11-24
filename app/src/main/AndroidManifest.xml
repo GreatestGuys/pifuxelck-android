@@ -41,6 +41,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.everythingissauce.pifuxelck.ui.NewGameActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_new_game"
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 
 </manifest>
