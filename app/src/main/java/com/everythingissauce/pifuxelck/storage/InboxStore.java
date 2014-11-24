@@ -51,7 +51,7 @@ public class InboxStore {
   }
 
   public List<InboxEntry> getEntries() {
-    SQLiteDatabase db = mSqlHelper.getWritableDatabase();
+    SQLiteDatabase db = mSqlHelper.getReadableDatabase();
     try {
       Cursor cursor = db.query(
           InboxSqlHelper.TABLE_NAME,

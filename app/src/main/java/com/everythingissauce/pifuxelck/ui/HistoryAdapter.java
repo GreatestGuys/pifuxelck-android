@@ -4,31 +4,43 @@ import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.storage.HistoryStore;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-public class GameAdapter extends ArrayAdapter<Game> {
+public class HistoryAdapter extends CursorAdapter {
 
-  public GameAdapter(Context context) {
-    super(context, R.layout.history_game);
+  public HistoryAdapter(Context context) {
+    super(context, null, 0);
   }
 
-  public GameAdapter(Context context, Game[] games) {
-    super(context, R.layout.history_game, games);
+  public Game getGame(int index) {
+    Cursor cursor = getCursor();
+    cursor.moveToPosition(index);
+    return HistoryStore.cursorToGame(cursor);
   }
 
   @Override
-  public View getView(int index, View view, ViewGroup parent) {
-    if (view == null) {
-      view = View.inflate(getContext(), R.layout.history_game, null);
-    }
+  public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+    return View.inflate(context, R.layout.history_game, null);
+  }
 
-    Game game = getItem(index);
+  @Override
+  public void bindView(View view, Context context, Cursor cursor) {
+    Game game = HistoryStore.cursorToGame(cursor);
+
+    if (game == null) {
+      view.setVisibility(View.GONE);
+      return;
+    }
+    view.setVisibility(View.VISIBLE);
 
     Drawing drawing1 = getDrawing(game, 0);
     Drawing drawing2 = getDrawing(game, 1);
@@ -49,8 +61,6 @@ public class GameAdapter extends ArrayAdapter<Game> {
     bindFrameAndDrawing(drawing3, frame3, view3);
 
     labelView.setText(getFirstLabel(game));
-
-    return view;
   }
 
   @Nullable
