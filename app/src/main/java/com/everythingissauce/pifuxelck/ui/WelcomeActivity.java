@@ -1,16 +1,18 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.api.Api;
+import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class WelcomeActivity extends Activity implements View.OnClickListener {
 
@@ -21,6 +23,8 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   private View mProgressOverlay;
 
   private IdentityProvider mIdentityProvider;
+
+  private final Api mApi = ApiProvider.getApi();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +51,31 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
       return;
     }
 
-    Identity.Partial partialIdentity = new Identity.Partial(displayName);
-    mIdentityProvider.setIdentity(partialIdentity.build(0));
-    openInbox();
+    showLoading();
+
+    mApi.registerAccount(displayName, new Api.Callback<Identity>() {
+      @Override
+      public void onApiSuccess(Identity identity) {
+        mIdentityProvider.setIdentity(identity);
+        openInbox();
+      }
+
+      @Override
+      public void onApiFailure() {
+        hideLoading();
+        Toast.makeText(
+            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
+                .show();
+      }
+    });
+  }
+
+  private void showLoading() {
+    mProgressOverlay.setVisibility(View.VISIBLE);
+  }
+
+  private void hideLoading() {
+    mProgressOverlay.setVisibility(View.INVISIBLE);
   }
 
   private void openInbox() {
