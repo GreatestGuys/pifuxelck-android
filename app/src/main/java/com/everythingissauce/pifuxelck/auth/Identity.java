@@ -3,9 +3,12 @@ package com.everythingissauce.pifuxelck.auth;
 import com.everythingissauce.pifuxelck.Base64Util;
 
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -113,6 +116,21 @@ public class Identity {
     mDisplayName = displayName;
     mPrivateKey = privateKey;
     mPublicKey = publicKey;
+  }
+
+  public String signBytes(byte[] data) {
+    try {
+      Signature signature = Signature.getInstance("SHA256withRSA");
+      signature.initSign(mPrivateKey);
+      signature.update(data);
+      return Base64Util.encode(signature.sign());
+    } catch (NoSuchAlgorithmException exception) {
+      throw new IllegalStateException(exception);
+    } catch (SignatureException exception) {
+      throw new IllegalStateException(exception);
+    } catch (InvalidKeyException exception) {
+      throw new IllegalStateException(exception);
+    }
   }
 
   public long getId() {
