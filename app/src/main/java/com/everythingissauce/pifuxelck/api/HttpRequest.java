@@ -14,6 +14,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
@@ -122,9 +123,10 @@ class HttpRequest {
         if (mBody != null) {
           if (DEBUG) Log.i(TAG, "Setting body: " + mBody);
           connection.setDoOutput(true);
-          Writer writer = new OutputStreamWriter(
-              new BufferedOutputStream(connection.getOutputStream()));
-          writer.write(mBody, 0, mBody.length());
+          OutputStream output =
+              new BufferedOutputStream(connection.getOutputStream());
+          IOUtils.write(mBody, output, "UTF-8");
+          output.close();
         }
 
         int responseCode = connection.getResponseCode();
