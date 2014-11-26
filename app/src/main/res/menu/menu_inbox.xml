@@ -1,0 +1,20 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".ui.Inbox">
+
+    <item android:id="@+id/action_history"
+          android:icon="@drawable/ic_history_white_24dp"
+          android:title="History"
+          android:showAsAction="always" />
+
+    <item android:id="@+id/action_contacts"
+          android:icon="@drawable/ic_people_white_24dp"
+          android:title="Contacts"
+          android:showAsAction="always" />
+
+    <item android:id="@+id/action_settings"
+          android:icon="@drawable/ic_settings_white_24dp"
+          android:title="Settings"
+          android:showAsAction="always" />
+
+</menu>
