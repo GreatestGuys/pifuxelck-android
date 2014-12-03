@@ -18,12 +18,6 @@ public class DrawingActivity extends Activity implements
     View.OnClickListener, View.OnTouchListener {
 
   /**
-   * The action that should be used when launching this activity.
-   */
-  public static final String ACTION_DRAW =
-      "com.everythingissauce.pifuxelck.DRAW";
-
-  /**
    * The extras key that will contain the bundled drawing.
    */
   public static final String EXTRAS_DRAWING = "drawing";

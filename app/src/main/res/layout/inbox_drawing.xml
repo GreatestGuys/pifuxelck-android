@@ -23,9 +23,7 @@
              the size. -->
 
         <com.everythingissauce.pifuxelck.ui.DrawingView
-            android:alpha="0.13"
-            android:layout_width="match_parent"
-            android:layout_height="100000000dp"
+            style="@style/DrawingView.Background"
             android:id="@+id/drawing_view" />
 
      </FrameLayout>

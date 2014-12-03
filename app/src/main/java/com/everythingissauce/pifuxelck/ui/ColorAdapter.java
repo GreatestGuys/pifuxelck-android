@@ -71,13 +71,13 @@ public class ColorAdapter extends ArrayAdapter<Color> implements
   private @Nullable OnColorSelectedListener mOnColorSelectedListener;
 
   public ColorAdapter(Context context) {
-    super(context, R.layout.color_swatch, PALETTE);
+    super(context, R.layout.drawing_color_swatch, PALETTE);
   }
 
   @Override
   public View getView(final int i, View containerView, ViewGroup viewGroup) {
     if (containerView == null) {
-      containerView = View.inflate(getContext(), R.layout.color_swatch, null);
+      containerView = View.inflate(getContext(), R.layout.drawing_color_swatch, null);
     }
 
     CircleView circleView =

@@ -10,8 +10,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -96,6 +94,9 @@ public class InboxActivity extends Activity implements
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_history:
+        Intent intent = new Intent();
+        intent.setClass(getApplicationContext(), HistoryActivity.class);
+        startActivity(intent);
         return true;
       case R.id.action_settings:
         return true;
@@ -110,8 +111,9 @@ public class InboxActivity extends Activity implements
     Turn turn = entry.getPreviousTurn();
 
     if (turn.isLabelTurn()) {
-      Intent drawingIntent = new Intent(DrawingActivity.ACTION_DRAW);
+      Intent drawingIntent = new Intent();
       drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, turn.getLabel());
+      drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
       startActivityForResult(drawingIntent, REQUEST_DRAWING);
     } else if (turn.isDrawingTurn()) {
       showLabelOverlay(turn.getDrawing());

@@ -55,6 +55,10 @@ public class Game implements Iterable<Turn> {
     return mCompletedAt;
   }
 
+  public int getNumberOfTurns() {
+    return mTurns.length;
+  }
+
   @Override
   public Iterator<Turn> iterator() {
     return Arrays.asList(mTurns).iterator();
@@ -67,6 +71,7 @@ public class Game implements Iterable<Turn> {
     for (Turn turn : mTurns) {
       turnArray.put(turn.toJson());
     }
+    json.put(TURNS_KEY, turnArray);
     return json;
   }
 
@@ -83,7 +88,7 @@ public class Game implements Iterable<Turn> {
   public String toString() {
     return MoreObjects.toStringHelper("Game")
         .add("completedAt", mCompletedAt)
-        .add("turns", mTurns)
+        .add("turns", mTurns.toString())
         .toString();
   }
 

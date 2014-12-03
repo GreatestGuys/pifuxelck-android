@@ -36,7 +36,7 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
   @Nullable private OnSizeSelectedListener mOnSizeSelectedListener;
 
   public SizeAdapter(Context context) {
-    super(context, R.layout.size_swatch, SIZES);
+    super(context, R.layout.drawing_size_swatch, SIZES);
     mFullWidth = 0;
     mColor = android.graphics.Color.BLACK;
   }
@@ -52,7 +52,7 @@ public class SizeAdapter extends ArrayAdapter<Double> implements
   @Override
   public View getView(final int i, View containerView, ViewGroup viewGroup) {
     if (containerView == null) {
-      containerView = View.inflate(getContext(), R.layout.size_swatch, null);
+      containerView = View.inflate(getContext(), R.layout.drawing_size_swatch, null);
     }
 
     CircleView circleView =

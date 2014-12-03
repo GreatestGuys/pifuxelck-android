@@ -55,4 +55,18 @@
         <item name="titleText">@string/action_button_background</item>
     </style>
 
+    <style name="DrawingView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="DrawingView.Background">
+        <item name="android:alpha">0.13</item>
+        <item name="android:layout_height">100000000dp</item>
+        <item name="android:clickable">false</item>
+    </style>
+
 </resources>
