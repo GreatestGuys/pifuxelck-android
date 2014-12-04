@@ -15,7 +15,8 @@
         android:textSize="48sp"
         android:id="@+id/welcome_text"
         android:layout_alignLeft="@+id/display_name_edit_text"
-        android:layout_above="@+id/display_name_edit_text"/>
+        android:layout_above="@+id/display_name_edit_text"
+        android:textColor="@android:color/white"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -35,7 +36,8 @@
         android:id="@+id/login_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="32dp"
+        android:textColor="@android:color/white"/>
 
     <!-- Login loading overlay. -->
 

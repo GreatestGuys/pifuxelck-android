@@ -1,7 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.Game;
-import com.everythingissauce.pifuxelck.InboxEntry;
 import com.everythingissauce.pifuxelck.R;
 
 import android.content.Context;
@@ -12,10 +11,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.everythingissauce.pifuxelck.Turn;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Arrays;
 
 /**
  * A {@link ListAdapter} that will provide views that correspond to the turns
@@ -83,6 +78,8 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
     playerView = (TextView) container.findViewById(R.id.player);
 
     drawingView.setDrawing(turn.getDrawing());
+    drawingView.clearDrawingCache();
+    drawingView.refreshDrawingCache();
     playerView.setText(turn.getPlayerId());
     return container;
   }

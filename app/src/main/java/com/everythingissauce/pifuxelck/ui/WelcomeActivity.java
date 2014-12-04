@@ -36,7 +36,7 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     }
 
     Intent intent = new Intent();
-    intent.setClass(this.getApplicationContext(), DrawingActivity.class);
+    intent.setClass(this.getApplicationContext(), InboxActivity.class);
     startActivity(intent);
   }
 }
