@@ -17,6 +17,18 @@ import android.widget.TextView;
 
 public class HistoryAdapter extends CursorAdapter {
 
+  private static final int[] DRAWING_FRAME_VIEW_IDS = new int[] {
+    R.id.drawing_1_frame,
+    R.id.drawing_2_frame,
+    R.id.drawing_3_frame
+  };
+
+  private static final int[] DRAWING_VIEW_IDS = new int[] {
+    R.id.drawing_1_view,
+    R.id.drawing_2_view,
+    R.id.drawing_3_view
+  };
+
   public HistoryAdapter(Context context) {
     super(context, null, 0);
   }
@@ -42,23 +54,14 @@ public class HistoryAdapter extends CursorAdapter {
     }
     view.setVisibility(View.VISIBLE);
 
-    Drawing drawing1 = getDrawing(game, 0);
-    Drawing drawing2 = getDrawing(game, 1);
-    Drawing drawing3 = getDrawing(game, 2);
-
-    View frame1 = view.findViewById(R.id.drawing_1_frame);
-    View frame2 = view.findViewById(R.id.drawing_2_frame);
-    View frame3 = view.findViewById(R.id.drawing_3_frame);
-
-    DrawingView view1 = (DrawingView) view.findViewById(R.id.drawing_1_view);
-    DrawingView view2 = (DrawingView) view.findViewById(R.id.drawing_2_view);
-    DrawingView view3 = (DrawingView) view.findViewById(R.id.drawing_3_view);
+    for (int i = 0; i < DRAWING_FRAME_VIEW_IDS.length; i++) {
+      bindFrameAndDrawing(
+          getDrawing(game, i),
+          view.findViewById(DRAWING_FRAME_VIEW_IDS[i]),
+          (DrawingView) view.findViewById(DRAWING_VIEW_IDS[i]));
+    }
 
     TextView labelView = (TextView) view.findViewById(R.id.label);
-
-    bindFrameAndDrawing(drawing1, frame1, view1);
-    bindFrameAndDrawing(drawing2, frame2, view2);
-    bindFrameAndDrawing(drawing3, frame3, view3);
 
     labelView.setText(getFirstLabel(game));
   }

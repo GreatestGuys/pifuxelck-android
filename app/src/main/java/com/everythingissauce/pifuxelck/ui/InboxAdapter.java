@@ -33,7 +33,7 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
       public int compare(InboxEntry first, InboxEntry second) {
         long firstId = first.getGameId();
         long secondId = second.getGameId();
-        return firstId== secondId ? 0 : firstId < secondId ? 1 : -1;
+        return firstId == secondId ? 0 : firstId < secondId ? 1 : -1;
       }
     });
 
@@ -46,7 +46,7 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
 
   @Override
   public View getView(int i, View containerView, ViewGroup viewGroup) {
-    Turn turn= getItem(i).getPreviousTurn();
+    Turn turn = getItem(i).getPreviousTurn();
 
     if (turn.isLabelTurn()) {
       return getViewForLabel(turn, containerView, viewGroup);

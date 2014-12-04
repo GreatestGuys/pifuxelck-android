@@ -36,9 +36,7 @@ public class DrawingView extends View {
     private int mSize;
     private Drawing mDrawing;
 
-    public CreateDrawingCacheTask(
-        int size,
-        AbstractDrawing drawing) {
+    public CreateDrawingCacheTask(int size, AbstractDrawing drawing) {
       mSize = size;
       mDrawing = new Drawing.Builder(drawing).build();
     }
@@ -69,18 +67,23 @@ public class DrawingView extends View {
   }
 
   /**
-   * A task that will render the drawing into a Bitmap on a background thread
-   * and update the mDrawingCache field on the UI thread when the cache has been
-   * rendered.
+   * A task that will render the current in-progress line into a Bitmap on a
+   * background thread and update the mLineCache field on the UI thread when the
+   * cache has been rendered.
+   * <p>
+   * This in-progress line cache exists outside of the primary drawing cache as
+   * an optimization. The in-progress line cache is invalidated many times per
+   * second when a new line is being drawn. If both caches were consolidated,
+   * the time to rebuild the cache would increase as the number of drawing lines
+   * increases which is noticeable on slow devices (*cough* Kindle Fire *cough*)
+   * after only a small number of lines.
    */
   private class CreateLineCacheTask extends AsyncTask<Void, Void, Bitmap> {
 
     private int mSize;
     private Line mLine;
 
-    public CreateLineCacheTask(
-        int size,
-        AbstractLine line) {
+    public CreateLineCacheTask(int size, AbstractLine line) {
       mSize = size;
       mLine = new Line.Builder(line).build();
     }
@@ -99,7 +102,7 @@ public class DrawingView extends View {
       mLineCache = cache;
       mLineCacheTask = null;
       if (mQueuedLineCacheTask) {
-        refreshDrawingCache();
+        refreshLineCache();
       }
 
       if (DEBUG) Log.d(TAG, "Finished drawing, invalidating view: " + mDrawing);
@@ -178,7 +181,7 @@ public class DrawingView extends View {
    * thread.
    */
   public void refreshLineCache() {
-    refreshDrawingCache(getWidth());
+    refreshLineCache(getWidth());
   }
 
   /**
@@ -213,7 +216,8 @@ public class DrawingView extends View {
   }
 
   /**
-   * Refreshes the current cache. This method MUST be called on the UI thread.
+   * Refreshes the current line cache. This method MUST be called on the UI
+   * thread.
    */
   private void refreshLineCache(int size) {
     // If there isn't a drawing, then refreshing the cache is pointless.
