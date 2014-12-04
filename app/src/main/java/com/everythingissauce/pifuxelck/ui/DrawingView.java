@@ -37,9 +37,7 @@ public class DrawingView extends View {
     private int mSize;
     private Drawing mDrawing;
 
-    public CreateDrawingCacheTask(
-        int size,
-        AbstractDrawing drawing) {
+    public CreateDrawingCacheTask(int size, AbstractDrawing drawing) {
       mSize = size;
       mDrawing = new Drawing.Builder(drawing).build();
     }
