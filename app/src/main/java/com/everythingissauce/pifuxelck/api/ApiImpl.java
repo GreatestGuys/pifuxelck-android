@@ -1,8 +1,11 @@
 package com.everythingissauce.pifuxelck.api;
 
+import com.everythingissauce.pifuxelck.Base64Util;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 
 import com.everythingissauce.pifuxelck.auth.Identity.Partial;
 import com.everythingissauce.pifuxelck.auth.Identity;
@@ -15,6 +18,8 @@ import org.json.JSONObject;
  */
 class ApiImpl implements Api {
 
+  private static final String TAG = "ApiImpl";
+
   private static final String THREAD_NAME = "Api Thread";
 
   private static final String REGISTER_END_POINT = "/account";
@@ -24,8 +29,13 @@ class ApiImpl implements Api {
   private static final String REGISTER_MODULUS = "modulus";
   private static final String REGISTER_PHONE = "hashed_phone";
 
+  private static final String LOGIN_START_END_POINT = "/login/0/";
+  private static final String LOGIN_START_CHALLENGE = "challenge";
+  private static final String LOGIN_START_CHALLENGE_ID = "id";
+
+  private static final String LOGIN_FINISH_END_POINT = "/login/1/";
+
   private final HttpRequestFactory mHttpRequestFactory;
-  private final HandlerThread mHandlerThread;
   private final Handler mHandler;
   private final Handler mMainHandler;
 
@@ -35,10 +45,10 @@ class ApiImpl implements Api {
   public ApiImpl(HttpRequestFactory httpRequestFactory) {
     mHttpRequestFactory = httpRequestFactory;
 
-    mHandlerThread = new HandlerThread(THREAD_NAME);
-    mHandlerThread.start();
+    HandlerThread handlerThread = new HandlerThread(THREAD_NAME);
+    handlerThread.start();
 
-    mHandler = new Handler(mHandlerThread.getLooper());
+    mHandler = new Handler(handlerThread.getLooper());
     mMainHandler = new Handler(Looper.getMainLooper());
   }
 
@@ -62,6 +72,7 @@ class ApiImpl implements Api {
 
           requestBody = bodyJson.toString();
         } catch (JSONException exception) {
+          Log.e(TAG, "Unable to create new account JSON.", exception);
           callbackFailureOnUi(callback);
           return;
         }
@@ -83,8 +94,70 @@ class ApiImpl implements Api {
   }
 
   @Override
-  public void login(Identity Identity, Callback<String> callback) {
-    // TODO(will): Implement me D:
+  public void login(final Identity identity, final Callback<String> callback) {
+    loginStart(identity, new CallbackWrapper<String>(callback) {
+      @Override
+      public void onApiSuccess(String jsonResponse) {
+        String challenge;
+        String challengeId;
+        try {
+          JSONObject response = new JSONObject(jsonResponse);
+          challenge = response.getString(LOGIN_START_CHALLENGE);
+          challengeId = response.getString(LOGIN_START_CHALLENGE_ID);
+        } catch (JSONException exception) {
+          Log.e(TAG, "Unable to parse login start response.", exception);
+          callbackFailureOnUi(callback);
+          return;
+        }
+
+        loginFinish(identity, challengeId, challenge, callback);
+      }
+    });
+  }
+
+  private void loginStart(
+      final Identity identity, final Callback<String> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(LOGIN_START_END_POINT + identity.getId())
+            .setMethod(HttpRequest.GET)
+            .setCallback(callback)
+            .makeRequest();
+      }
+    });
+  }
+
+  private void loginFinish(
+      final Identity identity,
+      final String challengeId,
+      final String challenge,
+      final Callback<String> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        String verification = identity.signBytes(Base64Util.decode(challenge));
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(LOGIN_FINISH_END_POINT + challengeId)
+            .setMethod(HttpRequest.POST)
+            .setBody(verification)
+            .setCallback(new CallbackWrapper<String>(callback) {
+                  @Override
+                  public void onApiSuccess(String token) {
+                    setAuthToken(token);
+                    super.onApiSuccess(token);
+                  }
+                })
+            .makeRequest();
+      }
+    });
+  }
+
+  private void setAuthToken(String token) {
+    synchronized (mAuthTokenLock) {
+      mAuthToken = token;
+    }
   }
 
   private <T> void callbackFailureOnUi(final Callback<T> callback) {

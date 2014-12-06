@@ -53,19 +53,34 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     showLoading();
 
+    final Toast errorToast = Toast.makeText(
+            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG);
+
     mApi.registerAccount(displayName, new Api.Callback<Identity>() {
       @Override
       public void onApiSuccess(Identity identity) {
         mIdentityProvider.setIdentity(identity);
-        openInbox();
+
+        // Now that we have successfully created an account, attempt to login
+        // with it!
+        mApi.login(identity, new Api.Callback<String>() {
+          @Override
+          public void onApiSuccess(String token) {
+            openInbox();
+          }
+
+          @Override
+          public void onApiFailure() {
+            errorToast.show();
+            hideLoading();
+          }
+        });
       }
 
       @Override
       public void onApiFailure() {
         hideLoading();
-        Toast.makeText(
-            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
-                .show();
+        errorToast.show();
       }
     });
   }
