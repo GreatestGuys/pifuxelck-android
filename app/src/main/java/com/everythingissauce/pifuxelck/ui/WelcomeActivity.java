@@ -39,7 +39,7 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     mIdentityProvider = IdentityProvider.getInstance(this);
     if (mIdentityProvider.hasIdentity()) {
-      openInbox();
+      login(mIdentityProvider.getIdentity());
     }
   }
 
@@ -54,33 +54,39 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     showLoading();
 
     final Toast errorToast = Toast.makeText(
-            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG);
+        WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG);
 
     mApi.registerAccount(displayName, new Api.Callback<Identity>() {
       @Override
       public void onApiSuccess(Identity identity) {
         mIdentityProvider.setIdentity(identity);
-
-        // Now that we have successfully created an account, attempt to login
-        // with it!
-        mApi.login(identity, new Api.Callback<String>() {
-          @Override
-          public void onApiSuccess(String token) {
-            openInbox();
-          }
-
-          @Override
-          public void onApiFailure() {
-            errorToast.show();
-            hideLoading();
-          }
-        });
+        login(identity);
       }
 
       @Override
       public void onApiFailure() {
         hideLoading();
         errorToast.show();
+      }
+    });
+  }
+
+  private void login(Identity identity) {
+    final Toast errorToast = Toast.makeText(
+        WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG);
+
+    showLoading();
+    mApi.login(identity, new Api.Callback<String>() {
+      @Override
+      public void onApiSuccess(String token) {
+        openInbox();
+      }
+
+      @Override
+      public void onApiFailure() {
+        errorToast.show();
+        hideLoading();
+        finish();
       }
     });
   }

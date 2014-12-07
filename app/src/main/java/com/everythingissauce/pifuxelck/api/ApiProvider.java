@@ -6,8 +6,8 @@ package com.everythingissauce.pifuxelck.api;
 public class ApiProvider {
 
   private static final String PROTOCOL = "http";
-  private static final String DOMAIN = "shamblinghalfling.com";
-  private static final int PORT = 4242;
+  private static final String DOMAIN = "everythingissauce.com";
+  private static final int PORT = 80;
 
   private static final HttpRequestFactory sHttpRequestFactory =
       new HttpRequestFactory(PROTOCOL, DOMAIN, PORT);

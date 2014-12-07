@@ -160,6 +160,7 @@ class HttpRequest {
 
       if (httpBody == null) {
         mCallback.onApiFailure();
+        return;
       }
       mCallback.onApiSuccess(httpBody);
     }
