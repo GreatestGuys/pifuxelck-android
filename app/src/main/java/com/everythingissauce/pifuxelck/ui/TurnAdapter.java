@@ -1,6 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Game;
+import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.everythingissauce.pifuxelck.Turn;
+import com.everythingissauce.pifuxelck.data.Turn;
 
 /**
  * A {@link ListAdapter} that will provide views that correspond to the turns

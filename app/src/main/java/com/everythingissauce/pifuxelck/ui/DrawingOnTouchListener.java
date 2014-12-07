@@ -1,8 +1,8 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Color;
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.Line;
+import com.everythingissauce.pifuxelck.data.Color;
+import com.everythingissauce.pifuxelck.data.Drawing;
+import com.everythingissauce.pifuxelck.data.Line;
 
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;

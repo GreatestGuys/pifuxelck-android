@@ -1,9 +1,11 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Drawing;
-import com.everythingissauce.pifuxelck.InboxEntry;
 import com.everythingissauce.pifuxelck.R;
-import com.everythingissauce.pifuxelck.Turn;
+import com.everythingissauce.pifuxelck.data.Drawing;
+import com.everythingissauce.pifuxelck.data.InboxEntry;
+import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.storage.InboxStore;
+
 import com.github.pavlospt.CircleView;
 
 import android.app.Activity;
@@ -45,6 +47,8 @@ public class InboxActivity extends Activity implements
   private CircleView mNewActionButton;
   private CircleView mDoneActionButton;
 
+  private InboxStore mInboxStore;
+
   // TODO(will): Used to store made up turns. This will be removed once a
   // proper data store and networking has been implemented.
   private final List<InboxEntry> mEntries = new ArrayList<InboxEntry>();
@@ -54,10 +58,6 @@ public class InboxActivity extends Activity implements
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_inbox);
     getActionBar().setTitle(R.string.title_activity_inbox);
-
-    addEntry(new Turn(null, "A banana"));
-    addEntry(new Turn(null, "The Death Star!"));
-    addEntry(new Turn(null, "Luke Skywalker eating froyo"));
 
     mEntryListView = (ListView) findViewById(R.id.entry_list);
     mEntryListView.setOnItemClickListener(this);
@@ -77,6 +77,7 @@ public class InboxActivity extends Activity implements
     mDoneActionButton = (CircleView) findViewById(R.id.done_action_button);
     mDoneActionButton.setOnClickListener(this);
 
+    mInboxStore = new InboxStore(this);
     refreshInbox();
   }
 
@@ -148,6 +149,7 @@ public class InboxActivity extends Activity implements
 
   @Override
   public void onRefresh() {
+    refreshInbox();
     mEntryRefreshLayout.setRefreshing(false);
   }
 
@@ -158,6 +160,7 @@ public class InboxActivity extends Activity implements
         onDrawingActivityResult(result, data);
         return;
     }
+    refreshInbox();
   }
 
   @Override
@@ -208,7 +211,8 @@ public class InboxActivity extends Activity implements
   }
 
   private void refreshInbox() {
-    mInboxAdapter = InboxAdapter.newInboxAdapter(this, mEntries);
+    List<InboxEntry> entries = mInboxStore.getEntries();
+    mInboxAdapter = InboxAdapter.newInboxAdapter(this, entries);
     mEntryListView.setAdapter(mInboxAdapter);
   }
 
@@ -225,8 +229,9 @@ public class InboxActivity extends Activity implements
     refreshInbox();
   }
 
-  // TODO(will): Remove once a real entry data store has been made.
+  // TODO(will): Remove once networking is completed.
   private void addEntry(Turn turn) {
-    mEntries.add(new InboxEntry(mEntries.size(), turn));
+    mInboxStore.addEntry(new InboxEntry(
+        (long) (Math.random() * 100000L), turn));
   }
 }

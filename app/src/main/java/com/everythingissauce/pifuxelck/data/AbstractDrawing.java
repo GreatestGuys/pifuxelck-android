@@ -1,4 +1,4 @@
-package com.everythingissauce.pifuxelck;
+package com.everythingissauce.pifuxelck.data;
 
 /**
  * A common interface for objects that can be treated like a Drawing.

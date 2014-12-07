@@ -10,6 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.everythingissauce.pifuxelck.data.InboxEntry;
+import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.storage.InboxStore;
 import com.github.pavlospt.CircleView;
 
 public class NewGameActivity extends Activity implements
@@ -23,6 +26,8 @@ public class NewGameActivity extends Activity implements
   private EditText mLabelEditText;
 
   private ArrayAdapter<String> mContactsAdapter;
+
+  private InboxStore mInboxStore;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +43,18 @@ public class NewGameActivity extends Activity implements
     mContactsListView = (ListView) findViewById(R.id.contacts_list_view);
     mContactsListView.setAdapter(mContactsAdapter);
     mContactsListView.setOnItemClickListener(this);
+
+    mInboxStore = new InboxStore(this);
   }
 
   @Override
   public void onClick(View view) {
+    if (mLabelEditText.getText().length() > 0) {
+      mInboxStore.addEntry(new InboxEntry(
+          (long) Math.random() * 10000L,
+          new Turn("Myself", mLabelEditText.getText().toString())));
+      finish();
+    }
   }
 
   @Override

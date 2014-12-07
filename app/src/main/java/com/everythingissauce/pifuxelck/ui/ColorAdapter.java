@@ -1,6 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
-import com.everythingissauce.pifuxelck.Color;
+import com.everythingissauce.pifuxelck.data.Color;
 import com.everythingissauce.pifuxelck.R;
 
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.everythingissauce.pifuxelck;
+package com.everythingissauce.pifuxelck.data;
 
 import android.os.Bundle;
 
