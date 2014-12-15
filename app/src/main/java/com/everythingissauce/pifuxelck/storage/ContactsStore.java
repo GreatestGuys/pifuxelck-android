@@ -75,7 +75,7 @@ public class ContactsStore {
     String[] whereClauseArguments = null;
     if (!TextUtils.isEmpty(query)) {
       whereClause =
-          ContactsSqlHelper.COLUMN_DISPLAY_NAME + " LIKE ('%' || ? || '%')";
+          ContactsSqlHelper.COLUMN_DISPLAY_NAME + " LIKE CONCAT('%', ?, '%')";
       whereClauseArguments = new String[] {query};
     }
 

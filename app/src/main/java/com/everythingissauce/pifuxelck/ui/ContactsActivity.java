@@ -1,29 +1,36 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.api.Api;
+import com.everythingissauce.pifuxelck.api.ApiProvider;
+import com.everythingissauce.pifuxelck.auth.Identity;
+import com.everythingissauce.pifuxelck.data.Contact;
+import com.everythingissauce.pifuxelck.storage.ContactsStore;
+import com.everythingissauce.pifuxelck.storage.IdentityProvider;
+
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.everythingissauce.pifuxelck.R;
-import com.everythingissauce.pifuxelck.data.Contact;
-import com.everythingissauce.pifuxelck.storage.ContactsStore;
-
 public class ContactsActivity extends Activity implements
     SearchView.OnQueryTextListener,
     LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+
+  private final Api mApi = ApiProvider.getApi();
+
+  private Identity mIdentity;
 
   private ContactsStore mContactsStore;
 
@@ -35,8 +42,9 @@ public class ContactsActivity extends Activity implements
   private TextView mNewContactName;
   private Button mAddContactButton;
 
-  // This field MUST only be access from the UI thread!
+  // These mutable fields MUST only be access from the UI thread!
   private String mQuery;
+  @Nullable private Long mResolvedUserId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +77,8 @@ public class ContactsActivity extends Activity implements
     mNewContactName = (TextView) findViewById(R.id.new_contact_name);
     mAddContactButton = (Button) findViewById(R.id.add_contact_button);
     mAddContactButton.setOnClickListener(this);
+
+    mIdentity = new IdentityProvider(this).getIdentity();
 
     // Initialize the query for all contacts.
     refreshContactsList();
@@ -130,21 +140,43 @@ public class ContactsActivity extends Activity implements
   }
 
   private void updateNewContactBox() {
+    mResolvedUserId = null;
     if (TextUtils.isEmpty(mQuery)) {
       mNewContactBox.setVisibility(View.GONE);
       return;
     }
 
     mNewContactName.setText(mQuery);
-    mAddContactButton.setEnabled(true);
     mNewContactBox.setVisibility(View.VISIBLE);
+    mAddContactButton.setVisibility(View.INVISIBLE);
 
-    // TODO: Call out to the server to enable or disable the add contact button.
+    // Don't bother to query for the user's own display name.
+    if (mQuery.equals(mIdentity.getDisplayName())) {
+      return;
+    }
+
+    mApi.lookupUserId(mQuery, new Api.Callback<Long>() {
+      @Override
+      public void onApiSuccess(Long result) {
+        mResolvedUserId = result;
+        mAddContactButton.setVisibility(View.VISIBLE);
+      }
+
+      @Override
+      public void onApiFailure() {
+        mResolvedUserId = null;
+      }
+    });
   }
 
   private void addContact() {
-    mContactsStore.addContact(new Contact(
-        (long) (Math.random() * 1000L), mQuery));
+    if (mResolvedUserId == null) {
+      return;
+    }
+
+    mContactsStore.addContact(new Contact(mResolvedUserId, mQuery));
+    mSearchView.setQuery("", false);
+    mSearchView.clearFocus();
     refreshContactsList();
   }
 
