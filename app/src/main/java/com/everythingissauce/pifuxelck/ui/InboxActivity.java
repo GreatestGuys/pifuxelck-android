@@ -78,6 +78,11 @@ public class InboxActivity extends Activity implements
     mDoneActionButton.setOnClickListener(this);
 
     mInboxStore = new InboxStore(this);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
     refreshInbox();
   }
 
@@ -91,10 +96,14 @@ public class InboxActivity extends Activity implements
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    Intent intent = new Intent();
     switch (item.getItemId()) {
       case R.id.action_history:
-        Intent intent = new Intent();
         intent.setClass(getApplicationContext(), HistoryActivity.class);
+        startActivity(intent);
+        return true;
+      case R.id.action_contacts:
+        intent.setClass(getApplicationContext(), ContactsActivity.class);
         startActivity(intent);
         return true;
       case R.id.action_settings:
