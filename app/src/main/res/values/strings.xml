@@ -16,8 +16,15 @@
 
     <!-- Error messages. -->
 
-    <string name="error_register">        Unable to register at this time. Sorry :(</string>
-    <string name="error_login">        Unable to login at this time. Sorry :(</string>
+    <string name="error_register">
+        Unable to register at this time. Sorry :(
+    </string>
+    <string name="error_login">
+        Unable to login at this time. Sorry :(
+    </string>
+    <string name="error_new_game">
+        Unable to create a new game at this time. Sorry  :(
+    </string>
 
     <!-- Circle button values -->
 

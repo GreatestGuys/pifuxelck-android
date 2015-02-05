@@ -9,9 +9,14 @@ import android.util.Log;
 
 import com.everythingissauce.pifuxelck.auth.Identity.Partial;
 import com.everythingissauce.pifuxelck.auth.Identity;
+import com.everythingissauce.pifuxelck.data.InboxEntry;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents the API that is used to communicate with an abstract backend.
@@ -36,6 +41,12 @@ class ApiImpl implements Api {
   private static final String LOGIN_FINISH_END_POINT = "/login/1/";
 
   private static final String ACCOUNT_LOOKUP_END_POINT = "/account/lookup/";
+
+  private static final String NEW_GAME_END_POINT = "/newgame";
+  private static final String NEW_GAME_PLAYERS = "players";
+  private static final String NEW_GAME_LABEL = "label";
+
+  private static final String INBOX_END_POINT = "/inbox";
 
   private final HttpRequestFactory mHttpRequestFactory;
   private final Handler mHandler;
@@ -172,6 +183,71 @@ class ApiImpl implements Api {
                 return Long.parseLong(userId);
               }
             })
+            .makeRequest();
+      }
+    });
+  }
+
+  @Override
+  public void newGame(
+      final String label,
+      final List<Long> players,
+      final Callback<Void>  callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        String requestBody = null;
+        try {
+          JSONArray playersJson = new JSONArray();
+          for (long playerId : players) {
+            playersJson.put(playerId);
+          }
+
+          JSONObject bodyJson = new JSONObject();
+          bodyJson.put(NEW_GAME_PLAYERS, playersJson);
+          bodyJson.put(NEW_GAME_LABEL, label);
+
+          requestBody = bodyJson.toString();
+        } catch (JSONException exception) {
+          Log.e(TAG, "Unable to create new game JSON.", exception);
+          callbackFailureOnUi(callback);
+          return;
+        }
+
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(NEW_GAME_END_POINT)
+            .setMethod(HttpRequest.POST)
+            .setAuthToken(getAuthToken())
+            .setBody(requestBody)
+            .setCallback(CallbackTransform.<String>voidTransform(callback))
+            .makeRequest();
+      }
+    });
+  }
+
+  @Override
+  public void inbox(final Callback<List<InboxEntry>> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(INBOX_END_POINT)
+            .setMethod(HttpRequest.POST)
+            .setAuthToken(getAuthToken())
+            .setCallback(
+                new CallbackTransform<String, List<InboxEntry>>(callback) {
+                  @Override
+                  public List<InboxEntry> transform(String body)
+                      throws Exception {
+                    List<InboxEntry> entryList = new ArrayList<>();
+                    JSONArray jsonArray = new JSONArray(body);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                      entryList.add(
+                          InboxEntry.fromJson(jsonArray.getJSONObject(i)));
+                    }
+                    return entryList;
+                  }
+                })
             .makeRequest();
       }
     });
