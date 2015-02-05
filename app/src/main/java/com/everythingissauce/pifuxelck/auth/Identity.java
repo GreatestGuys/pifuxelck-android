@@ -50,6 +50,10 @@ public class Identity {
       mPublicKey = (RSAPublicKey) keyPair.getPublic();
     }
 
+    public String getDisplayName() {
+      return mDisplayName;
+    }
+
     public String getModulusBase64() {
       return Base64Util.encode(mPublicKey.getModulus().toByteArray());
     }

@@ -14,6 +14,14 @@
     <string name="hint_describe_a_scene">Describe a scene…</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Error messages. -->
+    <string name="error_register">
+        Unable to register at this time. Sorry :(
+    </string>
+    <string name="error_login">
+        Unable to login at this time. Sorry :(
+    </string>
+
     <!-- Circle button values -->
 
     <string name="action_button_new">+</string>

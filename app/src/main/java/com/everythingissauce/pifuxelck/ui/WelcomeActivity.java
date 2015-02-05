@@ -1,16 +1,18 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.api.Api;
+import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class WelcomeActivity extends Activity implements View.OnClickListener {
 
@@ -21,6 +23,8 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   private View mProgressOverlay;
 
   private IdentityProvider mIdentityProvider;
+
+  private final Api mApi = ApiProvider.getApi();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,7 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     mIdentityProvider = IdentityProvider.getInstance(this);
     if (mIdentityProvider.hasIdentity()) {
-      openInbox();
+      login(mIdentityProvider.getIdentity());
     }
   }
 
@@ -47,9 +51,52 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
       return;
     }
 
-    Identity.Partial partialIdentity = new Identity.Partial(displayName);
-    mIdentityProvider.setIdentity(partialIdentity.build(0));
-    openInbox();
+    showLoading();
+
+    final Toast errorToast = Toast.makeText(
+        WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG);
+
+    mApi.registerAccount(displayName, new Api.Callback<Identity>() {
+      @Override
+      public void onApiSuccess(Identity identity) {
+        mIdentityProvider.setIdentity(identity);
+        login(identity);
+      }
+
+      @Override
+      public void onApiFailure() {
+        hideLoading();
+        errorToast.show();
+      }
+    });
+  }
+
+  private void login(Identity identity) {
+    final Toast errorToast = Toast.makeText(
+        WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG);
+
+    showLoading();
+    mApi.login(identity, new Api.Callback<String>() {
+      @Override
+      public void onApiSuccess(String token) {
+        openInbox();
+      }
+
+      @Override
+      public void onApiFailure() {
+        errorToast.show();
+        hideLoading();
+        finish();
+      }
+    });
+  }
+
+  private void showLoading() {
+    mProgressOverlay.setVisibility(View.VISIBLE);
+  }
+
+  private void hideLoading() {
+    mProgressOverlay.setVisibility(View.INVISIBLE);
   }
 
   private void openInbox() {
