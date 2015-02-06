@@ -10,6 +10,7 @@ import android.util.Log;
 import com.everythingissauce.pifuxelck.auth.Identity.Partial;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
+import com.everythingissauce.pifuxelck.data.Turn;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,8 @@ class ApiImpl implements Api {
   private static final String NEW_GAME_LABEL = "label";
 
   private static final String INBOX_END_POINT = "/inbox";
+
+  private static final String MOVE_END_POINT = "/move/";
 
   private final HttpRequestFactory mHttpRequestFactory;
   private final Handler mHandler;
@@ -227,6 +230,19 @@ class ApiImpl implements Api {
 
   @Override
   public void inbox(final Callback<List<InboxEntry>> callback) {
+    final Callback<String> wrappedCallback =
+        new CallbackTransform<String, List<InboxEntry>>(callback) {
+      @Override
+      public List<InboxEntry> transform(String body) throws Exception {
+        List<InboxEntry> entryList = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray(body);
+        for (int i = 0; i < jsonArray.length(); i++) {
+          entryList.add( InboxEntry.fromJson(jsonArray.getJSONObject(i)));
+        }
+        return entryList;
+      }
+    };
+
     mHandler.post(new Runnable() {
       @Override
       public void run() {
@@ -234,21 +250,30 @@ class ApiImpl implements Api {
             .setEndPoint(INBOX_END_POINT)
             .setMethod(HttpRequest.POST)
             .setAuthToken(getAuthToken())
-            .setCallback(
-                new CallbackTransform<String, List<InboxEntry>>(callback) {
-                  @Override
-                  public List<InboxEntry> transform(String body)
-                      throws Exception {
-                    List<InboxEntry> entryList = new ArrayList<>();
-                    JSONArray jsonArray = new JSONArray(body);
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                      entryList.add(
-                          InboxEntry.fromJson(jsonArray.getJSONObject(i)));
-                    }
-                    return entryList;
-                  }
-                })
+            .setCallback(wrappedCallback)
             .makeRequest();
+      }
+    });
+  }
+
+  @Override
+  public void move(
+      final long gameId, final Turn turn, final Callback<Void> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          mHttpRequestFactory.newRequest()
+              .setEndPoint(MOVE_END_POINT + gameId)
+              .setMethod(HttpRequest.POST)
+              .setAuthToken(getAuthToken())
+              .setBody(turn.toJson().toString())
+              .setCallback(CallbackTransform.<String>voidTransform(callback))
+              .makeRequest();
+        } catch (JSONException exception) {
+          Log.e(TAG, "Unable to create turn JSON.", exception);
+          callbackFailureOnUi(callback);
+        }
       }
     });
   }

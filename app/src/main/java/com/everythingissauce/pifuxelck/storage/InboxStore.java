@@ -44,7 +44,20 @@ public class InboxStore {
       ContentValues values = new ContentValues();
       values.put(InboxSqlHelper.COLUMN_GAME_ID, entry.getGameId());
       values.put(InboxSqlHelper.COLUMN_TURN_JSON, turnJson);
-      db.insert(InboxSqlHelper.TABLE_NAME, null, values);
+      db.insertWithOnConflict(
+          InboxSqlHelper.TABLE_NAME,
+          null,
+          values,
+          SQLiteDatabase.CONFLICT_REPLACE);
+    } finally {
+      db.close();
+    }
+  }
+
+  public void clear() {
+    SQLiteDatabase db = mSqlHelper.getWritableDatabase();
+    try {
+      db.delete(InboxSqlHelper.TABLE_NAME, null, null);
     } finally {
       db.close();
     }

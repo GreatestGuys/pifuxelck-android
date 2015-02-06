@@ -26,6 +26,12 @@ public class DrawingActivity extends Activity implements
    */
   public static final String EXTRAS_LABEL = "label";
 
+  /**
+   * The extras key that should contain the ID of the game that this drawing
+   * belongs to.
+   */
+  public static final String EXTRAS_GAME_ID = "game_id";
+
   private static final String TAG = "DrawingActivity";
 
   // Constants used when the user is swiping over the option button that they
@@ -50,6 +56,8 @@ public class DrawingActivity extends Activity implements
   private GridView mSizePickerView;
   private SizeAdapter mSizePickerAdapter;
 
+  private long mGameId;
+
   private int mChosenOption = OPTIONS_NONE;
 
   @Override
@@ -66,6 +74,8 @@ public class DrawingActivity extends Activity implements
     mDrawingView.setDrawing(mDrawingBuilder);
     mDrawingOnTouchListener =
         DrawingOnTouchListener.install(mDrawingView, mDrawingBuilder);
+
+    mGameId = getIntent().getLongExtra(EXTRAS_GAME_ID, -1);
 
     TextView labelView = (TextView) findViewById(R.id.label);
     String label = getIntent().getStringExtra(EXTRAS_LABEL);
@@ -114,6 +124,7 @@ public class DrawingActivity extends Activity implements
 
       case R.id.done_button:
         Intent intent = new Intent();
+        intent.putExtra(EXTRAS_GAME_ID, mGameId);
         intent.putExtra(EXTRAS_DRAWING, mDrawingBuilder.build().toBundle());
         setResult(RESULT_OK, intent);
         finish();

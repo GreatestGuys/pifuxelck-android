@@ -1,6 +1,8 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.api.Api;
+import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
@@ -24,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,8 @@ public class InboxActivity extends Activity implements
   // Request codes used when launching Activities for results.
   private static final int REQUEST_DRAWING = 0;
 
+  private final Api mApi = ApiProvider.getApi();
+
   private InboxAdapter mInboxAdapter;
   private SwipeRefreshLayout mEntryRefreshLayout;
   private ListView mEntryListView;
@@ -46,6 +51,10 @@ public class InboxActivity extends Activity implements
 
   private CircleView mNewActionButton;
   private CircleView mDoneActionButton;
+
+  // The ID of the game that corresponds to the current drawing that is being
+  // labeled to the user.
+  private long mGameId;
 
   private InboxStore mInboxStore;
 
@@ -117,9 +126,11 @@ public class InboxActivity extends Activity implements
   public void onItemClick(AdapterView<?> parent, View view, int index, long l) {
     InboxEntry entry = mInboxAdapter.getItem(index);
     Turn turn = entry.getPreviousTurn();
+    mGameId = entry.getGameId();
 
     if (turn.isLabelTurn()) {
       Intent drawingIntent = new Intent();
+      drawingIntent.putExtra(DrawingActivity.EXTRAS_GAME_ID, mGameId);
       drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, turn.getLabel());
       drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
       startActivityForResult(drawingIntent, REQUEST_DRAWING);
@@ -202,9 +213,7 @@ public class InboxActivity extends Activity implements
       return false;
     }
 
-    // TODO(will): For now also add the new label to the turns list.
-    addEntry(new Turn(null, mLabelEditText.getText().toString()));
-    refreshInbox();
+    submitTurn(mGameId, new Turn(null, mLabelEditText.getText().toString()));
     return true;
   }
 
@@ -220,6 +229,27 @@ public class InboxActivity extends Activity implements
   }
 
   private void refreshInbox() {
+    mApi.inbox(new Api.Callback<List<InboxEntry>>() {
+      @Override
+      public void onApiSuccess(List<InboxEntry> entries) {
+        mInboxStore.clear();
+        for (InboxEntry entry : entries) {
+          mInboxStore.addEntry(entry);
+        }
+        refreshInboxAdapter();
+      }
+
+      @Override
+      public void onApiFailure() {
+        Toast.makeText(
+            InboxActivity.this, R.string.error_inbox_refresh, Toast.LENGTH_LONG)
+            .show();
+        refreshInboxAdapter();
+      }
+    });
+  }
+
+  private void refreshInboxAdapter() {
     List<InboxEntry> entries = mInboxStore.getEntries();
     mInboxAdapter = InboxAdapter.newInboxAdapter(this, entries);
     mEntryListView.setAdapter(mInboxAdapter);
@@ -230,12 +260,30 @@ public class InboxActivity extends Activity implements
       return;
     }
 
-    // TODO(will): For now just add it as an inbox entry.
-    Drawing drawing = Drawing.fromBundle(
-        data.getBundleExtra(DrawingActivity.EXTRAS_DRAWING));
-    addEntry(new Turn(null, drawing));
+    final long gameId = data.getLongExtra(DrawingActivity.EXTRAS_GAME_ID, -1);
+    if (gameId == -1) {
+      return;
+    }
 
-    refreshInbox();
+    final Drawing drawing = Drawing.fromBundle(
+        data.getBundleExtra(DrawingActivity.EXTRAS_DRAWING));
+    submitTurn(gameId, new Turn(null, drawing));
+  }
+
+  private void submitTurn(long gameId, Turn turn) {
+    mApi.move(gameId, turn, new Api.Callback<Void>() {
+      @Override
+      public void onApiSuccess(Void result) {
+        refreshInbox();
+      }
+
+      @Override
+      public void onApiFailure() {
+        Toast.makeText(
+            InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
+            .show();
+      }
+    });
   }
 
   // TODO(will): Remove once networking is completed.
