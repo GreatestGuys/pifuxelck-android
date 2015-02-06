@@ -40,4 +40,12 @@ public interface Api {
    *                 success.
    */
   void login(Identity identity, Callback<String> callback);
+
+  /**
+   * Attempt to resolve the user ID of a given display name.
+   * @param displayName The display name of the user to lookup.
+   * @param callback A callback that will return the user ID of the given
+   *                 display name.
+   */
+  void lookupUserId(String displayName, Callback<Long> callback);
 }

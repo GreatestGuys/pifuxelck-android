@@ -7,7 +7,7 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:windowBackground">@color/background_grey</item>
 
-        <item name="android:colorButtonNormal">@color/primaryDark</item>
+        <item name="android:colorButtonNormal">@color/accent</item>
 
         <item name="android:navigationBarColor">@color/primary</item>
 

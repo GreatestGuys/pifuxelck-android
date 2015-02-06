@@ -53,9 +53,6 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     showLoading();
 
-    final Toast errorToast = Toast.makeText(
-        WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG);
-
     mApi.registerAccount(displayName, new Api.Callback<Identity>() {
       @Override
       public void onApiSuccess(Identity identity) {
@@ -66,14 +63,14 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
       @Override
       public void onApiFailure() {
         hideLoading();
-        errorToast.show();
+        Toast.makeText(
+            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
+            .show();
       }
     });
   }
 
   private void login(Identity identity) {
-    final Toast errorToast = Toast.makeText(
-        WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG);
 
     showLoading();
     mApi.login(identity, new Api.Callback<String>() {
@@ -84,9 +81,10 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
       @Override
       public void onApiFailure() {
-        errorToast.show();
-        hideLoading();
-        finish();
+        Toast.makeText(
+            WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG)
+            .show();
+        openInbox();
       }
     });
   }

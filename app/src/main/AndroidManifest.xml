@@ -9,64 +9,66 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.InboxActivity"
+            android:name=".ui.InboxActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_inbox"
-            android:theme="@style/AppTheme" >
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.WelcomeActivity"
+            android:name=".ui.WelcomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:noHistory="true"
-            android:theme="@style/AppTheme.Fullscreen">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.DrawingActivity"
+            android:name=".ui.DrawingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_drawing"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
         </activity>
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.NewGameActivity"
+            android:name=".ui.NewGameActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_new_game"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.HistoryActivity"
+            android:name=".ui.HistoryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_history"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
-
         <activity
-            android:name="com.everythingissauce.pifuxelck.ui.GameActivity"
+            android:name=".ui.GameActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_game"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
+        </activity>
+        <activity
+            android:name=".ui.ContactsActivity"
+            android:label="@string/title_activity_contacts"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
-
     </application>
 
 </manifest>

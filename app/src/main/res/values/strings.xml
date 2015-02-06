@@ -6,21 +6,18 @@
     <string name="app_name">pifuxelck</string>
     <string name="title_activity_inbox">Inbox</string>
     <string name="title_activity_drawing">Draw</string>
-    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_welcome">Welcome</string>
     <string name="title_activity_new_game">New Game</string>
     <string name="title_activity_history">History</string>
     <string name="title_activity_game">Game</string>
-
+    <string name="title_activity_contacts">Contacts</string>
     <string name="hint_describe_a_scene">Describe a scene…</string>
     <string name="action_settings">Settings</string>
 
     <!-- Error messages. -->
-    <string name="error_register">
-        Unable to register at this time. Sorry :(
-    </string>
-    <string name="error_login">
-        Unable to login at this time. Sorry :(
-    </string>
+
+    <string name="error_register">        Unable to register at this time. Sorry :(</string>
+    <string name="error_login">        Unable to login at this time. Sorry :(</string>
 
     <!-- Circle button values -->
 

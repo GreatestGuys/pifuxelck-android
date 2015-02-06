@@ -1,30 +1,42 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.data.Contact;
+import com.everythingissauce.pifuxelck.storage.ContactsStore;
 
-public class ContactsAdapter extends ArrayAdapter<String> {
+public class ContactsAdapter extends CursorAdapter {
 
-  public ContactsAdapter(Context context) {
-    super(context, R.layout.new_game_contact, new String[] {
-            "Cosmo", "Graham", "Jesse", "Zhenya"
-        });
+  private final Context mContext;
+  private final int mContactLayout;
+
+  public ContactsAdapter(Context context, int layout) {
+    super(context, null, 0);
+    mContext = context;
+    mContactLayout = layout;
   }
 
   @Override
-  public View getView(int index, View container, ViewGroup parent) {
-    if (container == null) {
-      container = View.inflate(getContext(), R.layout.new_game_contact, null);
-    }
+  public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+    return View.inflate(mContext, mContactLayout, null);
+  }
 
-    TextView contactName = (TextView) container.findViewById(R.id.contact_name);
-    contactName.setText(getItem(index));
+  @Override
+  public void bindView(View view, Context context, Cursor cursor) {
+    Contact contact = ContactsStore.cursorToContact(cursor);
+    TextView contactName = (TextView) view.findViewById(R.id.contact_name);
+    contactName.setText(contact.getDisplayName());
+  }
 
-    return container;
+  public Contact getContact(int index) {
+    Cursor cursor = getCursor();
+    cursor.moveToPosition(index);
+    return ContactsStore.cursorToContact(cursor);
   }
 }

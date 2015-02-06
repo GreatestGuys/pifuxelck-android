@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -32,9 +33,12 @@ class HttpRequest {
   private static final String TAG = "HttpRequest";
   private static final boolean DEBUG = true;
 
+  private static final String HEADER_AUTH = "x-pifuxelck-auth";
+
   @Nullable private Callback<String> mCallback;
   @Nullable private String mBody;
   @Nullable private String mEndPoint;
+  @Nullable private String mAuthToken;
 
   private String mMethod;
 
@@ -73,6 +77,12 @@ class HttpRequest {
   public HttpRequest setBody(String body) {
     checkFrozen();
     mBody = body;
+    return this;
+  }
+
+  public HttpRequest setAuthToken(String authToken) {
+    checkFrozen();
+    mAuthToken = authToken;
     return this;
   }
 
@@ -119,6 +129,11 @@ class HttpRequest {
 
         connection.setRequestMethod(mMethod);
         if (DEBUG) Log.i(TAG, "Setting method: " + mMethod);
+
+        if (!TextUtils.isEmpty(mAuthToken)) {
+          if (DEBUG) Log.i(TAG, "Adding auth token: " + mAuthToken);
+          connection.addRequestProperty(HEADER_AUTH, mAuthToken);
+        }
 
         if (mBody != null) {
           if (DEBUG) Log.i(TAG, "Setting body: " + mBody);

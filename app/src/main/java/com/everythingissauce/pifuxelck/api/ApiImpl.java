@@ -35,6 +35,8 @@ class ApiImpl implements Api {
 
   private static final String LOGIN_FINISH_END_POINT = "/login/1/";
 
+  private static final String ACCOUNT_LOOKUP_END_POINT = "/account/lookup/";
+
   private final HttpRequestFactory mHttpRequestFactory;
   private final Handler mHandler;
   private final Handler mMainHandler;
@@ -154,9 +156,36 @@ class ApiImpl implements Api {
     });
   }
 
+  @Override
+  public void lookupUserId(
+      final String displayName, final Callback<Long> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(ACCOUNT_LOOKUP_END_POINT + displayName)
+            .setMethod(HttpRequest.GET)
+            .setAuthToken(getAuthToken())
+            .setCallback(new CallbackTransform<String, Long>(callback) {
+              @Override
+              public Long transform(String userId) {
+                return Long.parseLong(userId);
+              }
+            })
+            .makeRequest();
+      }
+    });
+  }
+
   private void setAuthToken(String token) {
     synchronized (mAuthTokenLock) {
       mAuthToken = token;
+    }
+  }
+
+  private String getAuthToken() {
+    synchronized (mAuthTokenLock) {
+      return mAuthToken;
     }
   }
 
