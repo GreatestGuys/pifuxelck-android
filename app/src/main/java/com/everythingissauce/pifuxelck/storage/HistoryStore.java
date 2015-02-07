@@ -44,9 +44,14 @@ public class HistoryStore {
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
     try {
       ContentValues values = new ContentValues();
+      values.put(HistorySqlHelper.COLUMN_ID, game.getId());
       values.put(HistorySqlHelper.COLUMN_COMPLETED_AT, game.getTimeCompleted());
       values.put(HistorySqlHelper.COLUMN_GAME_JSON, gameJson);
-      db.insert(HistorySqlHelper.TABLE_NAME, null, values);
+      db.insertWithOnConflict(
+          HistorySqlHelper.TABLE_NAME,
+          null,
+          values,
+          SQLiteDatabase.CONFLICT_REPLACE);
     } finally {
       db.close();
     }

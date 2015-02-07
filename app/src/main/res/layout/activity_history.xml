@@ -5,14 +5,21 @@
     android:layout_height="match_parent"
     tools:context="com.everythingissauce.pifuxelck.ui.HistoryActivity">
 
-    <ListView
-        android:id="@+id/game_list_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:divider="@color/background_grey"
-        android:dividerHeight="1dp"
-        android:drawSelectorOnTop="true"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ListView
+            android:id="@+id/game_list_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:divider="@color/background_grey"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="true"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

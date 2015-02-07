@@ -28,7 +28,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InboxActivity extends Activity implements
@@ -57,10 +56,6 @@ public class InboxActivity extends Activity implements
   private long mGameId;
 
   private InboxStore mInboxStore;
-
-  // TODO(will): Used to store made up turns. This will be removed once a
-  // proper data store and networking has been implemented.
-  private final List<InboxEntry> mEntries = new ArrayList<InboxEntry>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -170,7 +165,6 @@ public class InboxActivity extends Activity implements
   @Override
   public void onRefresh() {
     refreshInbox();
-    mEntryRefreshLayout.setRefreshing(false);
   }
 
   @Override
@@ -253,6 +247,7 @@ public class InboxActivity extends Activity implements
     List<InboxEntry> entries = mInboxStore.getEntries();
     mInboxAdapter = InboxAdapter.newInboxAdapter(this, entries);
     mEntryListView.setAdapter(mInboxAdapter);
+    mEntryRefreshLayout.setRefreshing(false);
   }
 
   private void onDrawingActivityResult(int result, Intent data) {
@@ -284,11 +279,5 @@ public class InboxActivity extends Activity implements
             .show();
       }
     });
-  }
-
-  // TODO(will): Remove once networking is completed.
-  private void addEntry(Turn turn) {
-    mInboxStore.addEntry(new InboxEntry(
-        (long) (Math.random() * 100000L), turn));
   }
 }
