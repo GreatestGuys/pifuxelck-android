@@ -1,6 +1,10 @@
 package com.everythingissauce.pifuxelck.api;
 
 import com.everythingissauce.pifuxelck.auth.Identity;
+import com.everythingissauce.pifuxelck.data.InboxEntry;
+import com.everythingissauce.pifuxelck.data.Turn;
+
+import java.util.List;
 
 /**
  * Represents the API that is used to communicate with an abstract backend.
@@ -48,4 +52,31 @@ public interface Api {
    *                 display name.
    */
   void lookupUserId(String displayName, Callback<Long> callback);
+
+  /**
+   * Creates a new game.
+   * @param label The initial label.
+   * @param players A list IDs of players that are to be included in the game.
+   * @param callback A callback that can be used to determine the success or
+   *                 failure of the call.
+   */
+  void newGame(String label, List<Long> players, Callback<Void> callback);
+
+  /**
+   * Queries the current logged in user's inbox.
+   * @param callback A callback that will return the list of all current
+   *                 entries in a user's inbox.
+   */
+  void inbox(Callback<List<InboxEntry>> callback);
+
+  /**
+   * Submit a turn for an active game.
+   * @param gameId The ID of the game.
+   * @param turn The turn that is to be submitted. It is not necessary for
+   *             the player ID of the turn to be filled in as it will be
+   *             inferred by the logged in state of the user.
+   * @param callback A callback that can be used to determine the success or
+   *                 failure of the call.
+   */
+  void move(long gameId, Turn turn, Callback<Void> callback);
 }

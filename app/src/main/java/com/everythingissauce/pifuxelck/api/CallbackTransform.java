@@ -1,9 +1,25 @@
 package com.everythingissauce.pifuxelck.api;
 
+import android.util.Log;
+
 /**
  * A callback that maps from results of one type onto another.
  */
 abstract class CallbackTransform<U, V> implements Api.Callback<U> {
+
+  private static final String TAG = "CallbackTransform";
+
+  /**
+   * A Transformation that maps Strings to Void objects.
+   */
+  public static <U> Api.Callback<U> voidTransform(Api.Callback<Void> callback) {
+    return new CallbackTransform<U, Void>(callback) {
+      @Override
+      public Void transform(U result) throws Exception {
+        return null;
+      }
+    };
+  }
 
   private final Api.Callback<V> mCallback;
 
@@ -17,6 +33,7 @@ abstract class CallbackTransform<U, V> implements Api.Callback<U> {
     try {
       mCallback.onApiSuccess(transform(result));
     } catch (Exception exception) {
+      Log.e(TAG, "Unable to apply callback transformation.", exception);
       mCallback.onApiFailure();
     }
   }

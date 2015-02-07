@@ -27,7 +27,6 @@ import java.net.URL;
 class HttpRequest {
 
   public static final String GET = "GET";
-
   public static final String POST = "POST";
 
   private static final String TAG = "HttpRequest";
