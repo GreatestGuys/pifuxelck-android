@@ -55,21 +55,15 @@ public class HistoryActivity extends Activity implements
     mGameListView.setOnItemClickListener(this);
 
     // Initialize the query for historic games.
-    refreshHistoryInUI();
+    refreshHistoryFromNetwork();
   }
 
   @Override
   public void onItemClick(AdapterView<?> listView, View view, int i, long l) {
-    Game game = mGameAdapter.getGame(i);
-
-    try {
-      Intent intent = new Intent();
-      intent.setClass(getApplicationContext(), GameActivity.class);
-      intent.putExtra(GameActivity.EXTRA_GAME, game.toJson().toString());
-      startActivity(intent);
-    } catch (JSONException exception) {
-      Log.e(TAG, "Could not marshal game to JSON", exception);
-    }
+    Intent intent = new Intent();
+    intent.setClass(getApplicationContext(), GameActivity.class);
+    intent.putExtra(GameActivity.EXTRA_GAME, mGameAdapter.getGame(i).getId());
+    startActivity(intent);
   }
 
   @Override
@@ -93,8 +87,8 @@ public class HistoryActivity extends Activity implements
   }
 
   private void refreshHistoryFromNetwork() {
-    // TODO(will): Obtain the timestamp of the last game in the database.
-    long lastGameCompletedTime = 0;
+    long lastGameCompletedTime = mHistoryStore.getLastCompletedTime();
+    final long previousSize = mHistoryStore.getSize();
 
     mApi.history(lastGameCompletedTime, new Api.Callback<List<Game>>() {
       @Override
@@ -103,10 +97,12 @@ public class HistoryActivity extends Activity implements
           mHistoryStore.addGame(game);
         }
 
+        long newSize = mHistoryStore.getSize();
+
         // If there were no games in this query, then stop making network
         // requests, and update the UI. Otherwise, there might be more games,
         // so continue making network requests.
-        if (games.size() == 0) {
+        if (previousSize == newSize) {
           refreshHistoryInUI();
         } else {
           refreshHistoryFromNetwork();

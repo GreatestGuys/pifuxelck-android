@@ -24,6 +24,14 @@ public class HistoryStore {
       HistorySqlHelper.COLUMN_GAME_JSON
   };
 
+  private static final String[] LAST_TIME_QUERY_COLUMNS = new String[]{
+      HistorySqlHelper.COLUMN_COMPLETED_AT
+  };
+
+  private static final String[] SIZE_QUERY_COLUMNS = new String[]{
+      "COUNT(*)"
+  };
+
   private final Context mContext;
   private final HistorySqlHelper mSqlHelper;
 
@@ -52,6 +60,65 @@ public class HistoryStore {
           null,
           values,
           SQLiteDatabase.CONFLICT_REPLACE);
+    } finally {
+      db.close();
+    }
+  }
+
+  public long getSize() {
+    SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    try {
+      Cursor cursor = db.query(
+          HistorySqlHelper.TABLE_NAME,
+          SIZE_QUERY_COLUMNS,
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          null /* ORDER BY */,
+          null  /* LIMIT */);
+
+      cursor.moveToFirst();
+      if (!cursor.isAfterLast()) {
+        return cursor.getLong(0);
+      }
+    } finally {
+      db.close();
+    }
+    return 0;
+  }
+
+  public long getLastCompletedTime() {
+    SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    try {
+      Cursor cursor = db.query(
+          HistorySqlHelper.TABLE_NAME,
+          LAST_TIME_QUERY_COLUMNS,
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          HistorySqlHelper.COLUMN_COMPLETED_AT + " DESC",
+          "1"  /* LIMIT */);
+
+      cursor.moveToFirst();
+      if (!cursor.isAfterLast()) {
+        return cursor.getLong(0);
+      }
+    } finally {
+      db.close();
+    }
+    return 0;
+  }
+
+  public Game getGame(long id) {
+    final SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    try {
+      Cursor cursor = db.query(
+          HistorySqlHelper.TABLE_NAME,
+          QUERY_COLUMNS,
+          HistorySqlHelper.COLUMN_ID + " = ?", new String[] {Long.toString(id)},
+          null, null, /* GROUP BY clause. */
+          HistorySqlHelper.COLUMN_COMPLETED_AT + " DESC",
+          null /* LIMIT */);
+      cursor.moveToFirst();
+      return cursorToGame(cursor);
     } finally {
       db.close();
     }
@@ -89,6 +156,10 @@ public class HistoryStore {
 
   @Nullable
   public static Game cursorToGame(Cursor cursor) {
+    if (cursor.isAfterLast() || cursor.isBeforeFirst()) {
+      return null;
+    }
+
     try {
       return Game.fromJson(new JSONObject(cursor.getString(1)));
     } catch (JSONException exception) {
