@@ -5,6 +5,8 @@ import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.storage.HistoryStore;
+import com.everythingissauce.pifuxelck.storage.IdentityProvider;
+import com.everythingissauce.pifuxelck.sync.SyncAdapter;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -87,26 +89,14 @@ public class HistoryActivity extends Activity implements
   }
 
   private void refreshHistoryFromNetwork() {
-    long lastGameCompletedTime = mHistoryStore.getLastCompletedTime();
-    final long previousSize = mHistoryStore.getSize();
-
-    mApi.history(lastGameCompletedTime, new Api.Callback<List<Game>>() {
+    SyncAdapter.syncHistory(
+        new IdentityProvider(this),
+        mApi,
+        mHistoryStore,
+        new Api.Callback<Integer> () {
       @Override
-      public void onApiSuccess(List<Game> games) {
-        for (Game game : games) {
-          mHistoryStore.addGame(game);
-        }
-
-        long newSize = mHistoryStore.getSize();
-
-        // If there were no games in this query, then stop making network
-        // requests, and update the UI. Otherwise, there might be more games,
-        // so continue making network requests.
-        if (previousSize == newSize) {
-          refreshHistoryInUI();
-        } else {
-          refreshHistoryFromNetwork();
-        }
+      public void onApiSuccess(Integer numNew) {
+        refreshHistoryInUI();
       }
 
       @Override

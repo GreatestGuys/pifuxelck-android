@@ -24,10 +24,35 @@ public class InboxStore {
       InboxSqlHelper.COLUMN_GAME_ID, InboxSqlHelper.COLUMN_TURN_JSON
   };
 
+  private static final String[] SIZE_QUERY_COLUMNS = new String[]{
+      "COUNT(*)"
+  };
+
   private final InboxSqlHelper mSqlHelper;
 
   public InboxStore(Context context) {
     mSqlHelper = new InboxSqlHelper(context);
+  }
+
+  public int getSize() {
+    SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    try {
+      Cursor cursor = db.query(
+          InboxSqlHelper.TABLE_NAME,
+          SIZE_QUERY_COLUMNS,
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          null /* ORDER BY */,
+          null  /* LIMIT */);
+
+      cursor.moveToFirst();
+      if (!cursor.isAfterLast()) {
+        return cursor.getInt(0);
+      }
+    } finally {
+      db.close();
+    }
+    return 0;
   }
 
   public void addEntry(InboxEntry entry) {

@@ -6,8 +6,10 @@ import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 
+import com.everythingissauce.pifuxelck.sync.SyncAdapter;
 import com.github.pavlospt.CircleView;
 
 import android.app.Activity;
@@ -223,24 +225,24 @@ public class InboxActivity extends Activity implements
   }
 
   private void refreshInbox() {
-    mApi.inbox(new Api.Callback<List<InboxEntry>>() {
-      @Override
-      public void onApiSuccess(List<InboxEntry> entries) {
-        mInboxStore.clear();
-        for (InboxEntry entry : entries) {
-          mInboxStore.addEntry(entry);
-        }
-        refreshInboxAdapter();
-      }
+    SyncAdapter.syncInbox(
+        new IdentityProvider(this),
+        mApi,
+        mInboxStore,
+        new Api.Callback<Integer>() {
+          @Override
+          public void onApiSuccess(Integer numNew) {
+            refreshInboxAdapter();
+          }
 
-      @Override
-      public void onApiFailure() {
-        Toast.makeText(
-            InboxActivity.this, R.string.error_inbox_refresh, Toast.LENGTH_LONG)
-            .show();
-        refreshInboxAdapter();
-      }
-    });
+          @Override
+          public void onApiFailure() {
+            Toast.makeText(
+                InboxActivity.this, R.string.error_inbox_refresh, Toast.LENGTH_LONG)
+                .show();
+            refreshInboxAdapter();
+          }
+        });
   }
 
   private void refreshInboxAdapter() {

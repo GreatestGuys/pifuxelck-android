@@ -73,6 +73,13 @@ class ApiImpl implements Api {
   }
 
   @Override
+  public boolean loggedIn() {
+    synchronized (mAuthTokenLock) {
+      return mAuthToken != null;
+    }
+  }
+
+  @Override
   public void registerAccount(
       final String displayName, final Callback<Identity> callback) {
     mHandler.post(new Runnable() {
