@@ -80,6 +80,7 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
     drawingView.setDrawing(turn.getDrawing());
     drawingView.clearDrawingCache();
     drawingView.refreshDrawingCache();
+    drawingView.invalidate();
     playerView.setText(turn.getPlayerId());
     return container;
   }
