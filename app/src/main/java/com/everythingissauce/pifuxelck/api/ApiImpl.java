@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.everythingissauce.pifuxelck.auth.Identity.Partial;
 import com.everythingissauce.pifuxelck.auth.Identity;
+import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
 
@@ -20,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents the API that is used to communicate with an abstract backend.
+ * A concrete implementation of the API that communicates over HTTP/S with
+ * the pifuxelck-server.
  */
 class ApiImpl implements Api {
 
@@ -50,6 +52,8 @@ class ApiImpl implements Api {
   private static final String INBOX_END_POINT = "/inbox";
 
   private static final String MOVE_END_POINT = "/move/";
+
+  private static final String HISTORY_END_POINT = "/history/";
 
   private final HttpRequestFactory mHttpRequestFactory;
   private final Handler mHandler;
@@ -274,6 +278,35 @@ class ApiImpl implements Api {
           Log.e(TAG, "Unable to create turn JSON.", exception);
           callbackFailureOnUi(callback);
         }
+      }
+    });
+  }
+
+  @Override
+  public void history(
+      final long startTimeSeconds, final Callback<List<Game>> callback) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        final Callback<String> wrappedCallback =
+            new CallbackTransform<String, List<Game>>(callback) {
+              @Override
+              public List<Game> transform(String body) throws Exception {
+                List<Game> gameList = new ArrayList<>();
+                JSONArray jsonArray = new JSONArray(body);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                  gameList.add(Game.fromJson(jsonArray.getJSONObject(i)));
+                }
+                return gameList;
+              }
+            };
+
+        mHttpRequestFactory.newRequest()
+            .setEndPoint(HISTORY_END_POINT + startTimeSeconds)
+            .setMethod(HttpRequest.GET)
+            .setAuthToken(getAuthToken())
+            .setCallback(wrappedCallback)
+            .makeRequest();
       }
     });
   }

@@ -7,39 +7,33 @@ import android.widget.ListView;
 
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.storage.HistoryStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GameActivity extends Activity {
 
-  private static final String TAG = "GameActivity";
-
   /**
-   * The intent extra that contains the game to display.
-   * <p>
-   * TODO(will): Right now this is a JSON serialized copy of the game. This
-   * should be changed to be the game ID once local storage has been
-   * implemented.
+   * The intent extra that contains the game ID to display.
    */
   public static final String EXTRA_GAME = "game";
 
+  private static final String TAG = "GameActivity";
+
   private ListView mTurnListView;
   private TurnAdapter mTurnAdapter;
+
+  private HistoryStore mHistoryStore;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_game);
 
-    Game game = null;
-    try {
-      game = Game.fromJson(
-          new JSONObject(getIntent().getStringExtra(EXTRA_GAME)));
-    } catch (JSONException exception) {
-      Log.e(TAG, "Could not deserialize.", exception);
-    }
+    mHistoryStore = new HistoryStore(this);
 
+    Game game = mHistoryStore.getGame(getIntent().getLongExtra(EXTRA_GAME, -1));
     if (game == null) {
       return;
     }

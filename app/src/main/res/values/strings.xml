@@ -31,6 +31,9 @@
     <string name="error_submit_turn">
         Unable to submit turn at this time.
     </string>
+    <string name="error_history_refresh">
+        Unable to update history at this time.
+    </string>
 
     <!-- Circle button values -->
 

@@ -1,6 +1,7 @@
 package com.everythingissauce.pifuxelck.api;
 
 import com.everythingissauce.pifuxelck.auth.Identity;
+import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
 
@@ -79,4 +80,11 @@ public interface Api {
    *                 failure of the call.
    */
   void move(long gameId, Turn turn, Callback<Void> callback);
+
+  /**
+   * Retrieve a list of games that occurred after the given timestamp.
+   * @param startTimeSeconds The unix timestamp to begin querying games at.
+   * @param callback A callback that will be used to pass back the games.
+   */
+  void history(long startTimeSeconds, Callback<List<Game>> callback);
 }

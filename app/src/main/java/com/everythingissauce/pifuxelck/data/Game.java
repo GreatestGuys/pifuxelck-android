@@ -23,8 +23,10 @@ public class Game implements Iterable<Turn> {
   public static class Builder {
     private final List<Turn> mTurns;
     private final long mCompletedAt;
+    private final long mId;
 
-    public Builder(long completedAt) {
+    public Builder(long id, long completedAt) {
+      mId = id;
       mCompletedAt = completedAt;
       mTurns = new ArrayList<Turn>();
     }
@@ -35,20 +37,27 @@ public class Game implements Iterable<Turn> {
     }
 
     public Game build() {
-      return new Game(mCompletedAt, mTurns);
+      return new Game(mId, mCompletedAt, mTurns);
     }
   }
 
+  private static final String ID_KEY = "game_id";
   private static final String TURNS_KEY = "turns";
   private static final String COMPLETED_AT_KEY = "completed_at";
 
+  private final long mId;
   private final Turn[] mTurns;
   private final long mCompletedAt;
 
-  private Game(long completedAt, List<Turn> turns) {
+  private Game(long id, long completedAt, List<Turn> turns) {
+    mId = id;
     mCompletedAt = completedAt;
     mTurns = new Turn[turns.size()];
     turns.toArray(mTurns);
+  }
+
+  public long getId() {
+    return mId;
   }
 
   public long getTimeCompleted() {
@@ -66,6 +75,7 @@ public class Game implements Iterable<Turn> {
 
   public JSONObject toJson() throws JSONException {
     JSONObject json = new JSONObject();
+    json.put(ID_KEY, mId);
     json.put(COMPLETED_AT_KEY, mCompletedAt);
     JSONArray turnArray = new JSONArray();
     for (Turn turn : mTurns) {
@@ -76,7 +86,9 @@ public class Game implements Iterable<Turn> {
   }
 
   public static Game fromJson(JSONObject json) throws JSONException {
-    Builder builder = new Builder(json.getLong(COMPLETED_AT_KEY));
+    long id = json.getLong(ID_KEY);
+    long completedAt = json.getLong(COMPLETED_AT_KEY);
+    Builder builder = new Builder(id, completedAt);
     JSONArray turnArray = json.getJSONArray(TURNS_KEY);
     for (int i = 0; i < turnArray.length(); i++) {
       builder.addTurn(Turn.fromJson(turnArray.getJSONObject(i)));
@@ -87,6 +99,7 @@ public class Game implements Iterable<Turn> {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper("Game")
+        .add("id", mId)
         .add("completedAt", mCompletedAt)
         .add("turns", mTurns.toString())
         .toString();
@@ -98,7 +111,8 @@ public class Game implements Iterable<Turn> {
       return false;
     }
     Game otherGame = (Game) other;
-    return mCompletedAt == otherGame.mCompletedAt
+    return mId == otherGame.mId
+        && mCompletedAt == otherGame.mCompletedAt
         && Arrays.equals(mTurns, otherGame.mTurns);
   }
 
