@@ -113,6 +113,8 @@ public class InboxActivity extends Activity implements
         startActivity(intent);
         return true;
       case R.id.action_settings:
+        intent.setClass(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
         return true;
       default:
         return super.onOptionsItemSelected(item);
