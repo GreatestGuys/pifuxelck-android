@@ -6,7 +6,10 @@ import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,9 +17,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.concurrent.TimeUnit;
+
 public class WelcomeActivity extends Activity implements View.OnClickListener {
 
   private static final String TAG = "WelcomeActivity";
+
+  private static final String ACCOUNT = "pifuxelck";
+  private static final String ACCOUNT_TYPE = "pifuxelck.everythingissauce.com";
+  private static final String AUTHORITY =
+      "com.everythingissauce.pifuxelck.content";
+
+  private static final long SYNC_RATE_SECS = TimeUnit.MINUTES.toSeconds(15);
 
   private Button mLoginButton;
   private EditText mDisplayNameEditText;
@@ -41,6 +53,26 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     if (mIdentityProvider.hasIdentity()) {
       login(mIdentityProvider.getIdentity());
     }
+
+    // Set up a dummy account. This is required to placate the Android
+    // syncing framework which makes several restrictive assumptions about
+    // the structure of an application that will be syncing data with a
+    // server. Mainly, that there will be an account and content provider
+    // associated with the syncing.
+    Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
+    AccountManager accountManager =
+        (AccountManager) getSystemService(ACCOUNT_SERVICE);
+    accountManager.addAccountExplicitly(newAccount, null, null);
+
+    // Schedule periodic syncing with the backend. This will pull in new
+    // inbox entries and new recently finished games.
+    getContentResolver();
+    ContentResolver.setSyncAutomatically(newAccount, AUTHORITY, true);
+    ContentResolver.addPeriodicSync(
+        newAccount,
+        AUTHORITY,
+        Bundle.EMPTY,
+        SYNC_RATE_SECS);
   }
 
   @Override

@@ -31,6 +31,14 @@ public interface Api {
   }
 
   /**
+   * Synchronously determine if the API has an authentication token. Having
+   * an authentication token allows the API instance to make requests that
+   * require the user to be logged in.
+   * @return A boolean indicating if the API is currently logged in.
+   */
+  boolean loggedIn();
+
+  /**
    * Registers a partial identity with the server.
    * @param displayName The display name to register.
    * @param callback A callback that will return the user ID of the registered

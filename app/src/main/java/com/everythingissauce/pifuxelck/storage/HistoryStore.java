@@ -65,7 +65,7 @@ public class HistoryStore {
     }
   }
 
-  public long getSize() {
+  public int getSize() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
     try {
       Cursor cursor = db.query(
@@ -78,7 +78,7 @@ public class HistoryStore {
 
       cursor.moveToFirst();
       if (!cursor.isAfterLast()) {
-        return cursor.getLong(0);
+        return cursor.getInt(0);
       }
     } finally {
       db.close();

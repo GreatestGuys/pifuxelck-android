@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.everythingissauce.pifuxelck" >
+    package="com.everythingissauce.pifuxelck"
+    android:versionCode="1"
+    android:versionName="0.1">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- Permissions required to set up periodic synchronization. -->
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".ui.InboxActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_inbox"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize" >
-        </activity>
         <activity
             android:name=".ui.WelcomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -29,6 +30,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.InboxActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_inbox"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:parentActivityName=".ui.WelcomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.WelcomeActivity" />
         </activity>
         <activity
             android:name=".ui.DrawingActivity"
@@ -51,7 +64,11 @@
             android:label="@string/title_activity_history"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize" >
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:parentActivityName=".ui.InboxActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ui.InboxActivity" />
         </activity>
         <activity
             android:name=".ui.GameActivity"
@@ -59,7 +76,11 @@
             android:label="@string/title_activity_game"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize" >
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:parentActivityName=".ui.HistoryActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HistoryActivity" />
         </activity>
         <activity
             android:name=".ui.ContactsActivity"
@@ -67,8 +88,41 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize" >
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:parentActivityName=".ui.InboxActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.InboxActivity" />
         </activity>
+
+        <!-- Boilerplate required to get a sync service up and running... -->
+
+        <provider
+            android:name=".sync.SyncProvider"
+            android:authorities="com.everythingissauce.pifuxelck.content"
+            android:syncable="true"
+            android:label="SyncProvider" />
+
+        <service
+            android:name=".sync.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                       android:resource="@xml/syncadapter" />
+        </service>
+
+        <service
+            android:name=".sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
     </application>
 
 </manifest>

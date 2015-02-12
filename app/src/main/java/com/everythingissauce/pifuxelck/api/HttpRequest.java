@@ -30,7 +30,7 @@ class HttpRequest {
   public static final String POST = "POST";
 
   private static final String TAG = "HttpRequest";
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String HEADER_AUTH = "x-pifuxelck-auth";
 

@@ -95,6 +95,9 @@ public class HistoryAdapter extends CursorAdapter {
   private void bindFrameAndDrawing(
       @Nullable Drawing drawing, View frame, DrawingView drawingView) {
     drawingView.setDrawing(drawing);
+    drawingView.clearDrawingCache();
+    drawingView.refreshDrawingCache();
+    drawingView.invalidate();
     frame.setVisibility(drawing == null ? View.GONE : View.VISIBLE);
   }
 }
