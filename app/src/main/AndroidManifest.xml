@@ -136,15 +136,6 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <!-- Required for exporting account data. -->
-
-        <provider
-            android:name=".storage.IdentityContentProvider"
-            android:authorities="com.everythingissauce.pifuxelck.identity"
-            android:exported="false"
-            android:grantUriPermissions="true">
-        </provider>
-
     </application>
 
 </manifest>
