@@ -27,6 +27,9 @@
     <string name="error_new_game">
         Unable to create a new game at this time.
     </string>
+    <string name="error_new_game_no_friends">
+        You cannot create a game without any players.
+    </string>
     <string name="error_inbox_refresh">
         Unable to refresh inbox at this time.
     </string>

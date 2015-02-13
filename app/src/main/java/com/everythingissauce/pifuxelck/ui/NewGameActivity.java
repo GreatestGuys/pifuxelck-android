@@ -45,6 +45,9 @@ public class NewGameActivity extends Activity implements
   private ContactsStore mContactsStore;
   private InboxStore mInboxStore;
 
+  // MUST BE ACCESSED/MUTATED ON THE UI THREAD!
+  private boolean mClickedCreated;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -63,17 +66,32 @@ public class NewGameActivity extends Activity implements
     mContactsStore = new ContactsStore(this);
     mInboxStore = new InboxStore(this);
 
+    mClickedCreated = false;
+
     // Kick off loading of contacts list.
     getLoaderManager().initLoader(0, null, this).forceLoad();
   }
 
   @Override
   public void onClick(View view) {
+    if (mClickedCreated) {
+      return;
+    }
+
     String label = mLabelEditText.getText().toString();
     if (TextUtils.isEmpty(label)) {
       return;
     }
 
+    if (mPlayers.size() == 0) {
+      Toast.makeText(
+          NewGameActivity.this,
+          R.string.error_new_game_no_friends,
+          Toast.LENGTH_LONG).show();
+      return;
+    }
+
+    mClickedCreated = true;
     mApi.newGame(label, mPlayers, new Api.Callback<Void>() {
       @Override
       public void onApiSuccess(Void result) {
@@ -86,6 +104,7 @@ public class NewGameActivity extends Activity implements
             NewGameActivity.this,
             R.string.error_new_game,
             Toast.LENGTH_LONG).show();
+        finish();
       }
     });
   }
