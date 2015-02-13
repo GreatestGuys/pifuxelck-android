@@ -21,7 +21,6 @@
             android:name=".ui.WelcomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" >
             <intent-filter>

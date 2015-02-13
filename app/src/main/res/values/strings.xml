@@ -17,6 +17,12 @@
 
     <string name="account_type">pifuxelck.everythingissauce.com</string>
 
+    <!-- Welcome Activity. -->
+
+    <string name="welcome_import_account_chooser_title">
+        Import account from
+    </string>
+
     <!-- Settings Activity. -->
 
     <string name="settings_export_account_button">
@@ -24,7 +30,7 @@
     </string>
 
     <string name="settings_export_account_chooser_title">
-        Save Exported Account
+        Save exported account
     </string>
 
     <string name="settings_export_account_summary">
@@ -61,6 +67,9 @@
     </string>
     <string name="error_history_refresh">
         Unable to update history at this time.
+    </string>
+    <string name="error_import">
+        Unable to import account data.
     </string>
 
     <!-- Notification messages. -->
