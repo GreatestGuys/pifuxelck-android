@@ -84,12 +84,6 @@ public class InboxActivity extends Activity implements
     mDoneActionButton.setOnClickListener(this);
 
     mInboxStore = new InboxStore(this);
-
-    Intent drawingIntent = new Intent();
-    drawingIntent.putExtra(DrawingActivity.EXTRAS_GAME_ID, -1);
-    drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, "foobar");
-    drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
-    startActivity(drawingIntent);
   }
 
   @Override
