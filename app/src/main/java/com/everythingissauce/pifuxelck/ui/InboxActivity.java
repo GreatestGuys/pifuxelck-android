@@ -89,7 +89,7 @@ public class InboxActivity extends Activity implements
   @Override
   public void onResume() {
     super.onResume();
-    refreshInbox();
+    refreshInboxAdapter();
   }
 
   @Override

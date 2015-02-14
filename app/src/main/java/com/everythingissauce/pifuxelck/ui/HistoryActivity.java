@@ -57,7 +57,7 @@ public class HistoryActivity extends Activity implements
     mGameListView.setOnItemClickListener(this);
 
     // Initialize the query for historic games.
-    refreshHistoryFromNetwork();
+    refreshHistoryInUI();
   }
 
   @Override
