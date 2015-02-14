@@ -2,6 +2,9 @@ package com.everythingissauce.pifuxelck.auth;
 
 import com.everythingissauce.pifuxelck.Base64Util;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -20,6 +23,12 @@ import java.security.KeyPairGenerator;
  * A representation of the user's identity.
  */
 public class Identity {
+
+  private static final String FIELD_ID = "user_id";
+  private static final String FIELD_KEY_MODULUS = "modulus";
+  private static final String FIELD_KEY_PRIVATE = "private_exponent";
+  private static final String FIELD_KEY_PUBLIC = "public_exponent";
+  private static final String FIELD_NAME = "name";
 
   private static final int KEY_SIZE = 2048;
 
@@ -155,5 +164,24 @@ public class Identity {
 
   public String getPrivateExponentBase64() {
     return Base64Util.encode(mPrivateKey.getPrivateExponent().toByteArray());
+  }
+
+  public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put(FIELD_ID, getId());
+    json.put(FIELD_NAME, getDisplayName());
+    json.put(FIELD_KEY_PUBLIC, getPublicExponentBase64());
+    json.put(FIELD_KEY_PRIVATE, getPrivateExponentBase64());
+    json.put(FIELD_KEY_MODULUS, getModulusBase64());
+    return json;
+  }
+
+  public static Identity fromJson(JSONObject json) throws JSONException {
+    return new Identity(
+        json.getLong(FIELD_ID),
+        json.getString(FIELD_NAME),
+        json.getString(FIELD_KEY_MODULUS),
+        json.getString(FIELD_KEY_PUBLIC),
+        json.getString(FIELD_KEY_PRIVATE));
   }
 }

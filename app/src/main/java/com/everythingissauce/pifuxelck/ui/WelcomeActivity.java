@@ -5,23 +5,33 @@ import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
+import com.everythingissauce.pifuxelck.storage.IdentityStore;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 public class WelcomeActivity extends Activity implements View.OnClickListener {
 
   private static final String TAG = "WelcomeActivity";
+
+  private static final int RESULT_IMPORT = 0;
 
   private static final String ACCOUNT = "pifuxelck";
   private static final String ACCOUNT_TYPE = "pifuxelck.everythingissauce.com";
@@ -31,6 +41,7 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   private static final long SYNC_RATE_SECS = TimeUnit.MINUTES.toSeconds(15);
 
   private Button mLoginButton;
+  private Button mImportButton;
   private EditText mDisplayNameEditText;
   private View mProgressOverlay;
 
@@ -48,6 +59,9 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     mLoginButton = (Button) findViewById(R.id.login_button);
     mLoginButton.setOnClickListener(this);
+
+    mImportButton = (Button) findViewById(R.id.import_button);
+    mImportButton.setOnClickListener(this);
 
     mIdentityProvider = IdentityProvider.getInstance(this);
     if (mIdentityProvider.hasIdentity()) {
@@ -77,6 +91,17 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
   @Override
   public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.login_button:
+        onJoinClick();
+        return;
+      case R.id.import_button:
+        onImportClick();
+        return;
+    }
+  }
+
+  private void onJoinClick() {
     String displayName = mDisplayNameEditText.getText().toString();
 
     if (displayName.length() == 0) {
@@ -101,6 +126,40 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
       }
     });
   }
+
+  private void onImportClick() {
+    startActivityForResult(
+        Intent.createChooser(
+            new Intent(Intent.ACTION_GET_CONTENT).setType("*/*"),
+            getString(R.string.welcome_import_account_chooser_title)),
+        RESULT_IMPORT);
+  }
+
+  @Override
+  public void onActivityResult(int request, int result, Intent data) {
+    if (result != RESULT_OK || data == null) {
+      return;
+    }
+
+    Uri dataUri = data.getData();
+    if (dataUri == null) {
+      return;
+    }
+
+    try {
+      InputStream inputStream = getContentResolver().openInputStream(dataUri);
+      String identityString = IOUtils.toString(inputStream, "UTF-8");
+      Identity identity = Identity.fromJson(new JSONObject(identityString));
+      new IdentityStore(this).setIdentity(identity);
+      login(identity);
+    } catch (Exception exception) {
+      Log.e(TAG, "Unable to import identity.", exception);
+      Toast.makeText(
+          WelcomeActivity.this, R.string.error_import, Toast.LENGTH_LONG)
+          .show();
+    }
+  }
+
 
   private void login(Identity identity) {
 
@@ -133,5 +192,6 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     Intent intent = new Intent();
     intent.setClass(this.getApplicationContext(), InboxActivity.class);
     startActivity(intent);
+    finish();
   }
 }

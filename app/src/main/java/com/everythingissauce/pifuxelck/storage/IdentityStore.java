@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.everythingissauce.pifuxelck.Base64Util;
 import com.everythingissauce.pifuxelck.auth.Identity;
 
-class IdentityStore {
+public class IdentityStore {
 
   private static final String IDENTITY_SHARED_PREFERENCES = "identity";
 

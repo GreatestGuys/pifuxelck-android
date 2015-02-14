@@ -11,6 +11,7 @@
     <string name="title_activity_history">History</string>
     <string name="title_activity_game">Game</string>
     <string name="title_activity_contacts">Contacts</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="hint_describe_a_scene">Describe a scene…</string>
     <string name="action_settings">Settings</string>
 
@@ -24,6 +25,34 @@
 
     <string name="abandon_drawing_alert_content">
         Are you sure you want to abandon this drawing?
+    </string>
+
+    <!-- Welcome Activity. -->
+
+    <string name="welcome_import_account_chooser_title">
+        Import account from
+    </string>
+
+    <!-- Settings Activity. -->
+
+    <string name="settings_export_account_button">
+        Export Account
+    </string>
+
+    <string name="settings_export_account_chooser_title">
+        Save exported account
+    </string>
+
+    <string name="settings_export_account_summary">
+        Exporting your account will create a backup of private account
+        information that exists only on your phone. This information is
+        required to login. If your phone is lost or reset you will not be
+        able to access your account. It is a good idea to create a backup
+        so that you can recover your account or transfer it to another phone.
+    </string>
+
+    <string name="export_account_provider_display_name">
+        pifuxelck_account.json
     </string>
 
     <!-- Error messages. -->
@@ -48,6 +77,9 @@
     </string>
     <string name="error_history_refresh">
         Unable to update history at this time.
+    </string>
+    <string name="error_import">
+        Unable to import account data.
     </string>
 
     <!-- Notification messages. -->
