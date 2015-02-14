@@ -41,7 +41,7 @@
         android:drawSelectorOnTop="true"
         android:divider="@color/background_grey" />
 
-    <com.github.pavlospt.CircleView
+    <ImageButton
         style="@style/ActionButton.Ok"
         android:id="@+id/done_action_button"
         android:layout_alignParentBottom="true"

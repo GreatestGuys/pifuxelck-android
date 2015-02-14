@@ -6,22 +6,21 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Contact;
-import com.everythingissauce.pifuxelck.data.InboxEntry;
-import com.everythingissauce.pifuxelck.data.Turn;
 import com.everythingissauce.pifuxelck.storage.ContactsStore;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
-import com.github.pavlospt.CircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class NewGameActivity extends Activity implements
   private final Api mApi = ApiProvider.getApi();
   private final List<Long> mPlayers = new ArrayList<Long>();
 
-  private CircleView mActionButton;
+  private ImageButton mActionButton;
   private ListView mContactsListView;
   private EditText mLabelEditText;
 
@@ -55,7 +54,7 @@ public class NewGameActivity extends Activity implements
 
     mLabelEditText = (EditText) findViewById(R.id.label_edit_text);
 
-    mActionButton = (CircleView) findViewById(R.id.done_action_button);
+    mActionButton = (ImageButton) findViewById(R.id.done_action_button);
     mActionButton.setOnClickListener(this);
 
     mContactsAdapter = new ContactsAdapter(this, R.layout.new_game_contact);
