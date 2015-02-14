@@ -46,15 +46,23 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
 
   @Override
   public View getView(int i, View containerView, ViewGroup viewGroup) {
-    Turn turn = getItem(i).getPreviousTurn();
+    InboxEntry entry = getItem(i);
+    Turn turn = entry.getPreviousTurn();
 
+    View view = null;
     if (turn.isLabelTurn()) {
-      return getViewForLabel(turn, containerView, viewGroup);
+      view = getViewForLabel(turn, containerView, viewGroup);
     } else if (turn.isDrawingTurn()) {
-      return getViewForDrawing(turn, containerView, viewGroup);
+      view = getViewForDrawing(turn, containerView, viewGroup);
     }
 
-    return null;
+    if (view != null) {
+      View submitTurn = view.findViewById(R.id.submit_saved_turn);
+      submitTurn.setVisibility(
+          entry.getCurrentTurn() == null ? View.GONE : View.VISIBLE);
+    }
+
+    return view;
   }
 
   private View getViewForLabel(Turn turn, View container, ViewGroup group) {

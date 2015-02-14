@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -21,7 +22,9 @@ public class InboxStore {
   private final static String TAG = "InboxStore";
 
   private static final String[] QUERY_COLUMNS = new String[] {
-      InboxSqlHelper.COLUMN_GAME_ID, InboxSqlHelper.COLUMN_TURN_JSON
+      InboxSqlHelper.COLUMN_GAME_ID,
+      InboxSqlHelper.COLUMN_TURN_JSON,
+      InboxSqlHelper.COLUMN_REPLY_JSON
   };
 
   private static final String[] SIZE_QUERY_COLUMNS = new String[]{
@@ -79,6 +82,30 @@ public class InboxStore {
     }
   }
 
+  public void updateEntryWithReply(long gameId, Turn reply) {
+    String replyJson = null;
+    try {
+      replyJson = reply.toJson().toString();
+    } catch (JSONException exception) {
+      Log.i(TAG, "Unable to marshal turn into JSON object.", exception);
+      return;
+    }
+
+    SQLiteDatabase db = mSqlHelper.getWritableDatabase();
+    try {
+      ContentValues values = new ContentValues();
+      values.put(InboxSqlHelper.COLUMN_REPLY_JSON, replyJson);
+      db.updateWithOnConflict(
+          InboxSqlHelper.TABLE_NAME,
+          values,
+          InboxSqlHelper.COLUMN_GAME_ID + " = ?",
+          new String[] {Long.toString(gameId)},
+          SQLiteDatabase.CONFLICT_REPLACE);
+    } finally {
+      db.close();
+    }
+  }
+
   public void clear() {
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
     try {
@@ -115,9 +142,16 @@ public class InboxStore {
   @Nullable
   private InboxEntry cursorToInboxEntry(Cursor cursor) {
     try {
+      String replyString = cursor.getString(2);
+      Turn replyTurn = null;
+      if (!TextUtils.isEmpty(replyString)) {
+        replyTurn = Turn.fromJson(new JSONObject(replyString));
+      }
+
       return new InboxEntry(
           cursor.getLong(0),  // Game ID
-          Turn.fromJson(new JSONObject(cursor.getString(1))));  // Turn JSON
+          Turn.fromJson(new JSONObject(cursor.getString(1))),  // Turn JSON
+          replyTurn);
     } catch (JSONException exception) {
       Log.e(TAG, "Unable to un-marshal turn from JSON.", exception);
     }

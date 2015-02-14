@@ -40,4 +40,19 @@
         android:layout_marginLeft="64dp"
         android:layout_marginRight="64dp" />
 
+    <TextView
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Error sending. Tap to retry."
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/accent"
+        android:id="@+id/submit_saved_turn"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/label"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
 </RelativeLayout>
