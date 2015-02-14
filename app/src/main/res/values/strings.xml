@@ -16,6 +16,16 @@
 
     <string name="account_type">pifuxelck.everythingissauce.com</string>
 
+    <!-- Drawing activity. -->
+
+    <string name="abandon_drawing_alert_title">
+        Abandon drawing
+    </string>
+
+    <string name="abandon_drawing_alert_content">
+        Are you sure you want to abandon this drawing?
+    </string>
+
     <!-- Error messages. -->
 
     <string name="error_register">

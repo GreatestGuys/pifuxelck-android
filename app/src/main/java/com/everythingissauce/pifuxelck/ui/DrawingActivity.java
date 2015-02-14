@@ -5,6 +5,8 @@ import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -152,8 +154,20 @@ public class DrawingActivity extends Activity implements
       mSizePickerView.setVisibility(View.INVISIBLE);
       mSizePickerAdapter.setOnSizeSelectedListener(null);
     } else {
-      setResult(RESULT_CANCELED, new Intent());
-      super.onBackPressed();
+      // Ask the user if they would like to abandon the drawing to prevent
+      // accidental deletions.
+      new AlertDialog.Builder(this)
+          .setTitle(getString(R.string.abandon_drawing_alert_title))
+          .setMessage(getString(R.string.abandon_drawing_alert_content))
+          .setPositiveButton(android.R.string.yes,
+              new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+              setResult(RESULT_CANCELED, new Intent());
+              DrawingActivity.super.onBackPressed();
+            }
+          })
+          .setNegativeButton(android.R.string.no, null)
+          .show();
     }
   }
 
