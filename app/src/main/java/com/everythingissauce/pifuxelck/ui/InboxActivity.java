@@ -10,7 +10,6 @@ import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 
 import com.everythingissauce.pifuxelck.sync.SyncAdapter;
-import com.github.pavlospt.CircleView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +50,8 @@ public class InboxActivity extends Activity implements
   private EditText mLabelEditText;
   private DrawingView mDrawingView;
 
-  private CircleView mNewActionButton;
-  private CircleView mDoneActionButton;
+  private ImageButton mNewActionButton;
+  private ImageButton mDoneActionButton;
 
   // The ID of the game that corresponds to the current drawing that is being
   // labeled to the user.
@@ -77,13 +77,19 @@ public class InboxActivity extends Activity implements
     mDrawingView = (DrawingView) findViewById(R.id.drawing_view);
     mLabelEditText.setOnEditorActionListener(this);
 
-    mNewActionButton = (CircleView) findViewById(R.id.new_action_button);
+    mNewActionButton = (ImageButton) findViewById(R.id.new_action_button);
     mNewActionButton.setOnClickListener(this);
 
-    mDoneActionButton = (CircleView) findViewById(R.id.done_action_button);
+    mDoneActionButton = (ImageButton) findViewById(R.id.done_action_button);
     mDoneActionButton.setOnClickListener(this);
 
     mInboxStore = new InboxStore(this);
+
+    Intent drawingIntent = new Intent();
+    drawingIntent.putExtra(DrawingActivity.EXTRAS_GAME_ID, -1);
+    drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, "foobar");
+    drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
+    startActivity(drawingIntent);
   }
 
   @Override
@@ -124,6 +130,12 @@ public class InboxActivity extends Activity implements
     InboxEntry entry = mInboxAdapter.getItem(index);
     Turn turn = entry.getPreviousTurn();
     mGameId = entry.getGameId();
+
+    Turn reply = entry.getCurrentTurn();
+    if (reply != null) {
+      submitTurn(mGameId, reply);
+      return;
+    }
 
     if (turn.isLabelTurn()) {
       Intent drawingIntent = new Intent();
@@ -267,7 +279,7 @@ public class InboxActivity extends Activity implements
     submitTurn(gameId, new Turn(null, drawing));
   }
 
-  private void submitTurn(long gameId, Turn turn) {
+  private void submitTurn(final long gameId, final Turn turn) {
     mApi.move(gameId, turn, new Api.Callback<Void>() {
       @Override
       public void onApiSuccess(Void result) {
@@ -276,6 +288,8 @@ public class InboxActivity extends Activity implements
 
       @Override
       public void onApiFailure() {
+        mInboxStore.updateEntryWithReply(gameId, turn);
+        refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
         Toast.makeText(
             InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
             .show();

@@ -4,55 +4,43 @@
     <style name="ActionButton">
         <item name="android:layout_width">64dip</item>
         <item name="android:layout_height">64dip</item>
-        <item name="android:elevation">100dp</item>
-        <item name="subtitleText"></item>
-        <item name="titleColor">@android:color/white</item>
-        <item name="fillColor">@color/accent</item>
-        <item name="strokeColorValue">@android:color/transparent</item>
-        <item name="backgroundColorValue">@android:color/transparent</item>
-        <item name="fillRadius">1</item>
+        <item name="android:elevation">5dp</item>
         <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/action_button_background</item>
     </style>
 
     <style name="ActionButton.Ok">
-        <item name="titleSize">32dp</item>
-        <item name="titleText">@string/action_button_ok</item>
+        <item name="android:src">@drawable/ic_send_white_36dp</item>
     </style>
 
     <style name="ActionButton.New">
-        <item name="titleSize">48dp</item>
-        <item name="titleText">@string/action_button_new</item>
+        <item name="android:src">@drawable/ic_add_white_48dp</item>
     </style>
 
     <style name="ActionButton.More">
-        <item name="titleSize">48dp</item>
-        <item name="titleText">@string/action_button_more</item>
+        <item name="android:src">@drawable/ic_more_horiz_white_48dp</item>
     </style>
 
     <style name="ActionButton.Back">
-        <item name="titleSize">28dp</item>
-        <item name="titleText">@string/action_button_back</item>
+        <item name="android:src">@drawable/ic_undo_white_48dp</item>
     </style>
 
     <style name="ActionButton.Small">
         <item name="android:layout_width">48dip</item>
         <item name="android:layout_height">48dip</item>
-        <item name="android:elevation">50dp</item>
+        <item name="android:elevation">3dp</item>
     </style>
 
     <style name="ActionButton.Small.Size">
-        <item name="titleSize">24dp</item>
-        <item name="titleText">@string/action_button_size</item>
+        <item name="android:src">@drawable/ic_play_arrow_white_48dp</item>
     </style>
 
     <style name="ActionButton.Small.Color">
-        <item name="titleSize">32dp</item>
-        <item name="titleText">@string/action_button_color</item>
+        <item name="android:src">@drawable/ic_brightness_1_white_18dp</item>
     </style>
 
     <style name="ActionButton.Small.Background">
-        <item name="titleSize">18dp</item>
-        <item name="titleText">@string/action_button_background</item>
+        <item name="android:src">@drawable/ic_stop_white_36dp</item>
     </style>
 
     <style name="DrawingView">

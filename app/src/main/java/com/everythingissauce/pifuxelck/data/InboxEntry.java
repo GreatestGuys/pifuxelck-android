@@ -1,5 +1,7 @@
 package com.everythingissauce.pifuxelck.data;
 
+import android.support.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -16,10 +18,16 @@ public class InboxEntry {
 
   private final long mGameId;
   private final Turn mPreviousTurn;
+  @Nullable private final Turn mCurrentTurn;
 
   public InboxEntry(long gameId, Turn previousTurn) {
+    this(gameId, previousTurn, null);
+  }
+
+  public InboxEntry(long gameId, Turn previousTurn, Turn currentTurn) {
     mGameId = gameId;
     mPreviousTurn = previousTurn;
+    mCurrentTurn = currentTurn;
   }
 
   public long getGameId() {
@@ -28,6 +36,10 @@ public class InboxEntry {
 
   public Turn getPreviousTurn() {
     return mPreviousTurn;
+  }
+
+  public Turn getCurrentTurn() {
+    return mCurrentTurn;
   }
 
   public JSONObject toJson() throws JSONException {
