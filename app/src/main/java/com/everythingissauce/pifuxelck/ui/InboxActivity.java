@@ -127,6 +127,12 @@ public class InboxActivity extends Activity implements
     Turn turn = entry.getPreviousTurn();
     mGameId = entry.getGameId();
 
+    Turn reply = entry.getCurrentTurn();
+    if (reply != null) {
+      submitTurn(mGameId, reply);
+      return;
+    }
+
     if (turn.isLabelTurn()) {
       Intent drawingIntent = new Intent();
       drawingIntent.putExtra(DrawingActivity.EXTRAS_GAME_ID, mGameId);
@@ -269,7 +275,7 @@ public class InboxActivity extends Activity implements
     submitTurn(gameId, new Turn(null, drawing));
   }
 
-  private void submitTurn(long gameId, Turn turn) {
+  private void submitTurn(final long gameId, final Turn turn) {
     mApi.move(gameId, turn, new Api.Callback<Void>() {
       @Override
       public void onApiSuccess(Void result) {
@@ -278,6 +284,8 @@ public class InboxActivity extends Activity implements
 
       @Override
       public void onApiFailure() {
+        mInboxStore.updateEntryWithReply(gameId, turn);
+        refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
         Toast.makeText(
             InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
             .show();

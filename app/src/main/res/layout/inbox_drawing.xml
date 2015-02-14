@@ -11,6 +11,7 @@
     android:gravity="center" >
 
     <FrameLayout
+        android:id="@+id/drawing_view_frame"
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:layout_alignParentStart="true"
@@ -45,5 +46,19 @@
         android:layout_marginLeft="24dp"
         android:layout_gravity="center"
         android:paddingRight="16dp"/>
+
+    <TextView
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Error sending. Tap to retry."
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/accent"
+        android:id="@+id/submit_saved_turn"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
