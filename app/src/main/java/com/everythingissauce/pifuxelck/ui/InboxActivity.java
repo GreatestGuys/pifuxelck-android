@@ -10,7 +10,6 @@ import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 
 import com.everythingissauce.pifuxelck.sync.SyncAdapter;
-import com.github.pavlospt.CircleView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +50,8 @@ public class InboxActivity extends Activity implements
   private EditText mLabelEditText;
   private DrawingView mDrawingView;
 
-  private CircleView mNewActionButton;
-  private CircleView mDoneActionButton;
+  private ImageButton mNewActionButton;
+  private ImageButton mDoneActionButton;
 
   // The ID of the game that corresponds to the current drawing that is being
   // labeled to the user.
@@ -77,13 +77,19 @@ public class InboxActivity extends Activity implements
     mDrawingView = (DrawingView) findViewById(R.id.drawing_view);
     mLabelEditText.setOnEditorActionListener(this);
 
-    mNewActionButton = (CircleView) findViewById(R.id.new_action_button);
+    mNewActionButton = (ImageButton) findViewById(R.id.new_action_button);
     mNewActionButton.setOnClickListener(this);
 
-    mDoneActionButton = (CircleView) findViewById(R.id.done_action_button);
+    mDoneActionButton = (ImageButton) findViewById(R.id.done_action_button);
     mDoneActionButton.setOnClickListener(this);
 
     mInboxStore = new InboxStore(this);
+
+    Intent drawingIntent = new Intent();
+    drawingIntent.putExtra(DrawingActivity.EXTRAS_GAME_ID, -1);
+    drawingIntent.putExtra(DrawingActivity.EXTRAS_LABEL, "foobar");
+    drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
+    startActivity(drawingIntent);
   }
 
   @Override

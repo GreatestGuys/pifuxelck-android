@@ -57,21 +57,21 @@
 
         <!-- The three always visible buttons. -->
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.Ok"
             android:id="@+id/done_button"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="8dp"/>
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.Back"
             android:id="@+id/undo_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"/>
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.More"
             android:id="@+id/options_button"
             android:layout_alignParentBottom="true"
@@ -80,7 +80,7 @@
 
         <!-- The three expanded option buttons. -->
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.Small.Size"
             android:id="@+id/size_button"
             android:layout_above="@+id/stroke_color_button"
@@ -90,7 +90,7 @@
             android:layout_marginRight="8dp"
             android:visibility="invisible"/>
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.Small.Color"
             android:id="@+id/stroke_color_button"
             android:layout_above="@+id/options_button"
@@ -100,7 +100,7 @@
             android:layout_marginRight="8dp"
             android:visibility="invisible"/>
 
-        <com.github.pavlospt.CircleView
+        <ImageButton
             style="@style/ActionButton.Small.Background"
             android:id="@+id/background_color_button"
             android:layout_above="@+id/size_button"
