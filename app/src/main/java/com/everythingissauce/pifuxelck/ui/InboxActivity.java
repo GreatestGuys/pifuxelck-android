@@ -283,7 +283,7 @@ public class InboxActivity extends Activity implements
       @Override
       public void onApiFailure() {
         mInboxStore.updateEntryWithReply(gameId, turn);
-        refreshInboxAdapter();
+        refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
         Toast.makeText(
             InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
             .show();
