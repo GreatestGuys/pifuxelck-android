@@ -29,7 +29,10 @@ import com.everythingissauce.pifuxelck.storage.InboxStore;
 import com.everythingissauce.pifuxelck.ui.HistoryActivity;
 import com.everythingissauce.pifuxelck.ui.InboxActivity;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -157,16 +160,33 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
       return;
     }
 
-    final int initialSize = inboxStore.getSize();
+    final Set<Long> initialIds = new HashSet<>(inboxStore.getEntryIds());
     api.inbox(new Callback<List<InboxEntry>>() {
       @Override
       public void onApiSuccess(List<InboxEntry> entries) {
-        inboxStore.clear();
+        int numNewEntries = 0;
+
+        // Add new entries and determine which entries should be removed..
         for (InboxEntry entry : entries) {
-          inboxStore.addEntry(entry);
+          long id = entry.getGameId();
+          if (!initialIds.contains(id)) {
+            numNewEntries++;
+            inboxStore.addEntry(entry);
+          } else {
+            // Remove IDs from the set that are still in the data store as we
+            // go. That way when the entry list from the server has been
+            // completely traversed, the only items that remain in initialIds
+            // will be IDs that need to be removed.
+            initialIds.remove(id);
+          }
         }
-        int newSize = inboxStore.getSize();
-        if (callback != null) callback.onApiSuccess(newSize - initialSize);
+
+        // Remove entries that are no longer in the inbox.
+        for (Long id : initialIds) {
+          inboxStore.remove(id);
+        }
+
+        if (callback != null) callback.onApiSuccess(numNewEntries);
       }
 
       @Override

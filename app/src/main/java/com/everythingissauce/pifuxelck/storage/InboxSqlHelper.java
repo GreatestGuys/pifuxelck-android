@@ -22,8 +22,8 @@ class InboxSqlHelper extends SQLiteOpenHelper {
       "CREATE TABLE " + TABLE_NAME + " ("
           + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
           + COLUMN_GAME_ID + " INTEGER NOT NULL, "
-          + COLUMN_TURN_JSON + " TEXT NOT NULL"
-          + COLUMN_REPLY_JSON + " TEXT NOT NULL"
+          + COLUMN_TURN_JSON + " TEXT NOT NULL, "
+          + COLUMN_REPLY_JSON + " TEXT"
           + ");";
 
   public InboxSqlHelper(Context context) {

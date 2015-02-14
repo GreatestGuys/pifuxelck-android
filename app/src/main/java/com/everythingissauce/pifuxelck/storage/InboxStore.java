@@ -21,7 +21,7 @@ public class InboxStore {
 
   private final static String TAG = "InboxStore";
 
-  private static final String[] QUERY_COLUMNS = new String[] {
+  private static final String[] ENTRY_QUERY_COLUMNS = new String[] {
       InboxSqlHelper.COLUMN_GAME_ID,
       InboxSqlHelper.COLUMN_TURN_JSON,
       InboxSqlHelper.COLUMN_REPLY_JSON
@@ -29,6 +29,10 @@ public class InboxStore {
 
   private static final String[] SIZE_QUERY_COLUMNS = new String[]{
       "COUNT(*)"
+  };
+
+  private static final String[] ID_QUERY_COLUMNS = new String[] {
+      InboxSqlHelper.COLUMN_GAME_ID
   };
 
   private final InboxSqlHelper mSqlHelper;
@@ -99,17 +103,43 @@ public class InboxStore {
           InboxSqlHelper.TABLE_NAME,
           values,
           InboxSqlHelper.COLUMN_GAME_ID + " = ?",
-          new String[] {Long.toString(gameId)},
+          new String[]{Long.toString(gameId)},
           SQLiteDatabase.CONFLICT_REPLACE);
     } finally {
       db.close();
     }
   }
 
-  public void clear() {
+  public void remove(long gameId) {
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
     try {
-      db.delete(InboxSqlHelper.TABLE_NAME, null, null);
+      db.delete(
+          InboxSqlHelper.TABLE_NAME,
+          InboxSqlHelper.COLUMN_GAME_ID + " = ?",
+          new String[] {Long.toString(gameId)});
+    } finally {
+      db.close();
+    }
+  }
+
+  public List<Long> getEntryIds() {
+    SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    try {
+      Cursor cursor = db.query(
+          InboxSqlHelper.TABLE_NAME,
+          ID_QUERY_COLUMNS,
+          null, null, /* WHERE clause. */
+          null, null, /* GROUP BY clause. */
+          InboxSqlHelper.COLUMN_ID + " DESC",
+          null /* LIMIT */);
+
+      List<Long> ids = new ArrayList<Long>(cursor.getCount());
+      cursor.moveToFirst();
+      while (!cursor.isAfterLast()) {
+        ids.add(cursor.getLong(0));
+        cursor.moveToNext();
+      }
+      return ids;
     } finally {
       db.close();
     }
@@ -120,7 +150,7 @@ public class InboxStore {
     try {
       Cursor cursor = db.query(
           InboxSqlHelper.TABLE_NAME,
-          QUERY_COLUMNS,
+          ENTRY_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
           null, null, /* GROUP BY clause. */
           InboxSqlHelper.COLUMN_ID + " DESC",

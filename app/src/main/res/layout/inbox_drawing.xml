@@ -58,7 +58,6 @@
         android:id="@+id/submit_saved_turn"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_below="@+id/drawing_view_frame"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
 
