@@ -5,9 +5,9 @@ package com.everythingissauce.pifuxelck.api;
  */
 public class ApiProvider {
 
-  private static final String PROTOCOL = "https";
-  private static final String DOMAIN = "api.everythingissauce.com";
-  private static final int PORT = 443;
+  private static final String PROTOCOL = "http";
+  private static final String DOMAIN = "shamblinghalfling.com";
+  private static final int PORT = 4242;
 
   private static final HttpRequestFactory sHttpRequestFactory =
       new HttpRequestFactory(PROTOCOL, DOMAIN, PORT);

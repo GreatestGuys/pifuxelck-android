@@ -4,6 +4,7 @@ import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.drawing.DrawingPlacer;
 import com.everythingissauce.pifuxelck.storage.HistoryStore;
 
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class HistoryAdapter extends CursorAdapter {
@@ -29,8 +31,11 @@ public class HistoryAdapter extends CursorAdapter {
     R.id.drawing_3_view
   };
 
+  private final DrawingPlacer mDrawingPlacer;
+
   public HistoryAdapter(Context context) {
     super(context, null, 0);
+    mDrawingPlacer = new DrawingPlacer();
   }
 
   public Game getGame(int index) {
@@ -58,7 +63,7 @@ public class HistoryAdapter extends CursorAdapter {
       bindFrameAndDrawing(
           getDrawing(game, i),
           view.findViewById(DRAWING_FRAME_VIEW_IDS[i]),
-          (DrawingView) view.findViewById(DRAWING_VIEW_IDS[i]));
+          (ImageView) view.findViewById(DRAWING_VIEW_IDS[i]));
     }
 
     TextView labelView = (TextView) view.findViewById(R.id.label);
@@ -93,11 +98,12 @@ public class HistoryAdapter extends CursorAdapter {
   }
 
   private void bindFrameAndDrawing(
-      @Nullable Drawing drawing, View frame, DrawingView drawingView) {
-    drawingView.setDrawing(drawing);
-    drawingView.clearDrawingCache();
-    drawingView.refreshDrawingCache();
-    drawingView.invalidate();
-    frame.setVisibility(drawing == null ? View.GONE : View.VISIBLE);
+      @Nullable Drawing drawing, View frame, ImageView drawingView) {
+    if (drawing != null) {
+      mDrawingPlacer.placeDrawingInView(drawing, drawingView);
+      frame.setVisibility(View.VISIBLE);
+    } else {
+      frame.setVisibility(View.GONE);
+    }
   }
 }

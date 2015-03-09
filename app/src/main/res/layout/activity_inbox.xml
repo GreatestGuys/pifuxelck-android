@@ -49,7 +49,7 @@
             android:layout_marginRight="32dp"
             android:id="@+id/drawing_frame">
 
-            <com.everythingissauce.pifuxelck.ui.DrawingView
+            <com.everythingissauce.pifuxelck.ui.SquareImageView
                 style="@style/DrawingView"
                 android:id="@+id/drawing_view"/>
 

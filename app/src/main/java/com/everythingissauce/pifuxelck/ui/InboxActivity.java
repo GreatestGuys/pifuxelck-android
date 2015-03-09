@@ -6,6 +6,7 @@ import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.drawing.DrawingPlacer;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 
@@ -26,6 +27,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ public class InboxActivity extends Activity implements
   private static final int REQUEST_DRAWING = 0;
 
   private final Api mApi = ApiProvider.getApi();
+  private final DrawingPlacer mDrawingPlacer = new DrawingPlacer();
 
   private InboxAdapter mInboxAdapter;
   private SwipeRefreshLayout mEntryRefreshLayout;
@@ -48,7 +51,7 @@ public class InboxActivity extends Activity implements
 
   private View mOverlayView;
   private EditText mLabelEditText;
-  private DrawingView mDrawingView;
+  private ImageView mDrawingView;
 
   private ImageButton mNewActionButton;
   private ImageButton mDoneActionButton;
@@ -74,7 +77,7 @@ public class InboxActivity extends Activity implements
 
     mOverlayView = findViewById(R.id.overlay_layout);
     mLabelEditText = (EditText) findViewById(R.id.label_edit_text);
-    mDrawingView = (DrawingView) findViewById(R.id.drawing_view);
+    mDrawingView = (ImageView) findViewById(R.id.drawing_view);
     mLabelEditText.setOnEditorActionListener(this);
 
     mNewActionButton = (ImageButton) findViewById(R.id.new_action_button);
@@ -199,10 +202,7 @@ public class InboxActivity extends Activity implements
   }
 
   private void showLabelOverlay(Drawing drawing) {
-    mDrawingView.setDrawing(drawing);
-    mDrawingView.clearDrawingCache();
-    mDrawingView.refreshDrawingCache();
-    mDrawingView.invalidate();
+    mDrawingPlacer.placeDrawingInView(drawing, mDrawingView);
     mLabelEditText.setText("");
     mOverlayView.setVisibility(View.VISIBLE);
   }
@@ -223,8 +223,7 @@ public class InboxActivity extends Activity implements
 
   private void hideLabelOverlay() {
     mOverlayView.setVisibility(View.INVISIBLE);
-    mDrawingView.clearDrawingCache();
-    mDrawingView.setDrawing(null);
+    mDrawingView.setImageBitmap(null);
 
     // Make the keyboard go away if it is not already hidden.
     InputMethodManager imm =

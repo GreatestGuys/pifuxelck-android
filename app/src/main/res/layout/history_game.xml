@@ -16,7 +16,7 @@
             android:layout_height="96dp"
             android:background="@android:color/white">
 
-            <com.everythingissauce.pifuxelck.ui.DrawingView
+            <com.everythingissauce.pifuxelck.ui.SquareImageView
                 android:alpha="0.13"
                 android:layout_width="match_parent"
                 android:layout_height="100000000dp"
@@ -31,7 +31,7 @@
             android:layout_height="96dp"
             android:background="@android:color/white">
 
-            <com.everythingissauce.pifuxelck.ui.DrawingView
+            <com.everythingissauce.pifuxelck.ui.SquareImageView
                 style="@style/DrawingView.Background"
                 android:id="@+id/drawing_2_view" />
 
@@ -44,7 +44,7 @@
             android:layout_height="96dp"
             android:background="@android:color/white">
 
-            <com.everythingissauce.pifuxelck.ui.DrawingView
+            <com.everythingissauce.pifuxelck.ui.SquareImageView
                 android:alpha="0.13"
                 android:layout_width="match_parent"
                 android:layout_height="100000000dp"

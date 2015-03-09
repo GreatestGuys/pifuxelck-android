@@ -2,6 +2,7 @@ package com.everythingissauce.pifuxelck.storage;
 
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.google.common.io.Closeables;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,8 +44,9 @@ public class InboxStore {
 
   public int getSize() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           InboxSqlHelper.TABLE_NAME,
           SIZE_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
@@ -57,6 +59,7 @@ public class InboxStore {
         return cursor.getInt(0);
       }
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
     return 0;
@@ -124,8 +127,9 @@ public class InboxStore {
 
   public List<Long> getEntryIds() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           InboxSqlHelper.TABLE_NAME,
           ID_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
@@ -141,14 +145,16 @@ public class InboxStore {
       }
       return ids;
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
   }
 
   public List<InboxEntry> getEntries() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           InboxSqlHelper.TABLE_NAME,
           ENTRY_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
@@ -165,6 +171,7 @@ public class InboxStore {
       }
       return entries;
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
   }

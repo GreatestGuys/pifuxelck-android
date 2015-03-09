@@ -8,4 +8,6 @@ public interface AbstractLine extends Iterable<LineSegment> {
   Color getColor();
 
   double getSize();
+
+  Point getPoint(int i);
 }

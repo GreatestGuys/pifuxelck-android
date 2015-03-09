@@ -81,6 +81,11 @@ public class Line implements AbstractLine {
       return mSize;
     }
 
+    @Override
+    public Point getPoint(int i) {
+      return mPoints.get(i);
+    }
+
     public Line build() {
       return new Line(mColor, mSize, mPoints);
     }
@@ -141,6 +146,11 @@ public class Line implements AbstractLine {
 
   public double getSize() {
     return mSize;
+  }
+
+  @Override
+  public Point getPoint(int i) {
+    return mPoints[i];
   }
 
   public Bundle toBundle() {

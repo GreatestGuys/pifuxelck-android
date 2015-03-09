@@ -17,11 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.everythingissauce.pifuxelck.ui.DrawingView
+            <com.everythingissauce.pifuxelck.ui.SquareImageView
                 android:id="@+id/drawing_view"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
                 style="@style/DrawingView" />
 
             <TextView

@@ -7,10 +7,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.drawing.DrawingPlacer;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,8 +42,21 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
     return new InboxAdapter(context, entries);
   }
 
+  private final DrawingPlacer mDrawingPlacer;
+
   private InboxAdapter(Context context, InboxEntry[] entries) {
     super(context, 0, entries);
+    mDrawingPlacer = new DrawingPlacer();
+  }
+
+  @Override
+  public int getViewTypeCount() {
+    return 2;
+  }
+
+  @Override
+  public int getItemViewType(int position) {
+    return getItem(position).getPreviousTurn().isDrawingTurn() ? 0 : 1;
   }
 
   @Override
@@ -84,22 +99,20 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
   }
 
   private View getViewForDrawing(Turn turn, View container, ViewGroup group) {
-    DrawingView drawingView;
+    ImageView drawingView;
 
     // Create a new container if there isn't one that can be recycled, or if the
     // one that we were given to use is actually a label container.
     if (container == null || (drawingView = findDrawing(container)) == null) {
       container = View.inflate(getContext(), R.layout.inbox_drawing, null);
-      drawingView = (DrawingView) container.findViewById(R.id.drawing_view);
+      drawingView = (ImageView) container.findViewById(R.id.drawing_view);
     }
 
-    drawingView.setDrawing(turn.getDrawing());
-    drawingView.clearDrawingCache();
-    drawingView.refreshDrawingCache();
+    mDrawingPlacer.placeDrawingInView(turn.getDrawing(), drawingView);
     return container;
   }
 
-  private DrawingView findDrawing(View container) {
-    return (DrawingView) container.findViewById(R.id.drawing_view);
+  private ImageView findDrawing(View container) {
+    return (ImageView) container.findViewById(R.id.drawing_view);
   }
 }

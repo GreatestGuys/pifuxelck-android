@@ -23,7 +23,7 @@
              drawing will choose the lesser of the two dimensions to be
              the size. -->
 
-        <com.everythingissauce.pifuxelck.ui.DrawingView
+        <com.everythingissauce.pifuxelck.ui.SquareImageView
             style="@style/DrawingView.Background"
             android:id="@+id/drawing_view" />
 

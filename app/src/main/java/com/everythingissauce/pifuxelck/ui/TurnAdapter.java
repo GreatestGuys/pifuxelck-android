@@ -7,10 +7,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.everythingissauce.pifuxelck.drawing.DrawingPlacer;
 
 /**
  * A {@link ListAdapter} that will provide views that correspond to the turns
@@ -27,13 +29,26 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
     return new TurnAdapter(context, turns);
   }
 
+  private final DrawingPlacer mDrawingPlacer;
+
   private TurnAdapter(Context context, Turn[] turns) {
     super(context, 0, turns);
+    mDrawingPlacer = new DrawingPlacer();
+  }
+
+  @Override
+  public int getViewTypeCount() {
+    return 2;
+  }
+
+  @Override
+  public int getItemViewType(int position) {
+    return getItem(position).isDrawingTurn() ? 0 : 1;
   }
 
   @Override
   public View getView(int i, View containerView, ViewGroup viewGroup) {
-    Turn turn= getItem(i);
+    Turn turn = getItem(i);
 
     if (turn.isLabelTurn()) {
       return getViewForLabel(turn, containerView, viewGroup);
@@ -66,26 +81,23 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
   }
 
   private View getViewForDrawing(Turn turn, View container, ViewGroup group) {
-    DrawingView drawingView;
+    ImageView drawingView;
     TextView playerView;
 
     // Create a new container if there isn't one that can be recycled, or if the
     // one that we were given to use is actually a label container.
     if (container == null || (drawingView = findDrawing(container)) == null) {
       container = View.inflate(getContext(), R.layout.game_drawing, null);
-      drawingView = (DrawingView) container.findViewById(R.id.drawing_view);
+      drawingView = (ImageView) container.findViewById(R.id.drawing_view);
     }
     playerView = (TextView) container.findViewById(R.id.player);
 
-    drawingView.setDrawing(turn.getDrawing());
-    drawingView.clearDrawingCache();
-    drawingView.refreshDrawingCache();
-    drawingView.invalidate();
+    mDrawingPlacer.placeDrawingInView(turn.getDrawing(), drawingView);
     playerView.setText(turn.getPlayerId());
     return container;
   }
 
-  private DrawingView findDrawing(View container) {
-    return (DrawingView) container.findViewById(R.id.drawing_view);
+  private ImageView findDrawing(View container) {
+    return (ImageView) container.findViewById(R.id.drawing_view);
   }
 }

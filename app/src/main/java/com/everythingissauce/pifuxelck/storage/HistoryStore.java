@@ -67,8 +67,9 @@ public class HistoryStore {
 
   public int getSize() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           HistorySqlHelper.TABLE_NAME,
           SIZE_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
@@ -81,6 +82,7 @@ public class HistoryStore {
         return cursor.getInt(0);
       }
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
     return 0;
@@ -88,8 +90,9 @@ public class HistoryStore {
 
   public long getLastCompletedTime() {
     SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           HistorySqlHelper.TABLE_NAME,
           LAST_TIME_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
@@ -102,6 +105,7 @@ public class HistoryStore {
         return cursor.getLong(0);
       }
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
     return 0;
@@ -109,8 +113,9 @@ public class HistoryStore {
 
   public Game getGame(long id) {
     final SQLiteDatabase db = mSqlHelper.getReadableDatabase();
+    Cursor cursor = null;
     try {
-      Cursor cursor = db.query(
+      cursor = db.query(
           HistorySqlHelper.TABLE_NAME,
           QUERY_COLUMNS,
           HistorySqlHelper.COLUMN_ID + " = ?", new String[] {Long.toString(id)},
@@ -120,6 +125,7 @@ public class HistoryStore {
       cursor.moveToFirst();
       return cursorToGame(cursor);
     } finally {
+      if (cursor != null) cursor.close();
       db.close();
     }
   }

@@ -120,8 +120,7 @@ public class DrawingActivity extends Activity implements
       case R.id.undo_button:
         mDrawingBuilder.popLine();
         mDrawingView.setInProgressLine(null);
-        mDrawingView.clearLineCache();
-        mDrawingView.refreshDrawingCache();
+        mDrawingView.onDrawingChanged();
         break;
 
       case R.id.done_button:
@@ -226,7 +225,7 @@ public class DrawingActivity extends Activity implements
             mColorPickerAdapter.setOnColorSelectedListener(null);
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingBuilder.setBackgroundColor(color);
-            mDrawingView.refreshDrawingCache();
+            mDrawingView.onDrawingChanged();
           }
         });
   }
@@ -241,7 +240,6 @@ public class DrawingActivity extends Activity implements
             mColorPickerView.setVisibility(View.INVISIBLE);
             mDrawingOnTouchListener.setCurrentColor(color);
             mSizePickerAdapter.setColor(color.toAndroidColor());
-            mDrawingView.refreshDrawingCache();
           }
         });
   }
@@ -260,7 +258,6 @@ public class DrawingActivity extends Activity implements
             mSizePickerAdapter.setOnSizeSelectedListener(null);
             mSizePickerView.setVisibility(View.INVISIBLE);
             mDrawingOnTouchListener.setCurrentSize(size);
-            mDrawingView.refreshDrawingCache();
           }
         });
   }
