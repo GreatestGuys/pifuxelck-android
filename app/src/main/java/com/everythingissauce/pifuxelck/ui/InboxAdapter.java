@@ -44,6 +44,8 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
 
   private final DrawingPlacer mDrawingPlacer;
 
+  private int mLastPosition = -1;
+
   private InboxAdapter(Context context, InboxEntry[] entries) {
     super(context, 0, entries);
     mDrawingPlacer = new DrawingPlacer();
@@ -76,6 +78,8 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
       submitTurn.setVisibility(
           entry.getCurrentTurn() == null ? View.GONE : View.VISIBLE);
     }
+
+    mLastPosition = AnimationUtil.animateListView(view, mLastPosition, i);
 
     return view;
   }

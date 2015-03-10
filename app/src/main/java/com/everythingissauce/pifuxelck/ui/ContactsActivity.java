@@ -126,12 +126,17 @@ public class ContactsActivity extends Activity implements
 
   @Override
   public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-    mContactsAdapter.swapCursor(cursor);
+    setCursor(cursor);
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> cursorLoader) {
-    mContactsAdapter.swapCursor(null);
+    setCursor(null);
+  }
+
+  private void setCursor(Cursor cursor) {
+    Cursor old = mContactsAdapter.swapCursor(cursor);
+    if (old != null) old.close();
   }
 
   private void refreshContactsList() {

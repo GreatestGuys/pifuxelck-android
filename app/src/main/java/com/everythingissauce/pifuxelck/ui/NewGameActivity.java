@@ -129,11 +129,16 @@ public class NewGameActivity extends Activity implements
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-    mContactsAdapter.swapCursor(cursor);
+    setCursor(cursor);
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
-    mContactsAdapter.swapCursor(null);
+    setCursor(null);
+  }
+
+  private void setCursor(Cursor cursor) {
+    Cursor old = mContactsAdapter.swapCursor(cursor);
+    old.close();
   }
 }

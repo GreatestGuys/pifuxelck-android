@@ -19,12 +19,11 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.view.animation.AnimationUtils;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -32,15 +31,11 @@ import java.util.concurrent.Executors;
 public class HistoryAdapter extends CursorAdapter {
 
   private static final int[] DRAWING_FRAME_VIEW_IDS = new int[] {
-    R.id.drawing_1_frame,
-//    R.id.drawing_2_frame,
-//    R.id.drawing_3_frame
+    R.id.drawing_1_frame
   };
 
   private static final int[] DRAWING_VIEW_IDS = new int[] {
-    R.id.drawing_1_view,
-//    R.id.drawing_2_view,
-//    R.id.drawing_3_view
+    R.id.drawing_1_view
   };
 
   private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
@@ -49,6 +44,8 @@ public class HistoryAdapter extends CursorAdapter {
   private final HistoryStore mHistoryStore;
   private final ListeningExecutorService mThreadPool;
   private final WeakHashMap<View, ListenableFuture<Game>> mViewToGame;
+
+  private int mLastPosition = -1;
 
   public HistoryAdapter(Context context, HistoryStore historyStore) {
     super(context, null, 0);
@@ -67,6 +64,12 @@ public class HistoryAdapter extends CursorAdapter {
   }
 
   @Override
+  public Cursor swapCursor(Cursor cursor) {
+    mLastPosition = -1;
+    return super.swapCursor(cursor);
+  }
+
+  @Override
   public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
     return View.inflate(context, R.layout.history_game, null);
   }
@@ -80,6 +83,11 @@ public class HistoryAdapter extends CursorAdapter {
       return;
     }
     view.setVisibility(View.VISIBLE);
+
+    mLastPosition = AnimationUtil.animateListView(
+        view,
+        mLastPosition,
+        cursor.getPosition());
 
     TextView labelView = (TextView) view.findViewById(R.id.label);
     labelView.setText(preview.getPreviewText());

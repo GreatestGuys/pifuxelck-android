@@ -6,6 +6,7 @@ import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.storage.HistoryStore;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.sync.SyncAdapter;
+import com.google.common.io.Closeables;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -13,6 +14,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AdapterView;
@@ -51,7 +54,12 @@ public class HistoryActivity extends Activity implements
     mGameListView.setOnItemClickListener(this);
 
     // Initialize the query for historic games.
-    refreshHistoryInUI();
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
+        refreshHistoryInUI();
+      }
+    });
   }
 
   @Override
@@ -71,12 +79,17 @@ public class HistoryActivity extends Activity implements
 
   @Override
   public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-    mGameAdapter.swapCursor(cursor);
+    setCursor(cursor);
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> cursorLoader) {
-    mGameAdapter.swapCursor(null);
+    setCursor(null);
+  }
+
+  private void setCursor(Cursor cursor) {
+    Cursor old = mGameAdapter.swapCursor(cursor);
+    if (old != null) old.close();
   }
 
   @Override

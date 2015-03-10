@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
@@ -24,10 +25,6 @@ public class DrawingPlacer {
 
   private static final String TAG = "DrawingPlacer";
   private static final boolean DEBUG = false;
-
-  private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-  private static final ListeningExecutorService sThreadPool =
-      MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 
   private final Object mLock = new Object();
   private final WeakHashMap<View, ListenableFuture<Bitmap>> mViewToFuture;
@@ -98,25 +95,22 @@ public class DrawingPlacer {
       setFutureForView(view, bitmapFuture);
     }
 
-    Futures.addCallback(bitmapFuture, new FutureCallback<Bitmap>() {
+    ThreadUtil.callbackOnUi(bitmapFuture, new FutureCallback<Bitmap>() {
       @Override
       public void onSuccess(final Bitmap result) {
-        UI_HANDLER.post(new Runnable() {
-          @Override
-          public void run() {
-            ListenableFuture<Bitmap> previousFuture = mViewToFuture.get(view);
-            if (previousFuture != bitmapFuture) {
-              return;
-            }
-            mViewToFuture.remove(bitmapFuture);
-            view.clearAnimation();
-            view.startAnimation(
-                AnimationUtils.loadAnimation(
-                    view.getContext(),
-                    R.anim.drawing_placer_fade_in));
-            view.setImageBitmap(result);
+        synchronized (mLock) {
+          ListenableFuture<Bitmap> previousFuture = mViewToFuture.get(view);
+          if (previousFuture != bitmapFuture) {
+            return;
           }
-        });
+          mViewToFuture.remove(bitmapFuture);
+          view.clearAnimation();
+          view.startAnimation(
+              AnimationUtils.loadAnimation(
+                  view.getContext(),
+                  R.anim.drawing_placer_fade_in));
+          view.setImageBitmap(result);
+        }
       }
 
       @Override
@@ -174,7 +168,7 @@ public class DrawingPlacer {
           return;
         }
 
-        sThreadPool.submit(new Runnable() {
+        ThreadUtil.THREAD_POOL.submit(new Runnable() {
           @Override
           public void run() {
             placeDrawingInViewHeavy(drawing, (ImageView) view);

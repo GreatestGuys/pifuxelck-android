@@ -6,6 +6,7 @@ import com.everythingissauce.pifuxelck.R;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -31,9 +32,22 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
 
   private final DrawingPlacer mDrawingPlacer;
 
+  private int mLastPosition = -1;
+
   private TurnAdapter(Context context, Turn[] turns) {
     super(context, 0, turns);
     mDrawingPlacer = new DrawingPlacer();
+  }
+
+  private void animateView(View view, int position) {
+    view.clearAnimation();
+    view.startAnimation(
+        AnimationUtils.loadAnimation(
+            view.getContext(),
+            (position > mLastPosition)
+                ? R.anim.up_from_bottom
+                : R.anim.down_from_top));
+    mLastPosition = position;
   }
 
   @Override
@@ -50,13 +64,15 @@ public class TurnAdapter extends ArrayAdapter<Turn> {
   public View getView(int i, View containerView, ViewGroup viewGroup) {
     Turn turn = getItem(i);
 
+    View view = null;
     if (turn.isLabelTurn()) {
-      return getViewForLabel(turn, containerView, viewGroup);
+      view = getViewForLabel(turn, containerView, viewGroup);
     } else if (turn.isDrawingTurn()) {
-      return getViewForDrawing(turn, containerView, viewGroup);
+      view = getViewForDrawing(turn, containerView, viewGroup);
     }
 
-    return null;
+    mLastPosition = AnimationUtil.animateListView(view, mLastPosition, i);
+    return view;
   }
 
   private View getViewForLabel(Turn turn, View container, ViewGroup group) {

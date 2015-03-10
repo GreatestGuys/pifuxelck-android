@@ -164,7 +164,9 @@ public class HistoryStore {
     return new AsyncTaskLoader<Cursor>(mContext) {
       @Override
       public Cursor loadInBackground() {
-        return getHistoryCursor();
+        Cursor cursor = getHistoryCursor();
+        cursor.getCount();
+        return cursor;
       }
     };
   }

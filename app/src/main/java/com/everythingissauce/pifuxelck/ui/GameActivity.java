@@ -5,12 +5,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.storage.HistoryStore;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.Callable;
 
 public class GameActivity extends Activity {
 
@@ -33,13 +39,29 @@ public class GameActivity extends Activity {
 
     mHistoryStore = new HistoryStore(this);
 
-    Game game = mHistoryStore.getGame(getIntent().getLongExtra(EXTRA_GAME, -1));
-    if (game == null) {
-      return;
-    }
-
-    mTurnAdapter = TurnAdapter.newTurnAdapter(this, game);
     mTurnListView = (ListView) findViewById(R.id.turn_list_view);
-    mTurnListView.setAdapter(mTurnAdapter);
+
+    final long gameId = getIntent().getLongExtra(EXTRA_GAME, -1);
+    ListenableFuture<Game> gameFuture = ThreadUtil.THREAD_POOL.submit(
+        new Callable<Game>() {
+          @Override
+          public Game call() throws Exception {
+            return mHistoryStore.getGame(gameId);
+          }
+        });
+
+    ThreadUtil.callbackOnUi(gameFuture, new FutureCallback<Game>() {
+      @Override
+      public void onSuccess(Game game) {
+        if (game != null) {
+          mTurnAdapter = TurnAdapter.newTurnAdapter(GameActivity.this, game);
+          mTurnListView.setAdapter(mTurnAdapter);
+        }
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+      }
+    });
   }
 }
