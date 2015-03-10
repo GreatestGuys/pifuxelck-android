@@ -9,18 +9,20 @@ class HistorySqlHelper extends SQLiteOpenHelper {
 
   private static final String TAG = "HistorySqlHelper";
 
-  private static final int VERSION = 1;
+  private static final int VERSION = 2;
   private static final String DATABASE_NAME = "history.db";
 
   public static final String TABLE_NAME = "history";
   public static final String COLUMN_ID = "_id";
   public static final String COLUMN_COMPLETED_AT = "completed_at";
+  public static final String COLUMN_PREVIEW_TEXT = "preview_text";
   public static final String COLUMN_GAME_JSON = "game_json";
 
   private static final String DATABASE_CREATE =
       "CREATE TABLE " + TABLE_NAME + " ("
           + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
           + COLUMN_COMPLETED_AT + " INTEGER, "
+          + COLUMN_PREVIEW_TEXT + " TEXT, "
           + COLUMN_GAME_JSON + " TEXT"
           + ");";
 

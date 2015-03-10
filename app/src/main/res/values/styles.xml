@@ -52,7 +52,6 @@
     </style>
 
     <style name="DrawingView.Background">
-        <item name="android:alpha">0.13</item>
         <item name="android:layout_height">100000000dp</item>
         <item name="android:clickable">false</item>
     </style>

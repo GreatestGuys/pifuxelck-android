@@ -3,9 +3,12 @@ package com.everythingissauce.pifuxelck.drawing;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -49,25 +52,33 @@ public class DrawingPlacer implements View.OnLayoutChangeListener {
       final Drawing drawing,
       ImageView imageView) {
     imageView.addOnLayoutChangeListener(this);
+    setImageViewBitmap(imageView, null);
 
     final ListenableFuture<Bitmap> bitmapFuture;
     synchronized (mLock) {
+      Drawing oldDrawing = mViewToDrawing.get(imageView);
       mViewToDrawing.put(imageView, drawing);
 
-      ListenableFuture<Bitmap> previousFuture = mViewToFuture.get(imageView);
-      if(previousFuture != null) previousFuture.cancel(true);
-
       Bitmap bitmap =  mViewToBitmap.get(imageView);
-      if (bitmap == null || bitmap.getWidth() != imageView.getWidth()) {
+      if (bitmap != null
+          && oldDrawing != null
+          && imageView.getDrawable() != null
+          && bitmap.getWidth() == imageView.getWidth()
+          && oldDrawing.equals(drawing)) {
+        return;
+      }
+
+      if (bitmap == null || bitmap.getWidth() < imageView.getWidth()) {
         bitmap = DrawingUtil.newDrawingBitmap(imageView.getWidth());
         mViewToBitmap.put(imageView, bitmap);
       }
 
+      ListenableFuture<Bitmap> previousFuture = mViewToFuture.get(imageView);
+      if(previousFuture != null) previousFuture.cancel(true);
+
       bitmapFuture = DrawingUtil.renderDrawing(drawing, bitmap);
       mViewToFuture.put(imageView, bitmapFuture);
     }
-
-    setImageViewBitmap(imageView, null);
 
     final WeakReference<ImageView> weakView = new WeakReference<>(imageView);
     Futures.addCallback(bitmapFuture, new FutureCallback<Bitmap>() {
@@ -83,7 +94,7 @@ public class DrawingPlacer implements View.OnLayoutChangeListener {
         // the resulting bitmap and remove it from the map.
         synchronized (mLock) {
           ListenableFuture<Bitmap> future = mViewToFuture.get(imageView);
-          if (future != bitmapFuture) {
+          if (future != bitmapFuture || bitmapFuture.isCancelled()) {
             return;
           }
           mViewToFuture.remove(imageView);
@@ -105,13 +116,18 @@ public class DrawingPlacer implements View.OnLayoutChangeListener {
       int oldLeft, int oldTop, int oldRight, int oldBottom) {
     synchronized (mLock) {
       Bitmap bitmap = mViewToBitmap.get(view);
-      if (bitmap != null && bitmap.getWidth() >= view.getWidth()) {
+      if (bitmap != null && bitmap.getWidth() != 0) {
         return;
       }
 
       Drawing drawing = mViewToDrawing.get(view);
       if (drawing == null) {
         return;
+      }
+
+      ListenableFuture<Bitmap> future = mViewToFuture.get(view);
+      if (future != null) {
+        future.cancel(true);
       }
       placeDrawingInView(drawing, (ImageView) view);
     }
@@ -123,6 +139,11 @@ public class DrawingPlacer implements View.OnLayoutChangeListener {
     UI_HANDLER.post(new Runnable() {
       @Override
       public void run() {
+        imageView.clearAnimation();
+        imageView.startAnimation(
+            AnimationUtils.loadAnimation(
+                imageView.getContext(),
+                R.anim.drawing_placer_fade_in));
         imageView.setImageBitmap(bitmap);
       }
     });

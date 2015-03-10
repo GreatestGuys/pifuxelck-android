@@ -2,7 +2,6 @@ package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
-import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.storage.HistoryStore;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
@@ -15,15 +14,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import org.json.JSONException;
-
-import java.util.List;
 
 public class HistoryActivity extends Activity implements
     AdapterView.OnItemClickListener,
@@ -51,7 +45,7 @@ public class HistoryActivity extends Activity implements
     mRefreshLayout.setOnRefreshListener(this);
     mRefreshLayout.setColorSchemeResources(R.color.accent);
 
-    mGameAdapter = new HistoryAdapter(this);
+    mGameAdapter = new HistoryAdapter(this, mHistoryStore);
     mGameListView = (ListView) findViewById(R.id.game_list_view);
     mGameListView.setAdapter(mGameAdapter);
     mGameListView.setOnItemClickListener(this);
@@ -64,7 +58,9 @@ public class HistoryActivity extends Activity implements
   public void onItemClick(AdapterView<?> listView, View view, int i, long l) {
     Intent intent = new Intent();
     intent.setClass(getApplicationContext(), GameActivity.class);
-    intent.putExtra(GameActivity.EXTRA_GAME, mGameAdapter.getGame(i).getId());
+    intent.putExtra(
+        GameActivity.EXTRA_GAME,
+        mGameAdapter.getPreview(i).getGameId());
     startActivity(intent);
   }
 

@@ -2,9 +2,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="96dp">
+    android:layout_height="96dp"
+    android:background="@android:color/white">
 
     <LinearLayout
+        android:alpha="0.13"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -17,9 +19,7 @@
             android:background="@android:color/white">
 
             <com.everythingissauce.pifuxelck.ui.SquareImageView
-                android:alpha="0.13"
-                android:layout_width="match_parent"
-                android:layout_height="100000000dp"
+                style="@style/DrawingView.Background"
                 android:id="@+id/drawing_1_view" />
 
         </FrameLayout>
@@ -45,14 +45,18 @@
             android:background="@android:color/white">
 
             <com.everythingissauce.pifuxelck.ui.SquareImageView
-                android:alpha="0.13"
-                android:layout_width="match_parent"
-                android:layout_height="100000000dp"
+                style="@style/DrawingView.Background"
                 android:id="@+id/drawing_3_view" />
 
         </FrameLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="96dp">
+    </FrameLayout>
 
     <TextView
         android:id="@+id/label"

@@ -19,9 +19,33 @@ public class HistoryStore {
 
   private static final String TAG = "HistoryStore";
 
+  public static class Preview {
+
+    private final String mPreviewText;
+    private final long mGameId;
+
+    public Preview(long gameId, String previewText) {
+      mGameId = gameId;
+      mPreviewText = previewText;
+    }
+
+    public long getGameId() {
+      return mGameId;
+    }
+
+    public String getPreviewText() {
+      return mPreviewText;
+    }
+  }
+
   private static final String[] QUERY_COLUMNS = new String[]{
       HistorySqlHelper.COLUMN_ID,
       HistorySqlHelper.COLUMN_GAME_JSON
+  };
+
+  private static final String[] PREVIEW_QUERY_COLUMNS = new String[]{
+      HistorySqlHelper.COLUMN_ID,
+      HistorySqlHelper.COLUMN_PREVIEW_TEXT
   };
 
   private static final String[] LAST_TIME_QUERY_COLUMNS = new String[]{
@@ -49,11 +73,17 @@ public class HistoryStore {
       return;
     }
 
+    String previewText = "";
+    if (game.getNumberOfTurns() != 0) {
+      previewText = game.iterator().next().getLabel();
+    }
+
     SQLiteDatabase db = mSqlHelper.getWritableDatabase();
     try {
       ContentValues values = new ContentValues();
       values.put(HistorySqlHelper.COLUMN_ID, game.getId());
       values.put(HistorySqlHelper.COLUMN_COMPLETED_AT, game.getTimeCompleted());
+      values.put(HistorySqlHelper.COLUMN_PREVIEW_TEXT, previewText);
       values.put(HistorySqlHelper.COLUMN_GAME_JSON, gameJson);
       db.insertWithOnConflict(
           HistorySqlHelper.TABLE_NAME,
@@ -143,7 +173,7 @@ public class HistoryStore {
     final SQLiteDatabase db = mSqlHelper.getReadableDatabase();
     Cursor cursor = db.query(
           HistorySqlHelper.TABLE_NAME,
-          QUERY_COLUMNS,
+          PREVIEW_QUERY_COLUMNS,
           null, null, /* WHERE clause. */
           null, null, /* GROUP BY clause. */
           HistorySqlHelper.COLUMN_COMPLETED_AT + " DESC",
@@ -158,6 +188,14 @@ public class HistoryStore {
         db.close();
       }
     };
+  }
+
+  @Nullable
+  public static Preview cursorToPreview(Cursor cursor) {
+    if (cursor.isAfterLast() || cursor.isBeforeFirst()) {
+      return null;
+    }
+    return new Preview(cursor.getLong(0), cursor.getString(1));
   }
 
   @Nullable

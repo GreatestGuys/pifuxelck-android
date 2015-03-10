@@ -97,7 +97,6 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
         .detectAll()
         .penaltyLog()
-        .penaltyDeath()
         .build());
   }
 
