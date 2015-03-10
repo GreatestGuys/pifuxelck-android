@@ -8,6 +8,7 @@ public class Settings {
   private static final String PREFS_FILE = "settings";
 
   private static final String SETTING_VIBRATE = "should_vibrate";
+  private static final String SETTINGS_CONFIRM_SEND =  "should_confirm_send";
 
   private final Context mContext;
 
@@ -25,5 +26,13 @@ public class Settings {
 
   public void setShouldVibrate(boolean shouldVibrate) {
     getPrefs().edit().putBoolean(SETTING_VIBRATE, shouldVibrate).apply();
+  }
+
+  public boolean shouldConfirmSend() {
+    return getPrefs().getBoolean(SETTINGS_CONFIRM_SEND, true);
+  }
+
+  public void setShouldConfirmSend(boolean shouldConfirm) {
+    getPrefs().edit().putBoolean(SETTINGS_CONFIRM_SEND, shouldConfirm).apply();
   }
 }

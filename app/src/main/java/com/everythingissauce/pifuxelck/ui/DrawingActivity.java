@@ -1,5 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.Settings;
 import com.everythingissauce.pifuxelck.data.Color;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.R;
@@ -62,10 +63,14 @@ public class DrawingActivity extends Activity implements
 
   private int mChosenOption = OPTIONS_NONE;
 
+  private Settings mSettings;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_drawing);
+
+    mSettings = new Settings(this);
 
     mDrawingBuilder = savedInstanceState == null
         ? new Drawing.Builder()
@@ -124,13 +129,37 @@ public class DrawingActivity extends Activity implements
         break;
 
       case R.id.done_button:
-        Intent intent = new Intent();
-        intent.putExtra(EXTRAS_GAME_ID, mGameId);
-        intent.putExtra(EXTRAS_DRAWING, mDrawingBuilder.build().toBundle());
-        setResult(RESULT_OK, intent);
-        finish();
+        if (mSettings.shouldConfirmSend()) {
+          sendDrawingAlert();
+        } else {
+          sendDrawing();;
+        }
         break;
     }
+  }
+
+  private void sendDrawingAlert() {
+    // Ask the user if they would like to abandon the drawing to prevent
+    // accidental deletions.
+    new AlertDialog.Builder(this)
+        .setTitle(getString(R.string.send_drawing_alert_title))
+        .setMessage(getString(R.string.send_drawing_alert_content))
+        .setPositiveButton(android.R.string.yes,
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                sendDrawing();
+              }
+            })
+        .setNegativeButton(android.R.string.no, null)
+        .show();
+  }
+
+  private void sendDrawing() {
+    Intent intent = new Intent();
+    intent.putExtra(EXTRAS_GAME_ID, mGameId);
+    intent.putExtra(EXTRAS_DRAWING, mDrawingBuilder.build().toBundle());
+    setResult(RESULT_OK, intent);
+    finish();
   }
 
   @Override

@@ -27,6 +27,14 @@
         Are you sure you want to abandon this drawing?
     </string>
 
+    <string name="send_drawing_alert_title">
+        Send drawing
+    </string>
+
+    <string name="send_drawing_alert_content">
+        Are you sure you want to send this drawing?
+    </string>
+
     <!-- Welcome Activity. -->
 
     <string name="welcome_import_account_chooser_title">

@@ -25,7 +25,8 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
 
   private Button mExportAccountButton;
   private IdentityProvider mIdentityProvider;
-  private CheckBox mShouldVibrateCheckBox;
+  private CheckBox mShouldVibrate;
+  private CheckBox mShouldConfirmSend;
 
   private Settings mSettings;
 
@@ -40,9 +41,13 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     mExportAccountButton.setOnClickListener(this);
     mIdentityProvider = new IdentityProvider(this);
 
-    mShouldVibrateCheckBox = (CheckBox) findViewById(R.id.should_vibrate);
-    mShouldVibrateCheckBox.setChecked(mSettings.shouldVibrate());
-    mShouldVibrateCheckBox.setOnCheckedChangeListener(this);
+    mShouldVibrate = (CheckBox) findViewById(R.id.should_vibrate);
+    mShouldVibrate.setChecked(mSettings.shouldVibrate());
+    mShouldVibrate.setOnCheckedChangeListener(this);
+
+    mShouldConfirmSend = (CheckBox) findViewById(R.id.should_confirm_send);
+    mShouldConfirmSend.setChecked(mSettings.shouldConfirmSend());
+    mShouldConfirmSend.setOnCheckedChangeListener(this);
   }
 
   @Override
@@ -77,6 +82,9 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     switch (compoundButton.getId()) {
       case R.id.should_vibrate:
         mSettings.setShouldVibrate(checked);
+        break;
+      case R.id.should_confirm_send:
+        mSettings.setShouldConfirmSend(checked);
         break;
     }
   }
