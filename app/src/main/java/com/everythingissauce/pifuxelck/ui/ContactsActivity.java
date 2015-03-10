@@ -9,6 +9,7 @@ import com.everythingissauce.pifuxelck.data.Contact;
 import com.everythingissauce.pifuxelck.storage.ContactsStore;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -43,6 +44,8 @@ public class ContactsActivity extends Activity implements
   private ViewGroup mNewContactBox;
   private TextView mNewContactName;
   private Button mAddContactButton;
+
+  private ListenableFuture<Long> mCurrentLookup;
 
   // These mutable fields MUST only be access from the UI thread!
   private String mQuery;
@@ -162,18 +165,29 @@ public class ContactsActivity extends Activity implements
       return;
     }
 
+    if (mCurrentLookup != null) mCurrentLookup.cancel(true);
+    final ListenableFuture<Long> newLookup = mApi.lookupUserId(mQuery);
+    mCurrentLookup = newLookup;
     ThreadUtil.callbackOnUi(
-        mApi.lookupUserId(mQuery),
+        mCurrentLookup,
         new FutureCallback<Long>() {
           @Override
           public void onSuccess(Long result) {
+            if (newLookup != mCurrentLookup) {
+              return;
+            }
             mResolvedUserId = result;
             mAddContactButton.setVisibility(View.VISIBLE);
+            mCurrentLookup = null;
           }
 
           @Override
           public void onFailure(Throwable t) {
+            if (newLookup != mCurrentLookup) {
+              return;
+            }
             mResolvedUserId = null;
+            mCurrentLookup = null;
           }
         });
   }
