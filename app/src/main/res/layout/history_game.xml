@@ -24,6 +24,9 @@
 
         </FrameLayout>
 
+        <!-- Disabling multiple games per history as it looks "jumpy" when views
+             are recycled. -->
+        <!--
         <FrameLayout
             android:id="@+id/drawing_2_frame"
             android:layout_weight="1"
@@ -49,6 +52,8 @@
                 android:id="@+id/drawing_3_view" />
 
         </FrameLayout>
+
+        -->
 
     </LinearLayout>
 

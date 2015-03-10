@@ -33,14 +33,14 @@ public class HistoryAdapter extends CursorAdapter {
 
   private static final int[] DRAWING_FRAME_VIEW_IDS = new int[] {
     R.id.drawing_1_frame,
-    R.id.drawing_2_frame,
-    R.id.drawing_3_frame
+//    R.id.drawing_2_frame,
+//    R.id.drawing_3_frame
   };
 
   private static final int[] DRAWING_VIEW_IDS = new int[] {
     R.id.drawing_1_view,
-    R.id.drawing_2_view,
-    R.id.drawing_3_view
+//    R.id.drawing_2_view,
+//    R.id.drawing_3_view
   };
 
   private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
