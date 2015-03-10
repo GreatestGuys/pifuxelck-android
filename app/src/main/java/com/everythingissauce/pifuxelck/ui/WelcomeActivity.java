@@ -1,11 +1,13 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.IdentityStore;
+import com.google.common.util.concurrent.FutureCallback;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -121,21 +123,23 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     showLoading();
 
-    mApi.registerAccount(displayName, new Api.Callback<Identity>() {
-      @Override
-      public void onApiSuccess(Identity identity) {
-        mIdentityProvider.setIdentity(identity);
-        login(identity);
-      }
+    ThreadUtil.callbackOnUi(
+        mApi.registerAccount(displayName),
+        new FutureCallback<Identity>() {
+          @Override
+          public void onSuccess(Identity identity) {
+            mIdentityProvider.setIdentity(identity);
+            login(identity);
+          }
 
-      @Override
-      public void onApiFailure() {
-        hideLoading();
-        Toast.makeText(
-            WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
-            .show();
-      }
-    });
+          @Override
+          public void onFailure(Throwable t) {
+            hideLoading();
+            Toast.makeText(
+                WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
+                .show();
+          }
+        });
   }
 
   private void onImportClick() {
@@ -175,20 +179,22 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   private void login(Identity identity) {
 
     showLoading();
-    mApi.login(identity, new Api.Callback<String>() {
-      @Override
-      public void onApiSuccess(String token) {
-        openInbox();
-      }
+    ThreadUtil.callbackOnUi(
+        mApi.login(identity),
+        new FutureCallback<String>() {
+          @Override
+          public void onSuccess(String token) {
+            openInbox();
+          }
 
-      @Override
-      public void onApiFailure() {
-        Toast.makeText(
-            WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG)
-            .show();
-        openInbox();
-      }
-    });
+          @Override
+          public void onFailure(Throwable t) {
+            Toast.makeText(
+                WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG)
+                .show();
+            openInbox();
+          }
+        });
   }
 
   private void showLoading() {

@@ -16,11 +16,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Contact;
 import com.everythingissauce.pifuxelck.storage.ContactsStore;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
+import com.google.common.util.concurrent.FutureCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,21 +93,23 @@ public class NewGameActivity extends Activity implements
     }
 
     mClickedCreated = true;
-    mApi.newGame(label, mPlayers, new Api.Callback<Void>() {
-      @Override
-      public void onApiSuccess(Void result) {
-        finish();
-      }
+    ThreadUtil.callbackOnUi(
+        mApi.newGame(label, mPlayers),
+        new FutureCallback<Void>() {
+          @Override
+          public void onSuccess(Void result) {
+            finish();
+          }
 
-      @Override
-      public void onApiFailure() {
-        Toast.makeText(
-            NewGameActivity.this,
-            R.string.error_new_game,
-            Toast.LENGTH_LONG).show();
-        finish();
-      }
-    });
+          @Override
+          public void onFailure(Throwable t) {
+            Toast.makeText(
+                NewGameActivity.this,
+                R.string.error_new_game,
+                Toast.LENGTH_LONG).show();
+            finish();
+          }
+        });
   }
 
   @Override

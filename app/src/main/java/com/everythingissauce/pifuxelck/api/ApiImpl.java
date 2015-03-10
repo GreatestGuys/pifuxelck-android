@@ -7,11 +7,17 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.auth.Identity.Partial;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
 import com.everythingissauce.pifuxelck.data.Turn;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +25,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
 /**
  * A concrete implementation of the API that communicates over HTTP/S with
@@ -56,8 +64,6 @@ class ApiImpl implements Api {
   private static final String HISTORY_END_POINT = "/history/";
 
   private final HttpRequestFactory mHttpRequestFactory;
-  private final Handler mHandler;
-  private final Handler mMainHandler;
 
   private final Object mAuthTokenLock = new Object();
   private String mAuthToken = null;
@@ -67,9 +73,6 @@ class ApiImpl implements Api {
 
     HandlerThread handlerThread = new HandlerThread(THREAD_NAME);
     handlerThread.start();
-
-    mHandler = new Handler(handlerThread.getLooper());
-    mMainHandler = new Handler(Looper.getMainLooper());
   }
 
   @Override
@@ -80,242 +83,215 @@ class ApiImpl implements Api {
   }
 
   @Override
-  public void registerAccount(
-      final String displayName, final Callback<Identity> callback) {
-    mHandler.post(new Runnable() {
+  public ListenableFuture<Identity> registerAccount(final String displayName) {
+    final ListenableFuture<Partial> partialFuture =
+        ThreadUtil.THREAD_POOL.submit(new Callable<Partial>() {
       @Override
-      public void run() {
-        final Partial partial = new Partial(displayName);
-        String requestBody;
-        try {
-          JSONObject key = new JSONObject();
-          key.put(REGISTER_EXPONENT, partial.getPublicExponentBase64());
-          key.put(REGISTER_MODULUS, partial.getModulusBase64());
+      public Partial call() {
+        return new Partial(displayName);
+      }
+    });
 
-          JSONObject bodyJson = new JSONObject();
-          bodyJson.put(REGISTER_DISPLAY_NAME, partial.getDisplayName());
-          bodyJson.put(REGISTER_KEY_OBJECT, key);
-          bodyJson.put(REGISTER_PHONE, "");
+    ListenableFuture<String> bodyFuture = Futures.transform(
+        partialFuture,
+        new AsyncFunction<Partial, String>() {
+          @Override
+          public ListenableFuture<String> apply(Partial partial) throws JSONException {
+            JSONObject key = new JSONObject();
+            key.put(REGISTER_EXPONENT, partial.getPublicExponentBase64());
+            key.put(REGISTER_MODULUS, partial.getModulusBase64());
 
-          requestBody = bodyJson.toString();
-        } catch (JSONException exception) {
-          Log.e(TAG, "Unable to create new account JSON.", exception);
-          callbackFailureOnUi(callback);
-          return;
-        }
+            JSONObject bodyJson = new JSONObject();
+            bodyJson.put(REGISTER_DISPLAY_NAME, partial.getDisplayName());
+            bodyJson.put(REGISTER_KEY_OBJECT, key);
+            bodyJson.put(REGISTER_PHONE, "");
 
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(REGISTER_END_POINT)
-            .setMethod(HttpRequest.POST)
-            .setBody(requestBody)
-            .setCallback(new CallbackTransform<String, Identity>(callback) {
-                  @Override
-                  public Identity transform(String body)
-                      throws NumberFormatException {
-                    return partial.build(Long.valueOf(body));
-                  }
-                })
-            .makeRequest();
+            String requestBody = bodyJson.toString();
+
+            return mHttpRequestFactory.newRequest()
+                .setEndPoint(REGISTER_END_POINT)
+                .setMethod(HttpRequest.POST)
+                .setBody(requestBody)
+                .makeRequest();
+          }
+        }, ThreadUtil.THREAD_POOL);
+
+    ListenableFuture<List<Object>> combinedFuture =
+        Futures.allAsList(partialFuture, bodyFuture);
+    return Futures.transform(
+        combinedFuture,
+        new Function<List<Object>, Identity>() {
+      @Override
+      public Identity apply(List<Object> input) {
+        Partial partial = (Partial) input.get(0);
+        String body = (String) input.get(1);
+        return partial.build(Long.valueOf(body));
       }
     });
   }
 
   @Override
-  public void login(final Identity identity, final Callback<String> callback) {
-    loginStart(identity, new CallbackWrapper<String>(callback) {
+  public ListenableFuture<String> login(final Identity identity) {
+    return Futures.transform(
+        loginStart(identity),
+        new AsyncFunction<String, String>() {
       @Override
-      public void onApiSuccess(String jsonResponse) {
-        String challenge;
-        String challengeId;
-        try {
-          JSONObject response = new JSONObject(jsonResponse);
-          challenge = response.getString(LOGIN_START_CHALLENGE);
-          challengeId = response.getString(LOGIN_START_CHALLENGE_ID);
-        } catch (JSONException exception) {
-          Log.e(TAG, "Unable to parse login start response.", exception);
-          callbackFailureOnUi(callback);
-          return;
-        }
+      public ListenableFuture<String> apply(String jsonResponse)
+          throws Exception {
+        JSONObject response = new JSONObject(jsonResponse);
+        String challenge = response.getString(LOGIN_START_CHALLENGE);
+        String challengeId = response.getString(LOGIN_START_CHALLENGE_ID);
 
-        loginFinish(identity, challengeId, challenge, callback);
+        return loginFinish(identity, challengeId, challenge);
       }
-    });
+    }, ThreadUtil.THREAD_POOL);
   }
 
-  private void loginStart(
-      final Identity identity, final Callback<String> callback) {
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(LOGIN_START_END_POINT + identity.getId())
-            .setMethod(HttpRequest.GET)
-            .setCallback(callback)
-            .makeRequest();
-      }
-    });
+  private ListenableFuture<String> loginStart(final Identity identity) {
+      return mHttpRequestFactory.newRequest()
+          .setEndPoint(LOGIN_START_END_POINT + identity.getId())
+          .setMethod(HttpRequest.GET)
+          .makeRequest();
   }
 
-  private void loginFinish(
+  private ListenableFuture<String> loginFinish(
       final Identity identity,
       final String challengeId,
-      final String challenge,
-      final Callback<String> callback) {
-    mHandler.post(new Runnable() {
+      final String challenge) {
+    String verification = identity.signBytes(Base64Util.decode(challenge));
+    ListenableFuture<String> tokenFuture = mHttpRequestFactory
+        .newRequest()
+        .setEndPoint(LOGIN_FINISH_END_POINT + challengeId)
+        .setMethod(HttpRequest.POST)
+        .setBody(verification)
+        .makeRequest();
+
+    Futures.addCallback(tokenFuture, new FutureCallback<String>() {
       @Override
-      public void run() {
-        String verification = identity.signBytes(Base64Util.decode(challenge));
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(LOGIN_FINISH_END_POINT + challengeId)
-            .setMethod(HttpRequest.POST)
-            .setBody(verification)
-            .setCallback(new CallbackWrapper<String>(callback) {
-                  @Override
-                  public void onApiSuccess(String token) {
-                    setAuthToken(token);
-                    super.onApiSuccess(token);
-                  }
-                })
-            .makeRequest();
+      public void onSuccess(String token) {
+       setAuthToken(token);
       }
-    });
+
+      @Override
+      public void onFailure(Throwable t) {
+      }
+    }, ThreadUtil.THREAD_POOL);
+
+    return tokenFuture;
   }
 
   @Override
-  public void lookupUserId(
-      final String displayName, final Callback<Long> callback) {
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(ACCOUNT_LOOKUP_END_POINT + displayName)
-            .setMethod(HttpRequest.GET)
-            .setAuthToken(getAuthToken())
-            .setCallback(new CallbackTransform<String, Long>(callback) {
-              @Override
-              public Long transform(String userId) {
-                return Long.parseLong(userId);
-              }
-            })
-            .makeRequest();
-      }
-    });
+  public ListenableFuture<Long> lookupUserId(final String displayName) {
+      return Futures.transform(
+          mHttpRequestFactory.newRequest()
+              .setEndPoint(ACCOUNT_LOOKUP_END_POINT + displayName)
+              .setMethod(HttpRequest.GET)
+              .setAuthToken(getAuthToken())
+              .makeRequest(),
+          new Function<String, Long>() {
+            @Override
+            public Long apply(String input) {
+              return Long.parseLong(input);
+            }
+          }, ThreadUtil.THREAD_POOL);
   }
 
   @Override
-  public void newGame(
+  public ListenableFuture<Void> newGame(
       final String label,
-      final List<Long> players,
-      final Callback<Void>  callback) {
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        String requestBody = null;
-        try {
-          JSONArray playersJson = new JSONArray();
-          for (long playerId : players) {
-            playersJson.put(playerId);
-          }
+      final List<Long> players) {
+    return Futures.transform(
+        Futures.<Void>immediateFuture(null),
+        new AsyncFunction<Void, Void>() {
+          @Override
+          public ListenableFuture<Void> apply(Void input) throws JSONException {
+            JSONArray playersJson = new JSONArray();
+            for (long playerId : players) {
+              playersJson.put(playerId);
+            }
 
-          JSONObject bodyJson = new JSONObject();
-          bodyJson.put(NEW_GAME_PLAYERS, playersJson);
-          bodyJson.put(NEW_GAME_LABEL, label);
+            JSONObject bodyJson = new JSONObject();
+            bodyJson.put(NEW_GAME_PLAYERS, playersJson);
+            bodyJson.put(NEW_GAME_LABEL, label);
 
-          requestBody = bodyJson.toString();
-        } catch (JSONException exception) {
-          Log.e(TAG, "Unable to create new game JSON.", exception);
-          callbackFailureOnUi(callback);
-          return;
-        }
+            String requestBody = bodyJson.toString();
 
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(NEW_GAME_END_POINT)
-            .setMethod(HttpRequest.POST)
-            .setAuthToken(getAuthToken())
-            .setBody(requestBody)
-            .setCallback(CallbackTransform.<String>voidTransform(callback))
-            .makeRequest();
+            return ThreadUtil.voidFuture(
+                mHttpRequestFactory.newRequest()
+                    .setEndPoint(NEW_GAME_END_POINT)
+                    .setMethod(HttpRequest.POST)
+                    .setAuthToken(getAuthToken())
+                    .setBody(requestBody)
+                    .makeRequest());
       }
-    });
+    }, ThreadUtil.THREAD_POOL);
   }
 
   @Override
-  public void inbox(final Callback<List<InboxEntry>> callback) {
-    final Callback<String> wrappedCallback =
-        new CallbackTransform<String, List<InboxEntry>>(callback) {
-      @Override
-      public List<InboxEntry> transform(String body) throws Exception {
-        List<InboxEntry> entryList = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(body);
-        for (int i = 0; i < jsonArray.length(); i++) {
-          entryList.add( InboxEntry.fromJson(jsonArray.getJSONObject(i)));
-        }
-        return entryList;
-      }
-    };
-
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        mHttpRequestFactory.newRequest()
+  public ListenableFuture<List<InboxEntry>> inbox() {
+    ListenableFuture<String> bodyFuture = mHttpRequestFactory.newRequest()
             .setEndPoint(INBOX_END_POINT)
             .setMethod(HttpRequest.POST)
             .setAuthToken(getAuthToken())
-            .setCallback(wrappedCallback)
             .makeRequest();
-      }
-    });
+
+    return Futures.transform(
+        bodyFuture,
+        new AsyncFunction<String, List<InboxEntry>>() {
+          @Override
+          public ListenableFuture<List<InboxEntry>> apply(String body)
+              throws Exception {
+            List<InboxEntry> entryList = new ArrayList<>();
+            JSONArray jsonArray = new JSONArray(body);
+            for (int i = 0; i < jsonArray.length(); i++) {
+              entryList.add( InboxEntry.fromJson(jsonArray.getJSONObject(i)));
+            }
+            return Futures.immediateFuture(entryList);
+          }
+        }, ThreadUtil.THREAD_POOL);
   }
 
   @Override
-  public void move(
-      final long gameId, final Turn turn, final Callback<Void> callback) {
-    mHandler.post(new Runnable() {
+  public ListenableFuture<Void> move(final long gameId, final Turn turn) {
+    ListenableFuture<String> bodyFuture = Futures.transform(
+        Futures.<Void>immediateFuture(null),
+        new AsyncFunction<Void, String>() {
+          @Override
+          public ListenableFuture<String> apply(Void input) throws Exception {
+            return mHttpRequestFactory.newRequest()
+                .setEndPoint(MOVE_END_POINT + gameId)
+                .setMethod(HttpRequest.POST)
+                .setAuthToken(getAuthToken())
+                .setBody(turn.toJson().toString())
+                .makeRequest();
+          }
+        });
+    return ThreadUtil.voidFuture(bodyFuture);
+  }
+
+  @Override
+  public ListenableFuture<List<Game>> history(final long startTimeSeconds) {
+    AsyncFunction<String, List<Game>> bodyToGames =
+        new AsyncFunction<String, List<Game>>() {
       @Override
-      public void run() {
-        try {
-          mHttpRequestFactory.newRequest()
-              .setEndPoint(MOVE_END_POINT + gameId)
-              .setMethod(HttpRequest.POST)
-              .setAuthToken(getAuthToken())
-              .setBody(turn.toJson().toString())
-              .setCallback(CallbackTransform.<String>voidTransform(callback))
-              .makeRequest();
-        } catch (JSONException exception) {
-          Log.e(TAG, "Unable to create turn JSON.", exception);
-          callbackFailureOnUi(callback);
+      public ListenableFuture<List<Game>> apply(String body) throws Exception {
+        List<Game> gameList = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray(body);
+        for (int i = 0; i < jsonArray.length(); i++) {
+          gameList.add(Game.fromJson(jsonArray.getJSONObject(i)));
         }
+        return Futures.immediateFuture(gameList);
       }
-    });
-  }
+    };
 
-  @Override
-  public void history(
-      final long startTimeSeconds, final Callback<List<Game>> callback) {
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        final Callback<String> wrappedCallback =
-            new CallbackTransform<String, List<Game>>(callback) {
-              @Override
-              public List<Game> transform(String body) throws Exception {
-                List<Game> gameList = new ArrayList<>();
-                JSONArray jsonArray = new JSONArray(body);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                  gameList.add(Game.fromJson(jsonArray.getJSONObject(i)));
-                }
-                return gameList;
-              }
-            };
+    ListenableFuture<String> bodyFuture =  mHttpRequestFactory
+        .newRequest()
+        .setEndPoint(HISTORY_END_POINT + startTimeSeconds)
+        .setMethod(HttpRequest.GET)
+        .setAuthToken(getAuthToken())
+        .makeRequest();
 
-        mHttpRequestFactory.newRequest()
-            .setEndPoint(HISTORY_END_POINT + startTimeSeconds)
-            .setMethod(HttpRequest.GET)
-            .setAuthToken(getAuthToken())
-            .setCallback(wrappedCallback)
-            .makeRequest();
-      }
-    });
+    return Futures.transform(bodyFuture, bodyToGames, ThreadUtil.THREAD_POOL);
   }
 
   private void setAuthToken(String token) {
@@ -328,14 +304,5 @@ class ApiImpl implements Api {
     synchronized (mAuthTokenLock) {
       return mAuthToken;
     }
-  }
-
-  private <T> void callbackFailureOnUi(final Callback<T> callback) {
-    mMainHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        callback.onApiFailure();
-      }
-    });
   }
 }

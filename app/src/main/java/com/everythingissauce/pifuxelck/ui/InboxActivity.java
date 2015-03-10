@@ -1,6 +1,7 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.data.Drawing;
@@ -11,6 +12,10 @@ import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 
 import com.everythingissauce.pifuxelck.sync.SyncAdapter;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import android.app.Activity;
 import android.content.Context;
@@ -232,21 +237,20 @@ public class InboxActivity extends Activity implements
   }
 
   private void refreshInbox() {
-    SyncAdapter.syncInbox(
-        new IdentityProvider(this),
-        mApi,
-        mInboxStore,
-        new Api.Callback<Integer>() {
+    ThreadUtil.callbackOnUi(
+        SyncAdapter.syncInbox(new IdentityProvider(this), mApi, mInboxStore),
+        new FutureCallback<Integer>() {
           @Override
-          public void onApiSuccess(Integer numNew) {
+          public void onSuccess(Integer numNew) {
             refreshInboxAdapter();
           }
 
           @Override
-          public void onApiFailure() {
+          public void onFailure(Throwable t) {
             Toast.makeText(
-                InboxActivity.this, R.string.error_inbox_refresh, Toast.LENGTH_LONG)
-                .show();
+                InboxActivity.this,
+                R.string.error_inbox_refresh,
+                Toast.LENGTH_LONG).show();
             refreshInboxAdapter();
           }
         });
@@ -275,19 +279,31 @@ public class InboxActivity extends Activity implements
   }
 
   private void submitTurn(final long gameId, final Turn turn) {
-    mApi.move(gameId, turn, new Api.Callback<Void>() {
+    ListenableFuture<Void> moveFuture = mApi.move(gameId, turn);
+
+    Futures.addCallback(moveFuture, new FutureCallback<Void>() {
       @Override
-      public void onApiSuccess(Void result) {
-        refreshInbox();
+      public void onSuccess(Void result) {
+        ThreadUtil.UI_HANDLER.post(new Runnable() {
+          @Override
+          public void run() {
+            refreshInbox();
+          }
+        });
       }
 
       @Override
-      public void onApiFailure() {
+      public void onFailure(Throwable t) {
         mInboxStore.updateEntryWithReply(gameId, turn);
-        refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
-        Toast.makeText(
-            InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
-            .show();
+        ThreadUtil.UI_HANDLER.post(new Runnable() {
+          @Override
+          public void run() {
+            refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
+            Toast.makeText(
+                InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
+                .show();
+          }
+        });
       }
     });
   }

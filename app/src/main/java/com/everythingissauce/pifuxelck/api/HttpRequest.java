@@ -1,12 +1,11 @@
 package com.everythingissauce.pifuxelck.api;
 
-import com.everythingissauce.pifuxelck.api.Api.Callback;
+import com.everythingissauce.pifuxelck.ThreadUtil;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.apache.commons.io.IOUtils;
 
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,10 +15,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Callable;
 
 /**
  * Represents the API that is used to communicate with an abstract backend.
@@ -34,7 +32,6 @@ class HttpRequest {
 
   private static final String HEADER_AUTH = "x-pifuxelck-auth";
 
-  @Nullable private Callback<String> mCallback;
   @Nullable private String mBody;
   @Nullable private String mEndPoint;
   @Nullable private String mAuthToken;
@@ -54,7 +51,6 @@ class HttpRequest {
     mPort = port;
 
     mBody = null;
-    mCallback = null;
     mEndPoint = null;
     mMethod = GET;
 
@@ -85,22 +81,9 @@ class HttpRequest {
     return this;
   }
 
-  public HttpRequest setCallback(Callback<String> callback) {
-    checkFrozen();
-    mCallback = callback;
-    return this;
-  }
-
-  public void makeRequest() {
+  public ListenableFuture<String> makeRequest() {
     mFrozen = true;
-
-    // AsyncTasks must be created from the UI thread.
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        new HttpRequestTask().execute();
-      }
-    });
+    return ThreadUtil.THREAD_POOL.submit(new HttpRequestCallable());
   }
 
   private void checkFrozen() {
@@ -114,10 +97,10 @@ class HttpRequest {
    * Performs an HTTP request in a background thread and calls back the result
    * on the UI thread.
    */
-  private class HttpRequestTask extends AsyncTask<Void, Void, String> {
+  private class HttpRequestCallable implements Callable<String> {
 
     @Override
-    public String doInBackground(Void... params) {
+    public String call() {
       HttpURLConnection connection = null;
       try {
         String endPoint = mEndPoint == null ? "/" : mEndPoint;
@@ -164,19 +147,6 @@ class HttpRequest {
       }
 
       return null;
-    }
-
-    @Override
-    public void onPostExecute(String httpBody) {
-      if (mCallback == null) {
-        return;
-      }
-
-      if (httpBody == null) {
-        mCallback.onApiFailure();
-        return;
-      }
-      mCallback.onApiSuccess(httpBody);
     }
   }
 }

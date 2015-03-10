@@ -3,6 +3,7 @@ package com.everythingissauce.pifuxelck;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -42,6 +43,20 @@ public class ThreadUtil {
         });
       }
     }, THREAD_POOL);
+  }
+
+  public static <V> ListenableFuture<Void> voidFuture(
+      ListenableFuture<V>  future) {
+    return Futures.transform(future, voidTransform(), THREAD_POOL);
+  }
+
+  public static <V> Function<V, Void> voidTransform() {
+    return new Function<V, Void>() {
+      @Override
+      public Void apply(V input) {
+        return null;
+      }
+    };
   }
 
   private ThreadUtil() {}

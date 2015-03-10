@@ -1,12 +1,14 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.data.Contact;
 import com.everythingissauce.pifuxelck.storage.ContactsStore;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
+import com.google.common.util.concurrent.FutureCallback;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -160,18 +162,20 @@ public class ContactsActivity extends Activity implements
       return;
     }
 
-    mApi.lookupUserId(mQuery, new Api.Callback<Long>() {
-      @Override
-      public void onApiSuccess(Long result) {
-        mResolvedUserId = result;
-        mAddContactButton.setVisibility(View.VISIBLE);
-      }
+    ThreadUtil.callbackOnUi(
+        mApi.lookupUserId(mQuery),
+        new FutureCallback<Long>() {
+          @Override
+          public void onSuccess(Long result) {
+            mResolvedUserId = result;
+            mAddContactButton.setVisibility(View.VISIBLE);
+          }
 
-      @Override
-      public void onApiFailure() {
-        mResolvedUserId = null;
-      }
-    });
+          @Override
+          public void onFailure(Throwable t) {
+            mResolvedUserId = null;
+          }
+        });
   }
 
   private void addContact() {

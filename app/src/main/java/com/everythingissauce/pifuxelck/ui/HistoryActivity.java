@@ -1,5 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.R;
@@ -7,6 +8,7 @@ import com.everythingissauce.pifuxelck.storage.HistoryStore;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.sync.SyncAdapter;
 import com.google.common.io.Closeables;
+import com.google.common.util.concurrent.FutureCallback;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -93,25 +95,24 @@ public class HistoryActivity extends Activity implements
   }
 
   private void refreshHistoryFromNetwork() {
-    SyncAdapter.syncHistory(
-        new IdentityProvider(this),
-        mApi,
-        mHistoryStore,
-        new Api.Callback<Integer> () {
-      @Override
-      public void onApiSuccess(Integer numNew) {
-        refreshHistoryInUI();
-      }
+    ThreadUtil.callbackOnUi(
+        SyncAdapter.syncHistory(
+            new IdentityProvider(this), mApi, mHistoryStore),
+        new FutureCallback<Integer>() {
+          @Override
+          public void onSuccess(Integer result) {
+            refreshHistoryInUI();
+          }
 
-      @Override
-      public void onApiFailure() {
-        Toast.makeText(
-            HistoryActivity.this,
-            R.string.error_history_refresh,
-            Toast.LENGTH_LONG).show();
-        refreshHistoryInUI();
-      }
-    });
+          @Override
+          public void onFailure(Throwable t) {
+            Toast.makeText(
+                HistoryActivity.this,
+                R.string.error_history_refresh,
+                Toast.LENGTH_LONG).show();
+            refreshHistoryInUI();
+          }
+        });
   }
 
   private void refreshHistoryInUI() {

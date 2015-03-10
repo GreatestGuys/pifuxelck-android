@@ -18,8 +18,8 @@ import android.util.Log;
 
 import com.everythingissauce.pifuxelck.R;
 import com.everythingissauce.pifuxelck.Settings;
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.api.Api;
-import com.everythingissauce.pifuxelck.api.Api.Callback;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.data.Game;
@@ -29,6 +29,11 @@ import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 import com.everythingissauce.pifuxelck.storage.InboxStore;
 import com.everythingissauce.pifuxelck.ui.HistoryActivity;
 import com.everythingissauce.pifuxelck.ui.InboxActivity;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -92,26 +97,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
       final String authority,
       final ContentProviderClient client,
       final SyncResult syncResult) {
-    syncHistory(
-        mIdentityProvider,
-        mApi,
-        mHistoryStore,
-        newNotificationCallback(
-            R.string.new_history,
-            HISTORY_NOTIFICATION_ID,
-            HistoryActivity.class));
+     Futures.addCallback(
+         syncHistory(mIdentityProvider, mApi, mHistoryStore),
+         newNotificationCallback(
+             R.string.new_history,
+             HISTORY_NOTIFICATION_ID,
+             HistoryActivity.class));
 
-    syncInbox(
-        mIdentityProvider,
-        mApi,
-        mInboxStore,
+    Futures.addCallback(
+        syncInbox(mIdentityProvider, mApi, mInboxStore),
         newNotificationCallback(
             R.string.new_inbox,
             INBOX_NOTIFICATION_ID,
             InboxActivity.class));
   }
 
-  private Callback<Integer> newNotificationCallback(
+  private FutureCallback<Integer> newNotificationCallback(
       final int titleString,
       final int id,
       final Class clazz) {
@@ -119,9 +120,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     final NotificationManager manager = (NotificationManager)
         getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
-    return new Callback<Integer>() {
+    return new FutureCallback<Integer>() {
       @Override
-      public void onApiSuccess(Integer result) {
+      public void onSuccess(Integer result) {
         if (result <= 0) {
           return;
         }
@@ -152,146 +153,130 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
       }
 
       @Override
-      public void onApiFailure() {
+      public void onFailure(Throwable t) {
         // Do nothing.
       }
     };
   }
 
-  public static void syncInbox(
+  public static ListenableFuture<Integer> syncInbox(
       final IdentityProvider identityProvider,
       final Api api,
-      final InboxStore inboxStore,
-      @Nullable final Callback<Integer> callback) {
+      final InboxStore inboxStore) {
     if (!api.loggedIn()) {
-      loginAndTryInboxSyncAgain(identityProvider, api, inboxStore, callback);
-      return;
+      return loginAndTryInboxSyncAgain(identityProvider, api, inboxStore);
     }
 
     final Set<Long> initialIds = new HashSet<>(inboxStore.getEntryIds());
-    api.inbox(new Callback<List<InboxEntry>>() {
-      @Override
-      public void onApiSuccess(List<InboxEntry> entries) {
-        int numNewEntries = 0;
+    return Futures.transform(
+        api.inbox(),
+        new Function<List<InboxEntry>, Integer>() {
+          @Override
+          public Integer apply(List<InboxEntry> entries) {
+            int numNewEntries = 0;
 
-        // Add new entries and determine which entries should be removed..
-        for (InboxEntry entry : entries) {
-          long id = entry.getGameId();
-          if (!initialIds.contains(id)) {
-            numNewEntries++;
-            inboxStore.addEntry(entry);
-          } else {
-            // Remove IDs from the set that are still in the data store as we
-            // go. That way when the entry list from the server has been
-            // completely traversed, the only items that remain in initialIds
-            // will be IDs that need to be removed.
-            initialIds.remove(id);
+            // Add new entries and determine which entries should be removed..
+            for (InboxEntry entry : entries) {
+              long id = entry.getGameId();
+              if (!initialIds.contains(id)) {
+                numNewEntries++;
+                inboxStore.addEntry(entry);
+              } else {
+                // Remove IDs from the set that are still in the data store as we
+                // go. That way when the entry list from the server has been
+                // completely traversed, the only items that remain in initialIds
+                // will be IDs that need to be removed.
+                initialIds.remove(id);
+              }
+            }
+
+            // Remove entries that are no longer in the inbox.
+            for (Long id : initialIds) {
+              inboxStore.remove(id);
+            }
+
+            return numNewEntries;
           }
-        }
-
-        // Remove entries that are no longer in the inbox.
-        for (Long id : initialIds) {
-          inboxStore.remove(id);
-        }
-
-        if (callback != null) callback.onApiSuccess(numNewEntries);
-      }
-
-      @Override
-      public void onApiFailure() {
-        if (callback != null) callback.onApiFailure();
-      }
-    });
+        }, ThreadUtil.THREAD_POOL);
   }
 
-  private static void loginAndTryInboxSyncAgain(
+  private static ListenableFuture<Integer> loginAndTryInboxSyncAgain(
       final IdentityProvider identityProvider,
       final Api api,
-      final InboxStore inboxStore,
-      @Nullable final Callback<Integer> callback) {
+      final InboxStore inboxStore) {
     if(!identityProvider.hasIdentity()) {
-      return;
+      return Futures.immediateFailedCheckedFuture(
+          new IllegalStateException("Not logged in"));
     }
 
-    api.login(identityProvider.getIdentity(), new Callback<String>() {
-      @Override
-      public void onApiSuccess(String result) {
-        syncInbox(identityProvider, api, inboxStore, callback);
-      }
-
-      @Override
-      public void onApiFailure() {
-      }
-    });
+    return Futures.transform(
+        api.login(identityProvider.getIdentity()),
+        new AsyncFunction<String, Integer>() {
+          @Override
+          public ListenableFuture<Integer> apply(String result) {
+            return syncInbox(identityProvider, api, inboxStore);
+          }
+        }, ThreadUtil.THREAD_POOL);
   }
 
-  public static void syncHistory(
+  public static ListenableFuture<Integer> syncHistory(
       final IdentityProvider identityProvider,
       final Api api,
-      final HistoryStore historyStore,
-      @Nullable final Callback<Integer> callback) {
+      final HistoryStore historyStore) {
     if (!api.loggedIn()) {
-      loginAndTryHistorySyncAgain(
-          identityProvider, api, historyStore, callback);
-      return;
+      return loginAndTryHistorySyncAgain(identityProvider, api, historyStore);
     }
 
     final int initialSize = historyStore.getSize();
-    syncHistory(initialSize, api, historyStore, callback);
+    return syncHistory(initialSize, api, historyStore);
   }
 
-  private static void syncHistory(
+  private static ListenableFuture<Integer> syncHistory(
       final int initialSize,
       final Api api,
-      final HistoryStore historyStore,
-      @Nullable final Callback<Integer> callback) {
+      final HistoryStore historyStore) {
     long lastGameCompletedTime = historyStore.getLastCompletedTime();
     final int previousSize = historyStore.getSize();
 
-    api.history(lastGameCompletedTime, new Callback<List<Game>>() {
-      @Override
-      public void onApiSuccess(List<Game> games) {
-        for (Game game : games) {
-          historyStore.addGame(game);
-        }
+    return Futures.transform(
+        api.history(lastGameCompletedTime),
+        new AsyncFunction<List<Game>, Integer>() {
+          @Override
+          public ListenableFuture<Integer> apply(List<Game> games) {
+            for (Game game : games) {
+              historyStore.addGame(game);
+            }
 
-        int newSize = historyStore.getSize();
+            int newSize = historyStore.getSize();
 
-        // If there were no games in this query, then stop making network
-        // requests, and update the UI. Otherwise, there might be more games,
-        // so continue making network requests.
-        if (previousSize == newSize) {
-          if (callback != null) callback.onApiSuccess(newSize - initialSize);
-        } else {
-          syncHistory(initialSize, api, historyStore, callback);
-        }
-      }
-
-      @Override
-      public void onApiFailure() {
-        if (callback != null) callback.onApiFailure();
-      }
-    });
+            // If there were no games in this query, then stop making network
+            // requests, and update the UI. Otherwise, there might be more games,
+            // so continue making network requests.
+            if (previousSize == newSize) {
+              return Futures.immediateFuture(newSize - initialSize);
+            } else {
+              return syncHistory(initialSize, api, historyStore);
+            }
+          }
+        }, ThreadUtil.THREAD_POOL);
   }
 
-  private static void loginAndTryHistorySyncAgain(
+  private static ListenableFuture<Integer> loginAndTryHistorySyncAgain(
       final IdentityProvider identityProvider,
       final Api api,
-      final HistoryStore historyStore,
-      @Nullable final Callback<Integer> callback) {
+      final HistoryStore historyStore) {
     if(!identityProvider.hasIdentity()) {
-      return;
+      return Futures.immediateFailedFuture(
+          new IllegalStateException("Not logged in."));
     }
 
-    api.login(identityProvider.getIdentity(), new Callback<String>() {
-      @Override
-      public void onApiSuccess(String result) {
-        syncHistory(identityProvider, api, historyStore, callback);
-      }
-
-      @Override
-      public void onApiFailure() {
-      }
-    });
+    return Futures.transform(
+        api.login(identityProvider.getIdentity()),
+        new AsyncFunction<String, Integer>() {
+          @Override
+          public ListenableFuture<Integer> apply(String result) {
+            return syncHistory(identityProvider, api, historyStore);
+          }
+        }, ThreadUtil.THREAD_POOL);
   }
 }
