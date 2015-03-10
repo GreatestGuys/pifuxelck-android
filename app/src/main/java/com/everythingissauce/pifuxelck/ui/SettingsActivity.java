@@ -7,14 +7,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.Settings;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.storage.IdentityProvider;
 
 import org.json.JSONException;
 
-public class SettingsActivity extends Activity implements View.OnClickListener {
+public class SettingsActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
   private static final String TAG = "SettingsActivity";
 
@@ -22,15 +25,24 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
 
   private Button mExportAccountButton;
   private IdentityProvider mIdentityProvider;
+  private CheckBox mShouldVibrateCheckBox;
+
+  private Settings mSettings;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_settings);
 
+    mSettings = new Settings(this);
+
     mExportAccountButton = (Button) findViewById(R.id.export_account_button);
     mExportAccountButton.setOnClickListener(this);
     mIdentityProvider = new IdentityProvider(this);
+
+    mShouldVibrateCheckBox = (CheckBox) findViewById(R.id.should_vibrate);
+    mShouldVibrateCheckBox.setChecked(mSettings.shouldVibrate());
+    mShouldVibrateCheckBox.setOnCheckedChangeListener(this);
   }
 
   @Override
@@ -57,6 +69,15 @@ public class SettingsActivity extends Activity implements View.OnClickListener {
           getString(R.string.settings_export_account_chooser_title)));
     } catch (JSONException exception) {
       Log.e(TAG, "Unable to serialize account JSON.", exception);
+    }
+  }
+
+  @Override
+  public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+    switch (compoundButton.getId()) {
+      case R.id.should_vibrate:
+        mSettings.setShouldVibrate(checked);
+        break;
     }
   }
 }

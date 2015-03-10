@@ -17,6 +17,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.everythingissauce.pifuxelck.R;
+import com.everythingissauce.pifuxelck.Settings;
 import com.everythingissauce.pifuxelck.api.Api;
 import com.everythingissauce.pifuxelck.api.Api.Callback;
 import com.everythingissauce.pifuxelck.api.ApiProvider;
@@ -61,6 +62,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
   private final HistoryStore mHistoryStore;
   private final IdentityProvider mIdentityProvider;
   private final InboxStore mInboxStore;
+  private final Settings mSettings;
 
   public SyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
@@ -68,6 +70,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     mIdentityProvider = IdentityProvider.getInstance(context);
     mHistoryStore = new HistoryStore(context);
     mInboxStore = new InboxStore(context);
+    mSettings = new Settings(context);
   }
 
   public SyncAdapter(
@@ -79,6 +82,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     mIdentityProvider = IdentityProvider.getInstance(context);
     mHistoryStore = new HistoryStore(context);
     mInboxStore = new InboxStore(context);
+    mSettings = new Settings(context);
   }
 
   @Override
@@ -131,16 +135,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         PendingIntent pendingIntent =
             stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(getContext())
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat
+            .Builder(getContext())
             .setColor(res.getColor(R.color.accent))
             .setLights(res.getColor(R.color.accent), LIGHT_ON_MS, LIGHT_OFF_MS)
-            .setVibrate(VIBRATE_PATTERN)
             .setSmallIcon(R.drawable.ic_create_white_18dp)
             .setContentTitle(res.getString(titleString))
             .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build();
-        manager.notify(id, notification);
+            .setAutoCancel(true);
+
+        if (mSettings.shouldVibrate()) {
+          notificationBuilder.setVibrate(VIBRATE_PATTERN);
+        }
+
+        manager.notify(id, notificationBuilder.build());
       }
 
       @Override
