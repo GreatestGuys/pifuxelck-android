@@ -54,12 +54,7 @@ public class HistoryActivity extends Activity implements
     mGameListView.setOnItemClickListener(this);
 
     // Initialize the query for historic games.
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        refreshHistoryInUI();
-      }
-    });
+    refreshHistoryInUI();
   }
 
   @Override

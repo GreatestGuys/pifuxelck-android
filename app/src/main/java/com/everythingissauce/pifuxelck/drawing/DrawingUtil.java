@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.data.AbstractDrawing;
 import com.everythingissauce.pifuxelck.data.AbstractLine;
 import com.everythingissauce.pifuxelck.data.Line;
@@ -21,13 +22,10 @@ import java.util.concurrent.Executors;
 
 public class DrawingUtil {
 
-  private static final ListeningExecutorService sThreadPool =
-      MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
-
   public static ListenableFuture<Bitmap> renderDrawing(
       final AbstractDrawing drawing,
       final Bitmap bitmap) {
-    return sThreadPool.submit(new Callable<Bitmap>() {
+    return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
         Canvas canvas = new Canvas(bitmap);
@@ -54,7 +52,7 @@ public class DrawingUtil {
           public ListenableFuture<Bitmap> apply(Bitmap input) {
             return renderDrawing(drawing, input);
           }
-        });
+        }, ThreadUtil.THREAD_POOL);
   }
 
   public static ListenableFuture<Bitmap> renderLine(
@@ -67,13 +65,13 @@ public class DrawingUtil {
           public ListenableFuture<Bitmap> apply(Bitmap input) {
             return renderLine(line, input);
           }
-        });
+        }, ThreadUtil.THREAD_POOL);
   }
 
   public static ListenableFuture<Bitmap> renderLine(
       final AbstractLine line,
       final Bitmap bitmap) {
-    return sThreadPool.submit(new Callable<Bitmap>() {
+    return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
         Canvas canvas = new Canvas(bitmap);
@@ -96,7 +94,7 @@ public class DrawingUtil {
   }
 
   private static ListenableFuture<Bitmap> futureDrawingBitmap(final int size) {
-    return sThreadPool.submit(new Callable<Bitmap>() {
+    return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
         return newDrawingBitmap(size);
@@ -105,7 +103,7 @@ public class DrawingUtil {
   }
 
   private static ListenableFuture<Bitmap> futureLineBitmap(final int size) {
-    return sThreadPool.submit(new Callable<Bitmap>() {
+    return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
         return newLineBitmap(size);

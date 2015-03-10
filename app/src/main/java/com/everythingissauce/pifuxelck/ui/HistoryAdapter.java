@@ -1,5 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.data.Drawing;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.R;
@@ -38,11 +39,8 @@ public class HistoryAdapter extends CursorAdapter {
     R.id.drawing_1_view
   };
 
-  private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-
   private final DrawingPlacer mDrawingPlacer;
   private final HistoryStore mHistoryStore;
-  private final ListeningExecutorService mThreadPool;
   private final WeakHashMap<View, ListenableFuture<Game>> mViewToGame;
 
   private int mLastPosition = -1;
@@ -52,9 +50,6 @@ public class HistoryAdapter extends CursorAdapter {
     mDrawingPlacer = new DrawingPlacer();
     mHistoryStore = historyStore;
     mViewToGame = new WeakHashMap<>();
-    mThreadPool =  MoreExecutors
-        .listeningDecorator(Executors
-            .newFixedThreadPool(10));
   }
 
   public HistoryStore.Preview getPreview(int index) {
@@ -104,7 +99,7 @@ public class HistoryAdapter extends CursorAdapter {
     Futures.addCallback(gameFuture, new FutureCallback<Game>() {
       @Override
       public void onSuccess(final Game game) {
-        UI_HANDLER.post(new Runnable() {
+        ThreadUtil.UI_HANDLER.post(new Runnable() {
           @Override
           public void run() {
             bindGameToView(game, view);
@@ -119,7 +114,7 @@ public class HistoryAdapter extends CursorAdapter {
   }
 
   private ListenableFuture<Game> getGame(final long id) {
-    return mThreadPool.submit(new Callable<Game>() {
+    return ThreadUtil.THREAD_POOL.submit(new Callable<Game>() {
       @Override
       public Game call() throws Exception {
         return mHistoryStore.getGame(id);

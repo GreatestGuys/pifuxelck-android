@@ -1,5 +1,6 @@
 package com.everythingissauce.pifuxelck.ui;
 
+import com.everythingissauce.pifuxelck.ThreadUtil;
 import com.everythingissauce.pifuxelck.data.AbstractDrawing;
 import com.everythingissauce.pifuxelck.data.AbstractLine;
 import com.everythingissauce.pifuxelck.data.Drawing;
@@ -41,8 +42,6 @@ public class DrawingView extends View {
   @Nullable private Bitmap mLineCache;
   @Nullable private ListenableFuture mLineFuture;
 
-  private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-
   public DrawingView(Context context) {
     super(context);
   }
@@ -78,7 +77,7 @@ public class DrawingView extends View {
     Futures.addCallback(mLineFuture, new FutureCallback<Bitmap>() {
       @Override
       public void onSuccess(final Bitmap result) {
-        UI_HANDLER.post(new Runnable() {
+        ThreadUtil.UI_HANDLER.post(new Runnable() {
           @Override
           public void run() {
             if (DEBUG) Log.i(TAG, "Line future rendered.");
@@ -106,7 +105,7 @@ public class DrawingView extends View {
     Futures.addCallback(mDrawingFuture, new FutureCallback<Bitmap>() {
       @Override
       public void onSuccess(final Bitmap result) {
-        UI_HANDLER.post(new Runnable() {
+        ThreadUtil.UI_HANDLER.post(new Runnable() {
           @Override
           public void run() {
             if (DEBUG) Log.i(TAG, "Drawing future rendered.");
