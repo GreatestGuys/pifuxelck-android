@@ -143,6 +143,6 @@ public class NewGameActivity extends Activity implements
 
   private void setCursor(Cursor cursor) {
     Cursor old = mContactsAdapter.swapCursor(cursor);
-    old.close();
+    if (old != null) old.close();
   }
 }
