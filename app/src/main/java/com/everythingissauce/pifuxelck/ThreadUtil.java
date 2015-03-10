@@ -16,8 +16,11 @@ public class ThreadUtil {
 
   public static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 
-  public static final ListeningExecutorService THREAD_POOL =
-      MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+  public static final ListeningExecutorService THREAD_POOL = newThreadPool(16);
+
+  public static ListeningExecutorService newThreadPool(int size) {
+    return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(size));
+  }
 
   public static <V> void callbackOnUi(
       ListenableFuture<V> future,

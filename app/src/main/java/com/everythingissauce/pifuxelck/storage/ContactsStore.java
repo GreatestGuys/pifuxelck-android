@@ -63,7 +63,9 @@ public class ContactsStore {
     return new AsyncTaskLoader<Cursor>(mContext) {
       @Override
       public Cursor loadInBackground() {
-        return getContactsCursor(query);
+        Cursor cursor = getContactsCursor(query);
+        cursor.getCount();
+        return cursor;
       }
     };
   }

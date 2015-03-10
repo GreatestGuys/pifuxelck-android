@@ -14,11 +14,8 @@ import com.everythingissauce.pifuxelck.data.LineSegment;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 
 public class DrawingUtil {
 
@@ -28,16 +25,18 @@ public class DrawingUtil {
     return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = newPaint();
+        synchronized (bitmap) {
+          Canvas canvas = new Canvas(bitmap);
+          Paint paint = newPaint();
 
-        canvas.drawColor(drawing.getBackgroundColor().toAndroidColor());
+          canvas.drawColor(drawing.getBackgroundColor().toAndroidColor());
 
-        for (Line drawingLine : drawing) {
-          drawLine(canvas, paint, drawingLine, bitmap.getWidth());
+          for (Line drawingLine : drawing) {
+            drawLine(canvas, paint, drawingLine, bitmap.getWidth());
+          }
+
+          return bitmap;
         }
-
-        return bitmap;
       }
     });
   }
@@ -74,13 +73,15 @@ public class DrawingUtil {
     return ThreadUtil.THREAD_POOL.submit(new Callable<Bitmap>() {
       @Override
       public Bitmap call() throws Exception {
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = newPaint();
+        synchronized (bitmap) {
+          Canvas canvas = new Canvas(bitmap);
+          Paint paint = newPaint();
 
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        drawLine(canvas, paint, line, bitmap.getWidth());
+          canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+          drawLine(canvas, paint, line, bitmap.getWidth());
 
-        return bitmap;
+          return bitmap;
+        }
       }
     });
   }

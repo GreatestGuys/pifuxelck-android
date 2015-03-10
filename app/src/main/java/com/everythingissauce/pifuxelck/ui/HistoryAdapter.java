@@ -93,7 +93,7 @@ public class HistoryAdapter extends CursorAdapter {
     if (previousGame != null) {
       previousGame.cancel(true);
     }
-    ListenableFuture<Game> gameFuture = getGame(preview.getGameId());
+    final ListenableFuture<Game> gameFuture = getGame(preview.getGameId());
     mViewToGame.put(view, gameFuture);
 
     Futures.addCallback(gameFuture, new FutureCallback<Game>() {
@@ -102,6 +102,10 @@ public class HistoryAdapter extends CursorAdapter {
         ThreadUtil.UI_HANDLER.post(new Runnable() {
           @Override
           public void run() {
+            if (gameFuture != mViewToGame.get(view)) {
+              return;
+            }
+
             bindGameToView(game, view);
           }
         });

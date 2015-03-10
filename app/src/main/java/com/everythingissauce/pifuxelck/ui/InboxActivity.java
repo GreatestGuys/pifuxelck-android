@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.KeyEvent;
@@ -38,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class InboxActivity extends Activity implements
     AdapterView.OnItemClickListener,
@@ -148,7 +150,7 @@ public class InboxActivity extends Activity implements
       drawingIntent.setClass(getApplicationContext(), DrawingActivity.class);
       startActivityForResult(drawingIntent, REQUEST_DRAWING);
     } else if (turn.isDrawingTurn()) {
-      showLabelOverlay(turn.getDrawing());
+      showLabelOverlay(turn.getDrawing(), view);
     }
   }
 
@@ -206,10 +208,15 @@ public class InboxActivity extends Activity implements
     }
   }
 
-  private void showLabelOverlay(Drawing drawing) {
-    mDrawingPlacer.placeDrawingInView(drawing, mDrawingView);
-    mLabelEditText.setText("");
+  private void showLabelOverlay(Drawing drawing, View view) {
     mOverlayView.setVisibility(View.VISIBLE);
+    mLabelEditText.setText("");
+
+    // Use the bitmap from the label, so we don't have to wait for a new
+    // bitmap to render.
+    ImageView drawingView = (ImageView) view.findViewById(R.id.drawing_view);
+    BitmapDrawable bitmapDrawable = (BitmapDrawable) drawingView.getDrawable();
+    mDrawingView.setImageBitmap(bitmapDrawable.getBitmap());
   }
 
   /**
@@ -228,7 +235,7 @@ public class InboxActivity extends Activity implements
 
   private void hideLabelOverlay() {
     mOverlayView.setVisibility(View.INVISIBLE);
-    mDrawingView.setImageBitmap(null);
+    mDrawingPlacer.clearView(mDrawingView);
 
     // Make the keyboard go away if it is not already hidden.
     InputMethodManager imm =
@@ -237,30 +244,53 @@ public class InboxActivity extends Activity implements
   }
 
   private void refreshInbox() {
+    ThreadUtil.THREAD_POOL.submit(new Runnable() {
+      @Override
+      public void run() {
+        ThreadUtil.callbackOnUi(
+            SyncAdapter.syncInbox(
+                new IdentityProvider(InboxActivity.this), mApi, mInboxStore),
+            new FutureCallback<Integer>() {
+              @Override
+              public void onSuccess(Integer numNew) {
+                refreshInboxAdapter();
+              }
+
+              @Override
+              public void onFailure(Throwable t) {
+                Toast.makeText(
+                    InboxActivity.this,
+                    R.string.error_inbox_refresh,
+                    Toast.LENGTH_LONG).show();
+                refreshInboxAdapter();
+              }
+            });
+      }
+    });
+  }
+
+  private void refreshInboxAdapter() {
     ThreadUtil.callbackOnUi(
-        SyncAdapter.syncInbox(new IdentityProvider(this), mApi, mInboxStore),
-        new FutureCallback<Integer>() {
+        ThreadUtil.THREAD_POOL.submit(new Callable<List<InboxEntry>>() {
           @Override
-          public void onSuccess(Integer numNew) {
-            refreshInboxAdapter();
+          public List<InboxEntry> call() throws Exception {
+            return mInboxStore.getEntries();
+          }
+        }),
+        new FutureCallback<List<InboxEntry>>() {
+          @Override
+          public void onSuccess(List<InboxEntry> entries) {
+            mInboxAdapter =
+                InboxAdapter.newInboxAdapter(InboxActivity.this, entries);
+            mEntryListView.setAdapter(mInboxAdapter);
+            mEntryRefreshLayout.setRefreshing(false);
           }
 
           @Override
           public void onFailure(Throwable t) {
-            Toast.makeText(
-                InboxActivity.this,
-                R.string.error_inbox_refresh,
-                Toast.LENGTH_LONG).show();
-            refreshInboxAdapter();
+            mEntryRefreshLayout.setRefreshing(false);
           }
         });
-  }
-
-  private void refreshInboxAdapter() {
-    List<InboxEntry> entries = mInboxStore.getEntries();
-    mInboxAdapter = InboxAdapter.newInboxAdapter(this, entries);
-    mEntryListView.setAdapter(mInboxAdapter);
-    mEntryRefreshLayout.setRefreshing(false);
   }
 
   private void onDrawingActivityResult(int result, Intent data) {
