@@ -38,9 +38,11 @@ public class DrawingView extends View {
 
   @Nullable private Bitmap mDrawingCache;
   @Nullable private ListenableFuture<Bitmap> mDrawingFuture;
+  private boolean mDrawingQueued;
 
   @Nullable private Bitmap mLineCache;
   @Nullable private ListenableFuture mLineFuture;
+  private boolean mLineQueued;
 
   public DrawingView(Context context) {
     super(context);
@@ -55,6 +57,8 @@ public class DrawingView extends View {
   }
 
   public void setInProgressLine(@Nullable AbstractLine line) {
+    ThreadUtil.checkUI();
+
     mInProgressLine = line;
     if (line == null) {
       mLineCache = null;
@@ -65,16 +69,22 @@ public class DrawingView extends View {
   }
 
   public void setDrawing(@Nullable AbstractDrawing drawing) {
+    ThreadUtil.checkUI();
+
     mDrawing = drawing;
     onDrawingChanged();
   }
 
   public void onInProgressLineChanged() {
+    ThreadUtil.checkUI();
+
     if (mLineFuture != null) {
-      mLineFuture.cancel(true);
+      mLineQueued = true;
+      return;
     }
+
     mLineFuture = DrawingUtil.renderLine(mInProgressLine, getWidth());
-    Futures.addCallback(mLineFuture, new FutureCallback<Bitmap>() {
+    ThreadUtil.callbackOnUi(mLineFuture, new FutureCallback<Bitmap>() {
       @Override
       public void onSuccess(final Bitmap result) {
         ThreadUtil.UI_HANDLER.post(new Runnable() {
@@ -84,6 +94,7 @@ public class DrawingView extends View {
             mLineCache = result;
             mLineFuture = null;
 
+            maybeRenderQueuedLine();
             invalidate();
           }
         });
@@ -93,16 +104,28 @@ public class DrawingView extends View {
       public void onFailure(Throwable t) {
         if (DEBUG) Log.i(TAG, "Line future failed.");
         mLineFuture = null;
+        maybeRenderQueuedLine();
       }
     });
   }
 
-  public void onDrawingChanged() {
-    if (mDrawingFuture != null) {
-      mDrawingFuture.cancel(true);
+  private void maybeRenderQueuedLine() {
+    if (mLineQueued) {
+      onInProgressLineChanged();
     }
+    mLineQueued = false;
+  }
+
+  public void onDrawingChanged() {
+    ThreadUtil.checkUI();
+
+    if (mDrawingFuture != null) {
+      mDrawingQueued = true;
+      return;
+    }
+
     mDrawingFuture = DrawingUtil.renderDrawing(mDrawing, getWidth());
-    Futures.addCallback(mDrawingFuture, new FutureCallback<Bitmap>() {
+    ThreadUtil.callbackOnUi(mDrawingFuture, new FutureCallback<Bitmap>() {
       @Override
       public void onSuccess(final Bitmap result) {
         ThreadUtil.UI_HANDLER.post(new Runnable() {
@@ -111,7 +134,9 @@ public class DrawingView extends View {
             if (DEBUG) Log.i(TAG, "Drawing future rendered.");
             mDrawingCache = result;
             mDrawingFuture = null;
+
             invalidate();
+            maybeRenderQueuedDrawing();
           }
         });
       }
@@ -120,8 +145,16 @@ public class DrawingView extends View {
       public void onFailure(Throwable t) {
         if (DEBUG) Log.i(TAG, "Drawing future failed.");
         mDrawingFuture = null;
+        maybeRenderQueuedDrawing();
       }
     });
+  }
+
+  private void maybeRenderQueuedDrawing() {
+    if (mDrawingQueued) {
+      onDrawingChanged();
+    }
+    mDrawingQueued = false;
   }
 
   @Override
