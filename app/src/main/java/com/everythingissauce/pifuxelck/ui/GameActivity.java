@@ -3,6 +3,7 @@ package com.everythingissauce.pifuxelck.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.everythingissauce.pifuxelck.ThreadUtil;
@@ -63,5 +64,16 @@ public class GameActivity extends Activity {
       public void onFailure(Throwable t) {
       }
     });
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        super.onBackPressed();
+        return true;
+    }
+
+    return super.onOptionsItemSelected(item);
   }
 }

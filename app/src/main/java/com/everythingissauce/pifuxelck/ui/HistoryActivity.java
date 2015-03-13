@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -30,6 +31,8 @@ public class HistoryActivity extends Activity implements
     SwipeRefreshLayout.OnRefreshListener {
 
   private static final String TAG = "HistoryActivity";
+
+  private static final String STATE_LIST_VIEW = "list_view";
 
   private final Api mApi = ApiProvider.getApi();
 
@@ -57,6 +60,17 @@ public class HistoryActivity extends Activity implements
 
     // Initialize the query for historic games.
     refreshHistoryInUI();
+  }
+
+  @Override
+  protected void onSaveInstanceState (Bundle outState) {
+    outState.putParcelable(STATE_LIST_VIEW, mGameListView.onSaveInstanceState());
+  }
+
+  @Override
+  protected void onRestoreInstanceState (Bundle savedInstanceState) {
+    mGameListView.onRestoreInstanceState(
+        savedInstanceState.getParcelable(STATE_LIST_VIEW));
   }
 
   @Override
