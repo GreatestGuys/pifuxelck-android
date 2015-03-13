@@ -1,6 +1,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="0dp"
@@ -12,8 +13,6 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
         tools:context="com.everythingissauce.pifuxelck.ui.DrawingActivity">
@@ -23,8 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginRight="46dp"
             android:gravity="bottom"
             android:nestedScrollingEnabled="false"
             android:id="@+id/label_card" >
@@ -43,8 +42,12 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            card_view:cardElevation="8dp"
+            card_view:cardUseCompatPadding="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:id="@+id/drawing_card"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true">
@@ -59,13 +62,17 @@
 
         <ImageButton
             style="@style/ActionButton.Ok"
+            android:elevation="16dp"
             android:id="@+id/done_button"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="8dp"/>
 
         <ImageButton
             style="@style/ActionButton.Back"
+            android:elevation="16dp"
             android:id="@+id/undo_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
@@ -73,7 +80,10 @@
 
         <ImageButton
             style="@style/ActionButton.More"
+            android:elevation="16dp"
             android:id="@+id/options_button"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="8dp"/>
@@ -83,6 +93,7 @@
         <ImageButton
             style="@style/ActionButton.Small.Size"
             android:id="@+id/size_button"
+            android:elevation="16dp"
             android:layout_above="@+id/stroke_color_button"
             android:layout_alignLeft="@+id/stroke_color_button"
             android:layout_alignStart="@+id/stroke_color_button"
@@ -93,6 +104,7 @@
         <ImageButton
             style="@style/ActionButton.Small.Color"
             android:id="@+id/stroke_color_button"
+            android:elevation="16dp"
             android:layout_above="@+id/options_button"
             android:layout_alignLeft="@+id/background_color_button"
             android:layout_alignStart="@+id/background_color_button"
@@ -103,6 +115,7 @@
         <ImageButton
             style="@style/ActionButton.Small.Background"
             android:id="@+id/background_color_button"
+            android:elevation="16dp"
             android:layout_above="@+id/size_button"
             android:layout_alignRight="@+id/options_button"
             android:layout_alignEnd="@+id/options_button"

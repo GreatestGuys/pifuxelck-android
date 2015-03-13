@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -237,12 +239,27 @@ public class DrawingActivity extends Activity implements
     mSizeButton.setVisibility(View.VISIBLE);
     mColorButton.setVisibility(View.VISIBLE);
     mBackgroundButton.setVisibility(View.VISIBLE);
+
+    AnimationUtil.animateView(
+        mColorButton,  R.anim.drawing_stroke_slide_in);
+    AnimationUtil.animateView(
+        mSizeButton, R.anim.drawing_size_slide_in);
+    AnimationUtil.animateView(
+        mBackgroundButton, R.anim.drawing_fill_slide_in);
   }
 
   private void hideOptionButtons() {
-    mSizeButton.setVisibility(View.INVISIBLE);
-    mColorButton.setVisibility(View.INVISIBLE);
-    mBackgroundButton.setVisibility(View.INVISIBLE);
+    chainAnimateAndHide(mColorButton, R.anim.drawing_stroke_slide_out);
+    chainAnimateAndHide(mSizeButton, R.anim.drawing_size_slide_out);
+    chainAnimateAndHide(mBackgroundButton, R.anim.drawing_fill_slide_out);
+  }
+
+  private void chainAnimateAndHide(View view, int anim) {
+    AnimationUtil.animateView(view, anim);
+    AnimationUtil.hideOnAnimationFinish(view);
+    // Animation animation = AnimationUtils.loadAnimation(this, anim);
+    // AnimationUtil.hideOnAnimationFinish(view, animation);
+    // AnimationUtil.chainAnimateView(view, animation);
   }
 
   private void showBackgroundColors() {

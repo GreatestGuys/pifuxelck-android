@@ -1,6 +1,7 @@
 package com.everythingissauce.pifuxelck.ui;
 
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.everythingissauce.pifuxelck.R;
@@ -28,11 +29,39 @@ class AnimationUtil {
     return position;
   }
 
-  private static void animateView(View view, int animation) {
+  public static void animateView(View view, int animation) {
     view.setVisibility(View.VISIBLE);
     view.clearAnimation();
     view.startAnimation(
         AnimationUtils.loadAnimation(view.getContext(), animation));
+  }
+
+  public static void hideOnAnimationFinish(final View view) {
+    Animation animation = view.getAnimation();
+    if (animation == null) {
+      return;
+    }
+
+    hideOnAnimationFinish(view, animation);
+  }
+
+  public static void hideOnAnimationFinish(
+      final View view,  Animation animation) {
+    animation.setAnimationListener(new Animation.AnimationListener() {
+      @Override
+      public void onAnimationStart(Animation animation) {
+      }
+
+      @Override
+      public void onAnimationEnd(Animation animation) {
+        view.setVisibility(View.INVISIBLE);
+        animation.setAnimationListener(null);
+      }
+
+      @Override
+      public void onAnimationRepeat(Animation animation) {
+      }
+    });
   }
 
   private AnimationUtil() {}

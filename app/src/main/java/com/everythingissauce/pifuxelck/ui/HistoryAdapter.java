@@ -79,10 +79,10 @@ public class HistoryAdapter extends CursorAdapter {
     }
     view.setVisibility(View.VISIBLE);
 
-    mLastPosition = AnimationUtil.animateListView(
-        view,
-        mLastPosition,
-        cursor.getPosition());
+    // mLastPosition = AnimationUtil.animateListView(
+    //     view,
+    //     mLastPosition,
+    //     cursor.getPosition());
 
     TextView labelView = (TextView) view.findViewById(R.id.label);
     labelView.setText(preview.getPreviewText());
