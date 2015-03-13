@@ -31,7 +31,7 @@ public class DrawingView extends View {
 
   private static final String TAG = "DrawingView";
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   @Nullable private AbstractDrawing mDrawing;
   @Nullable private AbstractLine mInProgressLine;

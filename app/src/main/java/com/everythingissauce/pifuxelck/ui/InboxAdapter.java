@@ -79,7 +79,7 @@ public class InboxAdapter extends ArrayAdapter<InboxEntry> {
           entry.getCurrentTurn() == null ? View.GONE : View.VISIBLE);
     }
 
-    mLastPosition = AnimationUtil.animateListView(view, mLastPosition, i);
+    // mLastPosition = AnimationUtil.animateListView(view, mLastPosition, i);
 
     return view;
   }

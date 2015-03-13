@@ -26,7 +26,7 @@ import java.util.concurrent.FutureTask;
 public class DrawingPlacer implements View.OnLayoutChangeListener {
 
   private static final String TAG = "DrawingPlacer";
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   // Must only be accessed from the UI thread.
   private final WeakHashMap<View, DrawingPlacingRunnable> mViewToRunnable;
