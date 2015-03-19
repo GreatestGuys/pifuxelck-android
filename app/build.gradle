@@ -8,14 +8,14 @@ android {
         applicationId "com.everythingissauce.pifuxelck"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.2.1"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-            'proguard-rules.pro'
+                    'proguard-rules.pro'
         }
     }
 }
