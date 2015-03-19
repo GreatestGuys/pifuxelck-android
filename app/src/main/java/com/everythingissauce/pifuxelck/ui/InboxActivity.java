@@ -309,6 +309,10 @@ public class InboxActivity extends Activity implements
   }
 
   private void submitTurn(final long gameId, final Turn turn) {
+    // Always save the turn in the inbox regardless if it is a success or
+    // failure.
+    mInboxStore.updateEntryWithReply(gameId, turn);
+
     ListenableFuture<Void> moveFuture = mApi.move(gameId, turn);
 
     Futures.addCallback(moveFuture, new FutureCallback<Void>() {
@@ -324,11 +328,11 @@ public class InboxActivity extends Activity implements
 
       @Override
       public void onFailure(Throwable t) {
-        mInboxStore.updateEntryWithReply(gameId, turn);
         ThreadUtil.UI_HANDLER.post(new Runnable() {
           @Override
           public void run() {
-            refreshInboxAdapter();  // Refresh so that "tap to retry" is displayed.
+            // Refresh so that "tap to retry" is displayed.
+            refreshInboxAdapter();
             Toast.makeText(
                 InboxActivity.this, R.string.error_submit_turn, Toast.LENGTH_LONG)
                 .show();

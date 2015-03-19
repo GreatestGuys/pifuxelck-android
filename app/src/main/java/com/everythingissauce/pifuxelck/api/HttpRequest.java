@@ -100,7 +100,7 @@ class HttpRequest {
   private class HttpRequestCallable implements Callable<String> {
 
     @Override
-    public String call() {
+    public String call() throws IOException {
       HttpURLConnection connection = null;
       try {
         String endPoint = mEndPoint == null ? "/" : mEndPoint;
@@ -129,7 +129,8 @@ class HttpRequest {
         int responseCode = connection.getResponseCode();
         if (DEBUG) Log.i(TAG, "Got response code: " + responseCode);
         if (responseCode < 200 || 299 < responseCode) {
-          return null;
+          throw new IOException(
+              "HTTP request returned error code " + responseCode + ".");
         }
 
         InputStream responseInputStream = new BufferedInputStream(
@@ -138,15 +139,11 @@ class HttpRequest {
         if (DEBUG) Log.i(TAG, "Got response: " + responseBody);
 
         return responseBody;
-      } catch (IOException exception) {
-        Log.e(TAG, "Unable to complete HTTP request.", exception);
       } finally {
         if (connection != null) {
           connection.disconnect();
         }
       }
-
-      return null;
     }
   }
 }
