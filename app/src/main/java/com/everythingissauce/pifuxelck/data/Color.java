@@ -17,8 +17,8 @@ import org.json.JSONException;
 public class Color {
 
   private static final String ALPHA_KEY = "alpha";
-  private static final String BLUE_KEY = "green";
-  private static final String GREEN_KEY = "blue";
+  private static final String BLUE_KEY = "blue";
+  private static final String GREEN_KEY = "green";
   private static final String RED_KEY = "red";
 
   public static final Color WHITE = new Color(1, 1, 1);

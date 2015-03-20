@@ -9,7 +9,7 @@ class HistorySqlHelper extends SQLiteOpenHelper {
 
   private static final String TAG = "HistorySqlHelper";
 
-  private static final int VERSION = 2;
+  private static final int VERSION = 3;
   private static final String DATABASE_NAME = "history.db";
 
   public static final String TABLE_NAME = "history";

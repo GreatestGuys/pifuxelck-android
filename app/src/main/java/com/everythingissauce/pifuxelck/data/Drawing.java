@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class Drawing implements AbstractDrawing {
 
+
   /**
    * A builder for Drawing objects. This class is not thread safe.
    */
