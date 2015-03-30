@@ -26,9 +26,10 @@ class HttpRequest {
 
   public static final String GET = "GET";
   public static final String POST = "POST";
+  public static final String PUT = "PUT";
 
   private static final String TAG = "HttpRequest";
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   private static final String HEADER_AUTH = "x-pifuxelck-auth";
 
@@ -128,15 +129,16 @@ class HttpRequest {
 
         int responseCode = connection.getResponseCode();
         if (DEBUG) Log.i(TAG, "Got response code: " + responseCode);
-        if (responseCode < 200 || 299 < responseCode) {
-          throw new IOException(
-              "HTTP request returned error code " + responseCode + ".");
-        }
 
         InputStream responseInputStream = new BufferedInputStream(
             connection.getInputStream());
         String responseBody = IOUtils.toString(responseInputStream, "UTF-8");
         if (DEBUG) Log.i(TAG, "Got response: " + responseBody);
+
+        if (responseCode < 200 || 299 < responseCode) {
+          throw new IOException(
+              "HTTP request returned error code " + responseCode + ".");
+        }
 
         return responseBody;
       } finally {

@@ -24,6 +24,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
   private static final String EXPORT_ACCOUNT_FILE_TITLE = "account.json";
 
   private Button mExportAccountButton;
+  private Button mChangePasswordButton;
   private IdentityProvider mIdentityProvider;
   private CheckBox mShouldVibrate;
   private CheckBox mShouldConfirmSend;
@@ -39,6 +40,10 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
 
     mExportAccountButton = (Button) findViewById(R.id.export_account_button);
     mExportAccountButton.setOnClickListener(this);
+
+    mChangePasswordButton = (Button) findViewById(R.id.change_password_button);
+    mChangePasswordButton.setOnClickListener(this);
+
     mIdentityProvider = new IdentityProvider(this);
 
     mShouldVibrate = (CheckBox) findViewById(R.id.should_vibrate);
@@ -55,6 +60,9 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     switch(view.getId()) {
       case R.id.export_account_button:
         exportAccount();
+        break;
+      case R.id.change_password_button:
+        startActivity(new Intent(this, PasswordChangeActivity.class));
         break;
     }
   }

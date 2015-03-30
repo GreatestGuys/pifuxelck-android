@@ -3,8 +3,8 @@ package com.everythingissauce.pifuxelck.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
-import com.everythingissauce.pifuxelck.Base64Util;
 import com.everythingissauce.pifuxelck.auth.Identity;
 
 public class IdentityStore {
@@ -16,6 +16,7 @@ public class IdentityStore {
   private static final String FIELD_KEY_PRIVATE = "private_exponent";
   private static final String FIELD_KEY_PUBLIC = "public_exponent";
   private static final String FIELD_NAME = "name";
+  private static final String FIELD_PASSWORD = "password";
 
   private final SharedPreferences mSharedPrefs;
 
@@ -36,33 +37,35 @@ public class IdentityStore {
     String displayName = mSharedPrefs.getString(FIELD_NAME, null);
     if (displayName == null) return null;
 
+    String password = mSharedPrefs.getString(FIELD_PASSWORD, "");
+
     String modulus = mSharedPrefs.getString(FIELD_KEY_MODULUS, null);
-    if (modulus == null) return null;
-
     String privateExponent = mSharedPrefs.getString(FIELD_KEY_PRIVATE, null);
-    if (privateExponent == null) return null;
-
     String publicExponent = mSharedPrefs.getString(FIELD_KEY_PUBLIC, null);
-    if (publicExponent == null) return null;
 
-    return new Identity(
-        userId, displayName, modulus, publicExponent, privateExponent);
+    return TextUtils.isEmpty(password)
+        ? new Identity(
+            userId, displayName, password,
+            modulus, publicExponent, privateExponent)
+        : new Identity(
+            userId, displayName, password);
   }
 
   public void setIdentity(Identity identity) {
-    mSharedPrefs.edit()
-        .putLong(FIELD_ID, identity.getId())
-        .putString(FIELD_NAME, identity.getDisplayName())
-        .putString(FIELD_KEY_PUBLIC, identity.getPublicExponentBase64())
-        .putString(FIELD_KEY_PRIVATE, identity.getPrivateExponentBase64())
-        .putString(FIELD_KEY_MODULUS, identity.getModulusBase64())
-        .apply();
-  }
-
-  @Nullable
-  private byte[] getBytes(String field) {
-    String encodedBytes = mSharedPrefs.getString(field, null);
-    if (encodedBytes == null) return null;
-    return Base64Util.decode(encodedBytes);
+    if (identity.hasPassword()) {
+      mSharedPrefs.edit()
+          .putLong(FIELD_ID, identity.getId())
+          .putString(FIELD_NAME, identity.getDisplayName())
+          .putString(FIELD_PASSWORD, identity.getPassword())
+          .apply();
+    } else {
+      mSharedPrefs.edit()
+          .putLong(FIELD_ID, identity.getId())
+          .putString(FIELD_NAME, identity.getDisplayName())
+          .putString(FIELD_KEY_PUBLIC, identity.getPublicExponentBase64())
+          .putString(FIELD_KEY_PRIVATE, identity.getPrivateExponentBase64())
+          .putString(FIELD_KEY_MODULUS, identity.getModulusBase64())
+          .apply();
+    }
   }
 }

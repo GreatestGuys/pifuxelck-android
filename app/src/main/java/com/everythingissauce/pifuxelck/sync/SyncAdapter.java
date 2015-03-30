@@ -211,9 +211,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     return Futures.transform(
         api.login(identityProvider.getIdentity()),
-        new AsyncFunction<String, Integer>() {
+        new AsyncFunction<Identity, Integer>() {
           @Override
-          public ListenableFuture<Integer> apply(String result) {
+          public ListenableFuture<Integer> apply(Identity result) {
             return syncInbox(identityProvider, api, inboxStore);
           }
         }, ThreadUtil.THREAD_POOL);
@@ -272,9 +272,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     return Futures.transform(
         api.login(identityProvider.getIdentity()),
-        new AsyncFunction<String, Integer>() {
+        new AsyncFunction<Identity, Integer>() {
           @Override
-          public ListenableFuture<Integer> apply(String result) {
+          public ListenableFuture<Integer> apply(Identity result) {
             return syncHistory(identityProvider, api, historyStore);
           }
         }, ThreadUtil.THREAD_POOL);

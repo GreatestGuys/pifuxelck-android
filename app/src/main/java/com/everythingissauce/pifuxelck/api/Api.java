@@ -24,16 +24,27 @@ public interface Api {
   /**
    * Registers a partial identity with the server.
    * @param displayName the display name to register
+   * @param password the user's password
    * @return the user ID of the registered user
    */
-  ListenableFuture<Identity> registerAccount(String displayName);
+  ListenableFuture<Identity> registerAccount(String displayName,
+                                             String password);
 
   /**
    * Attempts to login and obtain an authentication token.
    * @param identity the identity of the current user
-   * @return the authentication token
+   * @return the logged in identity
    */
-  ListenableFuture<String> login(Identity identity);
+  ListenableFuture<Identity> login(Identity identity);
+
+  /**
+   * Attempts to login and obtain an authentication token.
+   * @param identity the identity of the current user
+   * @param newPassword the desired new password
+   * @return the new identity of the user
+   */
+  ListenableFuture<Identity> changePassword(
+      Identity identity, String newPassword);
 
   /**
    * Attempt to resolve the user ID of a given display name.

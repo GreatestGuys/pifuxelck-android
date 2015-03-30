@@ -101,6 +101,29 @@
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/background_grey"
+                />
+
+            <RelativeLayout
+                android:background="@android:color/white"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Button
+                    style="?android:attr/buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change password"
+                    android:id="@+id/change_password_button"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@android:color/white"/>
+
+            </RelativeLayout>
+
         </LinearLayout>
 
     </ScrollView>

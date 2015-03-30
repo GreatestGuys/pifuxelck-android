@@ -2,13 +2,12 @@ package com.everythingissauce.pifuxelck.api;
 
 import com.everythingissauce.pifuxelck.Base64Util;
 
-import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.util.Log;
 
 import com.everythingissauce.pifuxelck.ThreadUtil;
-import com.everythingissauce.pifuxelck.auth.Identity.Partial;
+import com.everythingissauce.pifuxelck.api.message.Message;
+import com.everythingissauce.pifuxelck.api.message.User;
 import com.everythingissauce.pifuxelck.auth.Identity;
 import com.everythingissauce.pifuxelck.data.Game;
 import com.everythingissauce.pifuxelck.data.InboxEntry;
@@ -38,18 +37,17 @@ class ApiImpl implements Api {
 
   private static final String THREAD_NAME = "Api Thread";
 
-  private static final String REGISTER_END_POINT = "/account";
-  private static final String REGISTER_DISPLAY_NAME = "display_name";
-  private static final String REGISTER_KEY_OBJECT = "public_key";
-  private static final String REGISTER_EXPONENT = "exponent";
-  private static final String REGISTER_MODULUS = "modulus";
-  private static final String REGISTER_PHONE = "hashed_phone";
+  private static final String REGISTER_END_POINT = "/api/2/account/register";
 
   private static final String LOGIN_START_END_POINT = "/login/0/";
   private static final String LOGIN_START_CHALLENGE = "challenge";
   private static final String LOGIN_START_CHALLENGE_ID = "id";
 
   private static final String LOGIN_FINISH_END_POINT = "/login/1/";
+
+  private static final String LOGIN_END_POINT =  "/api/2/account/login";
+
+  private static final String PASSWORD_END_POINT =  "/api/2/account";
 
   private static final String ACCOUNT_LOOKUP_END_POINT = "/account/lookup/";
 
@@ -83,60 +81,75 @@ class ApiImpl implements Api {
   }
 
   @Override
-  public ListenableFuture<Identity> registerAccount(final String displayName) {
-    final ListenableFuture<Partial> partialFuture =
-        ThreadUtil.THREAD_POOL.submit(new Callable<Partial>() {
+  public ListenableFuture<Identity> registerAccount(final String displayName,
+                                                    final String password) {
+    ListenableFuture<Message> messageFuture =
+        makeRequest(new  Callable<ListenableFuture<String>>() {
       @Override
-      public Partial call() {
-        return new Partial(displayName);
+      public ListenableFuture<String> call() throws Exception {
+        return mHttpRequestFactory.newRequest()
+                .setEndPoint(REGISTER_END_POINT)
+                .setMethod(HttpRequest.POST)
+                .setAuthToken(getAuthToken())
+                .setBody(new Message.Builder()
+                    .setUser(new User(displayName, password))
+                    .buildJsonString())
+                .makeRequest();
       }
     });
 
-    ListenableFuture<String> bodyFuture = Futures.transform(
-        partialFuture,
-        new AsyncFunction<Partial, String>() {
-          @Override
-          public ListenableFuture<String> apply(Partial partial) throws JSONException {
-            JSONObject key = new JSONObject();
-            key.put(REGISTER_EXPONENT, partial.getPublicExponentBase64());
-            key.put(REGISTER_MODULUS, partial.getModulusBase64());
-
-            JSONObject bodyJson = new JSONObject();
-            bodyJson.put(REGISTER_DISPLAY_NAME, partial.getDisplayName());
-            bodyJson.put(REGISTER_KEY_OBJECT, key);
-            bodyJson.put(REGISTER_PHONE, "");
-
-            String requestBody = bodyJson.toString();
-
-            return mHttpRequestFactory.newRequest()
-                .setEndPoint(REGISTER_END_POINT)
-                .setMethod(HttpRequest.POST)
-                .setBody(requestBody)
-                .makeRequest();
-          }
-        }, ThreadUtil.THREAD_POOL);
-
-    ListenableFuture<List<Object>> combinedFuture =
-        Futures.allAsList(partialFuture, bodyFuture);
-    return Futures.transform(
-        combinedFuture,
-        new Function<List<Object>, Identity>() {
+    return Futures.transform(messageFuture, new Function<Message, Identity>() {
       @Override
-      public Identity apply(List<Object> input) {
-        Partial partial = (Partial) input.get(0);
-        String body = (String) input.get(1);
-        return partial.build(Long.valueOf(body));
+      public Identity apply(Message input) {
+        User user = input.getUser();
+        return new Identity(user.getId(), displayName, password);
       }
     });
   }
 
   @Override
-  public ListenableFuture<String> login(final Identity identity) {
+  public ListenableFuture<Identity> login(final Identity identity) {
+    return identity.hasPassword()
+        ? loginWithPassword(identity)
+        : loginWithRsa(identity);
+  }
+
+  private ListenableFuture<Identity> loginWithPassword(
+      final Identity identity) {
+    ListenableFuture<Message> messageFuture =
+        makeRequest(new  Callable<ListenableFuture<String>>() {
+          @Override
+          public ListenableFuture<String> call() throws Exception {
+            return mHttpRequestFactory.newRequest()
+                .setEndPoint(LOGIN_END_POINT)
+                .setMethod(HttpRequest.POST)
+                .setAuthToken(getAuthToken())
+                .setBody(new Message.Builder()
+                    .setUser(new User(identity))
+                    .buildJsonString())
+                .makeRequest();
+          }
+        });
+
+    return Futures.transform(messageFuture, new Function<Message, Identity>() {
+      @Override
+      public Identity apply(Message input) {
+        setAuthToken(input.getMeta().getAuth());
+        User user = input.getUser();
+        return new Identity(
+            user.getId(),
+            identity.getDisplayName(),
+            identity.getPassword());
+      }
+    }, ThreadUtil.THREAD_POOL);
+  }
+
+  private ListenableFuture<Identity> loginWithRsa(final Identity identity) {
     return Futures.transform(
         loginStart(identity),
-        new AsyncFunction<String, String>() {
+        new AsyncFunction<String, Identity>() {
       @Override
-      public ListenableFuture<String> apply(String jsonResponse)
+      public ListenableFuture<Identity> apply(String jsonResponse)
           throws Exception {
         JSONObject response = new JSONObject(jsonResponse);
         String challenge = response.getString(LOGIN_START_CHALLENGE);
@@ -154,7 +167,7 @@ class ApiImpl implements Api {
           .makeRequest();
   }
 
-  private ListenableFuture<String> loginFinish(
+  private ListenableFuture<Identity> loginFinish(
       final Identity identity,
       final String challengeId,
       final String challenge) {
@@ -169,7 +182,7 @@ class ApiImpl implements Api {
     Futures.addCallback(tokenFuture, new FutureCallback<String>() {
       @Override
       public void onSuccess(String token) {
-       setAuthToken(token);
+        setAuthToken(token);
       }
 
       @Override
@@ -177,7 +190,39 @@ class ApiImpl implements Api {
       }
     }, ThreadUtil.THREAD_POOL);
 
-    return tokenFuture;
+    return Futures.transform(tokenFuture, new Function<String, Identity>() {
+      @Override
+      public Identity apply(String input) {
+        return identity;
+      }
+    }, ThreadUtil.THREAD_POOL);
+  }
+
+  @Override
+  public ListenableFuture<Identity> changePassword(
+      final Identity identity, final String newPassword) {
+    ListenableFuture<Message> messageFuture = makeRequest(
+        new Callable<ListenableFuture<String>>() {
+      @Override
+      public ListenableFuture<String> call() throws Exception {
+        return mHttpRequestFactory.newRequest()
+            .setEndPoint(PASSWORD_END_POINT)
+            .setMethod(HttpRequest.PUT)
+            .setAuthToken(getAuthToken())
+            .setBody(new Message.Builder()
+                .setUser(new User(identity.getDisplayName(), newPassword))
+                .buildJsonString())
+            .makeRequest();
+      }
+    });
+
+    return Futures.transform(messageFuture, new Function<Message, Identity>() {
+      @Override
+      public Identity apply(Message input) {
+        return new Identity(
+            identity.getId(), identity.getDisplayName(), newPassword);
+      }
+    });
   }
 
   @Override
@@ -292,6 +337,29 @@ class ApiImpl implements Api {
         .makeRequest();
 
     return Futures.transform(bodyFuture, bodyToGames, ThreadUtil.THREAD_POOL);
+  }
+
+  private ListenableFuture<Message> makeRequest(
+      final Callable<ListenableFuture<String>> requestCallable) {
+    return Futures.transform(
+        Futures.<Void>immediateFuture(null),
+        new AsyncFunction<Void, Message>() {
+          @Override
+          public ListenableFuture<Message> apply(Void input) throws Exception {
+            ListenableFuture<String> bodyFuture = requestCallable.call();
+            return Futures.transform(
+                bodyFuture,
+                new AsyncFunction<String, Message>() {
+                  @Override
+                  public ListenableFuture<Message> apply(String input)
+                      throws JSONException {
+                    return Futures.immediateFuture(
+                        Message.fromJson(new  JSONObject(input)));
+                  }
+                });
+          }
+        }
+    );
   }
 
   private void setAuthToken(String token) {

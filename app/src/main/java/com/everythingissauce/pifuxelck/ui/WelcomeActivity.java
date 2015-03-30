@@ -16,15 +16,13 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -44,9 +42,8 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   private static final long SYNC_RATE_SECS = TimeUnit.MINUTES.toSeconds(15);
 
   private Button mLoginButton;
+  private Button mJoinButton;
   private Button mImportButton;
-  private EditText mDisplayNameEditText;
-  private View mProgressOverlay;
 
   private IdentityProvider mIdentityProvider;
 
@@ -57,18 +54,18 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_welcome);
 
-    mDisplayNameEditText = (EditText) findViewById(R.id.display_name_edit_text);
-    mProgressOverlay = findViewById(R.id.progress_overlay);
-
     mLoginButton = (Button) findViewById(R.id.login_button);
     mLoginButton.setOnClickListener(this);
+
+    mJoinButton = (Button) findViewById(R.id.join_button);
+    mJoinButton.setOnClickListener(this);
 
     mImportButton = (Button) findViewById(R.id.import_button);
     mImportButton.setOnClickListener(this);
 
     mIdentityProvider = IdentityProvider.getInstance(this);
     if (mIdentityProvider.hasIdentity()) {
-      login(mIdentityProvider.getIdentity());
+      login(mIdentityProvider.getIdentity(), true);
     }
 
     // Set up a dummy account. This is required to placate the Android
@@ -95,41 +92,16 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     switch (view.getId()) {
+      case R.id.join_button:
+        startActivity(new Intent(this, RegisterActivity.class));
+        return;
       case R.id.login_button:
-        onJoinClick();
+        startActivity(new Intent(this, LoginActivity.class));
         return;
       case R.id.import_button:
         onImportClick();
         return;
     }
-  }
-
-  private void onJoinClick() {
-    String displayName = mDisplayNameEditText.getText().toString();
-
-    if (displayName.length() == 0) {
-      return;
-    }
-
-    showLoading();
-
-    ThreadUtil.callbackOnUi(
-        mApi.registerAccount(displayName),
-        new FutureCallback<Identity>() {
-          @Override
-          public void onSuccess(Identity identity) {
-            mIdentityProvider.setIdentity(identity);
-            login(identity);
-          }
-
-          @Override
-          public void onFailure(Throwable t) {
-            hideLoading();
-            Toast.makeText(
-                WelcomeActivity.this, R.string.error_register, Toast.LENGTH_LONG)
-                .show();
-          }
-        });
   }
 
   private void onImportClick() {
@@ -155,8 +127,7 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
       InputStream inputStream = getContentResolver().openInputStream(dataUri);
       String identityString = IOUtils.toString(inputStream, "UTF-8");
       Identity identity = Identity.fromJson(new JSONObject(identityString));
-      new IdentityStore(this).setIdentity(identity);
-      login(identity);
+      login(identity, false);
     } catch (Exception exception) {
       Log.e(TAG, "Unable to import identity.", exception);
       Toast.makeText(
@@ -165,40 +136,16 @@ public class WelcomeActivity extends Activity implements View.OnClickListener {
     }
   }
 
-
-  private void login(Identity identity) {
-
-    showLoading();
-    ThreadUtil.callbackOnUi(
-        mApi.login(identity),
-        new FutureCallback<String>() {
-          @Override
-          public void onSuccess(String token) {
-            openInbox();
-          }
-
-          @Override
-          public void onFailure(Throwable t) {
-            Toast.makeText(
-                WelcomeActivity.this, R.string.error_login, Toast.LENGTH_LONG)
-                .show();
-            openInbox();
-          }
-        });
-  }
-
-  private void showLoading() {
-    mProgressOverlay.setVisibility(View.VISIBLE);
-  }
-
-  private void hideLoading() {
-    mProgressOverlay.setVisibility(View.INVISIBLE);
-  }
-
-  private void openInbox() {
-    Intent intent = new Intent();
-    intent.setClass(this.getApplicationContext(), InboxActivity.class);
-    startActivity(intent);
-    finish();
+  private void login(Identity identity, boolean failToInbox) {
+    try {
+      Intent intent = new Intent(this, PerformLoginActivity.class);
+      intent.putExtra(PerformLoginActivity.EXTRA_FAIL_TO_INBOX, failToInbox);
+      intent.putExtra(
+          PerformLoginActivity.EXTRA_IDENTITY,
+          identity.toJson().toString());
+      startActivity(intent);
+    } catch (JSONException exception) {
+      Log.e(TAG, "Unable to marshal identity to JSON.", exception);
+    }
   }
 }

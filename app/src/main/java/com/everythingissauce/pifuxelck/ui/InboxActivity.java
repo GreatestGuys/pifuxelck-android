@@ -203,8 +203,9 @@ public class InboxActivity extends Activity implements
     if (mOverlayView.getVisibility() == View.VISIBLE) {
       hideLabelOverlay();
     } else {
-      setResult(RESULT_CANCELED, new Intent());
-      super.onBackPressed();
+      // Prevent going back to the welcome page.
+      // setResult(RESULT_CANCELED, new Intent());
+      // super.onBackPressed();
     }
   }
 
