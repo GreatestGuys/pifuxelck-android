@@ -23,11 +23,13 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
 
   private static final String EXPORT_ACCOUNT_FILE_TITLE = "account.json";
 
-  private Button mExportAccountButton;
-  private Button mChangePasswordButton;
-  private IdentityProvider mIdentityProvider;
   private CheckBox mShouldVibrate;
   private CheckBox mShouldConfirmSend;
+  private View mChangePasswordLayout;
+  private View mShouldVibrateLayout;
+  private View mShouldConfirmSendLayout;
+
+  private IdentityProvider mIdentityProvider;
 
   private Settings mSettings;
 
@@ -38,11 +40,14 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
 
     mSettings = new Settings(this);
 
-    mExportAccountButton = (Button) findViewById(R.id.export_account_button);
-    mExportAccountButton.setOnClickListener(this);
+    mShouldConfirmSendLayout = findViewById(R.id.should_confirm_send_layout);
+    mShouldConfirmSendLayout.setOnClickListener(this);
 
-    mChangePasswordButton = (Button) findViewById(R.id.change_password_button);
-    mChangePasswordButton.setOnClickListener(this);
+    mShouldVibrateLayout = findViewById(R.id.should_vibrate_layout);
+    mShouldVibrateLayout.setOnClickListener(this);
+
+    mChangePasswordLayout = findViewById(R.id.change_password_layout);
+    mChangePasswordLayout.setOnClickListener(this);
 
     mIdentityProvider = new IdentityProvider(this);
 
@@ -57,31 +62,21 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
 
   @Override
   public void onClick(View view) {
+    boolean checked;
     switch(view.getId()) {
-      case R.id.export_account_button:
-        exportAccount();
-        break;
-      case R.id.change_password_button:
+      case R.id.change_password_layout:
         startActivity(new Intent(this, PasswordChangeActivity.class));
         break;
-    }
-  }
-
-  private void exportAccount() {
-    Identity identity = mIdentityProvider.getIdentity();
-    if (identity == null) {
-      return;
-    }
-
-    try {
-      startActivity(Intent.createChooser(
-          new Intent(Intent.ACTION_SEND)
-              .setType("text/plain")
-              .putExtra(Intent.EXTRA_TEXT, identity.toJson().toString())
-              .putExtra(Intent.EXTRA_SUBJECT, EXPORT_ACCOUNT_FILE_TITLE),
-          getString(R.string.settings_export_account_chooser_title)));
-    } catch (JSONException exception) {
-      Log.e(TAG, "Unable to serialize account JSON.", exception);
+      case R.id.should_confirm_send_layout:
+        checked = !mShouldConfirmSend.isChecked();
+        mShouldConfirmSend.setChecked(checked);
+        mSettings.setShouldConfirmSend(checked);
+        break;
+      case R.id.should_vibrate_layout:
+        checked = !mShouldVibrate.isChecked();
+        mShouldVibrate.setChecked(checked);
+        mSettings.setShouldVibrate(checked);
+        break;
     }
   }
 

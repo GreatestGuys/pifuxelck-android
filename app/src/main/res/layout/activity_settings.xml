@@ -17,42 +17,11 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:padding="8dp"
-                android:background="@android:color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/export_account_button"
-                    android:text="@string/settings_export_account_summary"
-                    android:id="@+id/export_account_summary" />
-
-                <Button
-                    style="?android:attr/buttonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_export_account_button"
-                    android:id="@+id/export_account_button"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@android:color/white"/>
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/background_grey"
-                />
-
-            <RelativeLayout
                 android:background="@android:color/white"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:id="@+id/should_vibrate_layout"
+                android:clickable="true">
 
                 <CheckBox
                     android:layout_margin="16dp"
@@ -81,7 +50,9 @@
             <RelativeLayout
                 android:background="@android:color/white"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:id="@+id/should_confirm_send_layout"
+                android:clickable="true">
 
                 <CheckBox
                     android:layout_margin="16dp"
@@ -108,19 +79,19 @@
                 />
 
             <RelativeLayout
+                android:id="@+id/change_password_layout"
                 android:background="@android:color/white"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:clickable="true">
 
-                <Button
-                    style="?android:attr/buttonStyle"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
                     android:text="Change password"
-                    android:id="@+id/change_password_button"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@android:color/white"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    />
 
             </RelativeLayout>
 
